@@ -1,10 +1,9 @@
-package com.example.mustmarket.SharedComposables
+package com.example.mustmarket.core.SharedComposables
 
 import androidx.annotation.RawRes
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.compose.*
 
 @Composable

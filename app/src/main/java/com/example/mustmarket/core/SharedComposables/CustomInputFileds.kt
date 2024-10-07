@@ -1,4 +1,4 @@
-package com.example.mustmarket.SharedComposables
+package com.example.mustmarket.core.SharedComposables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

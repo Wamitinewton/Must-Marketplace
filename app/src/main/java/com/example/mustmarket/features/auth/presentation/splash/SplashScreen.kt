@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.feature_splash
+package com.example.mustmarket.features.auth.presentation.splash
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.*
 
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.mustmarket.SharedComposables.LottieLoader
+import com.example.mustmarket.core.SharedComposables.LottieLoader
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
 import kotlinx.coroutines.delay
