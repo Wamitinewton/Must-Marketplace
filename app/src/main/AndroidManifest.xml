@@ -15,7 +15,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="MustMarket"
             android:theme="@style/Theme.MustMarket">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
