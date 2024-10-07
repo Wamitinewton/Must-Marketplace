@@ -1,6 +1,5 @@
-package com.example.mustmarket.presentation.screens.signup
+package com.example.mustmarket.features.feature_login.presentation.login
 
-import android.view.RoundedCorner
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,13 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -37,14 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
-import com.example.mustmarket.presentation.components.ButtonLoading
-import com.example.mustmarket.presentation.components.MyTextField
-import com.example.mustmarket.presentation.components.PasswordInput
-
+import com.example.mustmarket.components.ButtonLoading
+import com.example.mustmarket.components.MyTextField
+import com.example.mustmarket.components.PasswordInput
 
 @Composable
-fun SignUpScreen(
-    navController: NavController,
+fun LoginScreen(
+    navController: NavController
 ) {
     val context = LocalContext.current
     Scaffold { innerPadding ->
@@ -53,33 +50,26 @@ fun SignUpScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(Color(0xfffcfcfc)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
             Image(
-                painter = painterResource(
-                    id = R.drawable.ic_min_carrot
-                ),
-                contentDescription = null
+                modifier = Modifier
+                    .padding(top = 32.dp, bottom = 62.dp),
+                painter = painterResource(id = R.drawable.ic_min_carrot),
+                contentDescription = stringResource(id = R.string.logo)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "Sign up",
+                text = "Login",
                 style = MaterialTheme.typography.h2,
-                modifier = Modifier.padding(bottom = 6.dp)
+                textAlign = TextAlign.Start
             )
             Text(
-                text = "Enter your credentials to continue",
+                modifier = Modifier
+                    .padding(bottom = 16.dp, top = 6.dp),
+                text = "Enter your email and password",
                 style = MaterialTheme.typography.h3,
                 color = Color(0xff727272),
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-            MyTextField(
-                onInputChanged = {},
-                inputText = "",
-                name = "Name"
+                textAlign = TextAlign.Start
             )
             MyTextField(
                 onInputChanged = {},
@@ -93,39 +83,15 @@ fun SignUpScreen(
                 toggleShowPassword = {},
                 name = "Password"
             )
-            PasswordInput(
-                onInputChanged = {},
-                inputText = "",
-                showPassword = false,
-                toggleShowPassword = {},
-                name = "Confirm Password"
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 20.dp),
+                text = "Forgot Password",
+                style = MaterialTheme.typography.h6
             )
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "By continuing you agree to our",
-                    style = MaterialTheme.typography.h5
-                )
-                Text(
-                    text = "Terms of service",
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.primary
-                )
-                Text(text = "and ", style = MaterialTheme.typography.h5)
-                Text(
-                    text = "Privacy Policy.",
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.primary
-                )
-
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
             ButtonLoading(
-                name = "Sign Up",
+                name = "Login",
                 isLoading = false,
                 enabled = true,
                 onClicked = {}
@@ -155,18 +121,13 @@ fun SignUpScreen(
                     style = MaterialTheme.typography.button,
                 )
             }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Already have an account?",
+                    text = "Don't have an account?",
                     style = MaterialTheme.typography.h6,
                     fontFamily = FontFamily(
                         Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
@@ -177,11 +138,11 @@ fun SignUpScreen(
                 IconButton(
                     onClick = {
                         navController.popBackStack()
-                        navController.navigate(Screen.Login.route)
+                        navController.navigate(Screen.SignUp.route)
                     }
                 ) {
                     Text(
-                        text = "Sign in",
+                        text = "Sign up",
                         style = MaterialTheme.typography.h6,
                         fontFamily = FontFamily(
                             Font(
@@ -190,7 +151,7 @@ fun SignUpScreen(
                             )
                         ),
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colors.primary
+                        color = MaterialTheme.colors.primary,
                     )
                 }
             }

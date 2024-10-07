@@ -10,8 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
-import com.example.mustmarket.presentation.screens.login.LoginScreen
-import com.example.mustmarket.presentation.screens.signup.SignUpScreen
+import com.example.mustmarket.features.feature_login.presentation.login.LoginScreen
+import com.example.mustmarket.features.feature_register.presentation.signup.SignUpScreen
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
