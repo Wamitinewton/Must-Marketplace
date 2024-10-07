@@ -24,7 +24,7 @@ fun SetUpNavGraph(
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = Screen.SignUp.route
+            startDestination = Screen.Login.route
         ) {
             composable(route = Screen.SignUp.route) { SignUpScreen(navController = navController) }
             composable(route = Screen.Login.route) { LoginScreen(navController = navController) }

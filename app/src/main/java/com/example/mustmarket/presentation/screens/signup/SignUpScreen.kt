@@ -87,6 +87,13 @@ fun SignUpScreen(
                 inputText = "",
                 showPassword = false,
                 toggleShowPassword = {},
+                name = "Password"
+            )
+            PasswordInput(
+                onInputChanged = {},
+                inputText = "",
+                showPassword = false,
+                toggleShowPassword = {},
                 name = "Confirm Password"
             )
 
