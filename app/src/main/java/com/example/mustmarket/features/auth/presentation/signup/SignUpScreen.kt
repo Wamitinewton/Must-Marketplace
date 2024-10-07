@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.feature_login.presentation.login
+package com.example.mustmarket.features.auth.presentation.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -35,13 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
-import com.example.mustmarket.SharedComposables.ButtonLoading
-import com.example.mustmarket.SharedComposables.MyTextField
-import com.example.mustmarket.SharedComposables.PasswordInput
+import com.example.mustmarket.core.SharedComposables.ButtonLoading
+import com.example.mustmarket.core.SharedComposables.MyTextField
+import com.example.mustmarket.core.SharedComposables.PasswordInput
+
 
 @Composable
-fun LoginScreen(
-    navController: NavController
+fun SignUpScreen(
+    navController: NavController,
 ) {
     val context = LocalContext.current
     Scaffold { innerPadding ->
@@ -50,26 +50,33 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(Color(0xfffcfcfc)),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Image(
-                modifier = Modifier
-                    .padding(top = 32.dp, bottom = 62.dp),
-                painter = painterResource(id = R.drawable.ic_min_carrot),
-                contentDescription = stringResource(id = R.string.logo)
+                painter = painterResource(
+                    id = R.drawable.ic_min_carrot
+                ),
+                contentDescription = null
             )
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "Login",
+                text = "Sign up",
                 style = MaterialTheme.typography.h2,
-                textAlign = TextAlign.Start
+                modifier = Modifier.padding(bottom = 6.dp)
             )
             Text(
-                modifier = Modifier
-                    .padding(bottom = 16.dp, top = 6.dp),
-                text = "Enter your email and password",
+                text = "Enter your credentials to continue",
                 style = MaterialTheme.typography.h3,
                 color = Color(0xff727272),
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+            MyTextField(
+                onInputChanged = {},
+                inputText = "",
+                name = "Name"
             )
             MyTextField(
                 onInputChanged = {},
@@ -83,15 +90,39 @@ fun LoginScreen(
                 toggleShowPassword = {},
                 name = "Password"
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp, horizontal = 20.dp),
-                text = "Forgot Password",
-                style = MaterialTheme.typography.h6
+            PasswordInput(
+                onInputChanged = {},
+                inputText = "",
+                showPassword = false,
+                toggleShowPassword = {},
+                name = "Confirm Password"
             )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "By continuing you agree to our",
+                    style = MaterialTheme.typography.h5
+                )
+                Text(
+                    text = "Terms of service",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primary
+                )
+                Text(text = "and ", style = MaterialTheme.typography.h5)
+                Text(
+                    text = "Privacy Policy.",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primary
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(22.dp))
             ButtonLoading(
-                name = "Login",
+                name = "Sign Up",
                 isLoading = false,
                 enabled = true,
                 onClicked = {}
@@ -121,13 +152,18 @@ fun LoginScreen(
                     style = MaterialTheme.typography.button,
                 )
             }
-            Spacer(modifier = Modifier.height(12.dp))
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+
             Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Don't have an account?",
+                    text = "Already have an account?",
                     style = MaterialTheme.typography.h6,
                     fontFamily = FontFamily(
                         Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
@@ -138,11 +174,11 @@ fun LoginScreen(
                 IconButton(
                     onClick = {
                         navController.popBackStack()
-                        navController.navigate(Screen.SignUp.route)
+                        navController.navigate(Screen.Login.route)
                     }
                 ) {
                     Text(
-                        text = "Sign up",
+                        text = "Sign in",
                         style = MaterialTheme.typography.h6,
                         fontFamily = FontFamily(
                             Font(
@@ -151,7 +187,7 @@ fun LoginScreen(
                             )
                         ),
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colors.primary
                     )
                 }
             }
