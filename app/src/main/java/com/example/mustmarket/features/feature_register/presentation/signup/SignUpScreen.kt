@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
-import com.example.mustmarket.components.ButtonLoading
-import com.example.mustmarket.components.MyTextField
-import com.example.mustmarket.components.PasswordInput
+import com.example.mustmarket.SharedComposables.ButtonLoading
+import com.example.mustmarket.SharedComposables.MyTextField
+import com.example.mustmarket.SharedComposables.PasswordInput
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.mustmarket.components
+package com.example.mustmarket.SharedComposables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row

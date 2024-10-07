@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.feature_login.presentation.login.LoginScreen
 import com.example.mustmarket.features.feature_register.presentation.signup.SignUpScreen
+import com.example.mustmarket.features.feature_splash.SplashScreen
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
@@ -24,10 +25,11 @@ fun SetUpNavGraph(
         NavHost(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
-            startDestination = Screen.Login.route
+            startDestination = Screen.Splash.route
         ) {
             composable(route = Screen.SignUp.route) { SignUpScreen(navController = navController) }
             composable(route = Screen.Login.route) { LoginScreen(navController = navController) }
+            composable(route = Screen.Splash.route) { SplashScreen(navController = navController) }
         }
     }
 }
