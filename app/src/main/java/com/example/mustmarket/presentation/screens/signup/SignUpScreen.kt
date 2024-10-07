@@ -1,6 +1,7 @@
 package com.example.mustmarket.presentation.screens.signup
 
 import android.view.RoundedCorner
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -43,6 +46,7 @@ import com.example.mustmarket.presentation.components.PasswordInput
 fun SignUpScreen(
     navController: NavController,
 ) {
+    val context = LocalContext.current
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -127,15 +131,17 @@ fun SignUpScreen(
                 onClicked = {}
             )
             Spacer(modifier = Modifier.height(22.dp))
-            OutlinedButton(
-                onClick = {},
+            Button(
+                onClick = {
+                    Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
+                },
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = Color.Gray
+                    backgroundColor = Color(0xff5383ec)
                 )
             ) {
                 Image(
@@ -146,10 +152,10 @@ fun SignUpScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Sign in with Google",
-                    style = MaterialTheme.typography.h6,
-                    color = Color.Black
+                    style = MaterialTheme.typography.button,
                 )
             }
+
             Spacer(modifier = Modifier.height(22.dp))
 
 
