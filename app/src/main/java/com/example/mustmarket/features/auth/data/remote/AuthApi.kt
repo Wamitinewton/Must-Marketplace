@@ -9,7 +9,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthApi {
-
     @GET("/api/me")
     suspend fun loginUser(@Header("Authorization") authToken: String): FinalUser
     // remember to return user from user sessions
