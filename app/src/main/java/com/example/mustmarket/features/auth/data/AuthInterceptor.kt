@@ -31,7 +31,6 @@ class AuthInterceptor(context: Context) : Interceptor {
         var refreshToken = response.headers().get(REFRESH_TOKEN)
         val newAccessToken = response.headers().get("x-access-token")
         if (newAccessToken != null) accessToken = newAccessToken
-
         if (accessToken != null && refreshToken != null) {
             sessionManager.saveAccessToken(accessToken)
             sessionManager.saveRefreshToken(refreshToken)
