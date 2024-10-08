@@ -22,7 +22,14 @@ jobs:
         run: |
           git checkout -b feature-update-${{ github.run_number }}
 
+      - name: Check for changes
+        id: changes-check
+        run: |
+          git status --porcelain
+        continue-on-error: true
+
       - name: Commit changes
+        if: steps.changes-check.outputs.changes != ''
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -30,12 +37,14 @@ jobs:
           git commit -m "Automated PR: Update code"
 
       - name: Push changes
+        if: steps.changes-check.outputs.changes != ''
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: feature-update-${{ github.run_number }}
 
       - name: Create Pull Request
+        if: steps.changes-check.outputs.changes != ''
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
