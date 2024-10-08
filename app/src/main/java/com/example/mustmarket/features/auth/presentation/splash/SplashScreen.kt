@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.core.SharedComposables.LottieLoader
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
 import com.example.mustmarket.navigation.Screen
 import kotlinx.coroutines.delay
 
@@ -45,7 +46,7 @@ fun SplashScreen(
         Box(
             contentAlignment = Alignment.Center
         ){
-            LottieLoader(
+            LoopReverseLottieLoader(
                 modifier = Modifier.size(270.dp),
                 lottieFile = R.raw.business
             )

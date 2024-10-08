@@ -21,7 +21,7 @@ import com.example.mustmarket.features.auth.presentation.splash.SplashScreen
 fun SetUpNavGraph(
     navController: NavHostController
 ) {
-    // mbona unaeka pading kwa routing ;)
+
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
