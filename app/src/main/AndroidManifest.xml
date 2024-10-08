@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".BaseApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/mustmarket"
+        android:icon="@drawable/launchermarket"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/mustmarket"
+        android:roundIcon="@drawable/launchermarket"
         android:supportsRtl="true"
         android:theme="@style/Theme.MustMarket"
         tools:targetApi="31">
