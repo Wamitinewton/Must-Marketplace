@@ -51,7 +51,7 @@ class AuthRepositoryImpl @Inject constructor(
             } catch (e: IOException) {
                 emit(
                     Resource.Error(
-                        message = "Couldn't reach server, check your internet connection",
+                        message = "",
                     )
                 )
             }
