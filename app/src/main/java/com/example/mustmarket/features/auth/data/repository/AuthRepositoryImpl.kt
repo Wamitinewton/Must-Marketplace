@@ -58,6 +58,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
     override suspend fun login(authToken: String): FinalUser {
-        TODO("Not yet implemented")
+        return authApi.login(authToken = authToken)
     }
 }

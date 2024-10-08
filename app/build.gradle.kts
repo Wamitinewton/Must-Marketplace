@@ -4,12 +4,15 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-    id("com.google.gms.google-services")
     id("kotlin-parcelize")
     id("kotlinx-serialization")
+    id("androidx.room")
 }
 
 android {
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
     namespace = "com.example.mustmarket"
     compileSdk = 34
 
@@ -90,12 +93,10 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie-compose:5.0.3")
 
-    //firebase-auth
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.0")
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
+    // Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.3.0")
 }
