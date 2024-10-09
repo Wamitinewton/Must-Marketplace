@@ -63,24 +63,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.compose.material:material:1.5.0")
+    implementation("androidx.compose.material:material:1.7.3")
 
     // Dagger  -Hilt
-    implementation ("com.google.dagger:hilt-android:2.51")
-    kapt ("com.google.dagger:hilt-compiler:2.51")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+    implementation (libs.hilt.android)
+    kapt (libs.hilt.compiler)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.2.0-alpha02")
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
 
     //coil
-    implementation("io.coil-kt:coil-compose:1.4.0")
+    implementation("io.coil-kt:coil-compose:2.2.2")
 
     // Retrofit && KotlinX Serialization
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     //accompanist-compose
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.18.0")
