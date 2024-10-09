@@ -152,11 +152,11 @@ fun SignUpScreen(
                     color = MaterialTheme.colors.primary
                 )
                 Text(text = "and ", style = MaterialTheme.typography.h5)
-//                Text(
-//                    text = "Privacy Policy.",
-//                    style = MaterialTheme.typography.h5,
-//                    color = MaterialTheme.colors.primary
-//                )
+                Text(
+                    text = "Privacy Policy.",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primary
+                )
 
             }
 
