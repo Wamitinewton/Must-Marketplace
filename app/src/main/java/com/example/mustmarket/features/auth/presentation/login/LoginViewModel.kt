@@ -1,7 +1,5 @@
 package com.example.mustmarket.features.auth.presentation.login
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +10,6 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.FinalUser
 import com.example.mustmarket.features.auth.domain.model.LoginUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,13 +37,8 @@ class LoginViewModel @Inject constructor(
     private var _fUser = MutableLiveData<FinalUser>()
     val fUser = _fUser
 
-    fun login(accessToken: String) {
-        viewModelScope.launch(Dispatchers.IO){
-            val token = "Bearer $accessToken"
-            Log.d(TAG, token)
-//            _fUser.value = authUseCase.loginUseCase()
-        }
-    }
+
+
 
     fun loginUser(loginCredentials: LoginUser){
         viewModelScope.launch {

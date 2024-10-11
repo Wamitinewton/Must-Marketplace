@@ -6,6 +6,7 @@ import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
 import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
+import com.example.mustmarket.features.auth.domain.usecases.TokenSession
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +30,7 @@ object RepositoryModule {
     ): UseCases =
         UseCases(
             signUpUseCase = SignUpUseCase(repository = authRepository),
-            loginUseCase = LoginUseCase(repository = authRepository)
+            loginUseCase = LoginUseCase(repository = authRepository),
+            tokenLogin = TokenSession(repository = authRepository)
         )
 }
