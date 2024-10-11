@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.auth.presentation.login
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,13 +30,15 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.R
-import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.features.product.presentation.details.ProductDetailsScreen
+import com.example.mustmarket.navigation.Screen
 
 @Composable
 fun LoginScreen(
@@ -99,7 +100,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(22.dp))
             Button(
                 onClick = {
-                    Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
+                    navController.navigate(Screen.Detail.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
