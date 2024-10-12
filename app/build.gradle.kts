@@ -64,6 +64,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("androidx.compose.material:material:1.7.3")
+    implementation("androidx.compose.material:material-icons-core:1.2.0")
+    implementation("androidx.compose.material:material-icons-extended:1.2.0")
 
     // Dagger  -Hilt
     implementation (libs.hilt.android)

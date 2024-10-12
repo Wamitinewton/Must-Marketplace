@@ -32,18 +32,55 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.features.auth.domain.model.LoginUser
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun LoginScreen(
-    navController: NavController
+    navController: NavController,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    val uiState by loginViewModel.uiState.collectAsState()
+    val loginCredentials = LoginUser(
+        email = uiState.emailInput,
+        password = uiState.passwordInput
+    )
+    val btnEnabled = uiState.emailInput.isNotEmpty()
+            && uiState.passwordInput.isNotEmpty()
     val context = LocalContext.current
+
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
+
+    LaunchedEffect(key1 = uiState.isLoading) {
+        if (!uiState.isLoading && uiState.result.isNotEmpty() && uiState.errorMessage.isEmpty()) {
+            Toast.makeText(
+                context,
+                "User ${uiState.result} login successful",
+                Toast.LENGTH_SHORT
+            ).show()
+            navController.popBackStack()
+            navController.navigate(Screen.SignUp.route) { launchSingleTop = true }
+        } else if (uiState.errorMessage.isNotEmpty()) {
+            Toast.makeText(context, "Error ${uiState.errorMessage}", Toast.LENGTH_SHORT).show()
+        }
+    }
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -72,15 +109,15 @@ fun LoginScreen(
                 textAlign = TextAlign.Start
             )
             MyTextField(
-                onInputChanged = {},
-                inputText = "",
+                onInputChanged = loginViewModel::onEmailInputChanged,
+                inputText = uiState.emailInput,
                 name = "Email"
             )
             PasswordInput(
-                onInputChanged = {},
-                inputText = "",
+                onInputChanged = loginViewModel::onPasswordInputChanged,
+                inputText = uiState.passwordInput,
                 showPassword = false,
-                toggleShowPassword = {},
+                toggleShowPassword = loginViewModel::toggleShowPassword,
                 name = "Password"
             )
             Text(
@@ -92,9 +129,11 @@ fun LoginScreen(
             )
             ButtonLoading(
                 name = "Login",
-                isLoading = false,
-                enabled = true,
-                onClicked = {}
+                isLoading = uiState.isLoading,
+                enabled = btnEnabled,
+                onClicked = {
+                    loginViewModel.loginUser(loginCredentials)
+                }
             )
             Spacer(modifier = Modifier.height(22.dp))
             Button(
