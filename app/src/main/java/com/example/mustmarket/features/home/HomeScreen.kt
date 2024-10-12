@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -49,7 +48,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
-import com.example.mustmarket.features.details.TopProduct
+import com.example.mustmarket.features.home.composables.AppBarPrimary
+import com.example.mustmarket.features.home.composables.TopProduct
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 
@@ -113,6 +113,7 @@ fun Content(
 
     }
 }
+
 
 @Composable
 fun HeaderBar(modifier: Modifier = Modifier) {
