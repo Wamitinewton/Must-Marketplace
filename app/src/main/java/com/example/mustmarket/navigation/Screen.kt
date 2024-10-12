@@ -13,6 +13,7 @@ sealed class Screen(
     object Welcome : Screen("welcome_screen")
     object Login : Screen("login_screen")
     object SignUp : Screen("sign_up_screen")
+    object HomeScreen: Screen("home_screen")
     object Detail : Screen("detail_screen")
     object Order : Screen("order_screen")
     object Start : Screen("get_started_screen")

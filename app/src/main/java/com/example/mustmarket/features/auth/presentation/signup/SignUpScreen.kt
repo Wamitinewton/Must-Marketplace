@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.auth.presentation.signup
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +22,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,19 +35,55 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.features.auth.domain.model.SignUpUser
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
 ) {
+    val uiState by signUpViewModel.uiState.collectAsState()
+
+    val userSignup = SignUpUser(
+        name = uiState.nameInput,
+        password = uiState.passwordInput,
+        confirmPassword = uiState.passwordConfirmInput,
+        email = uiState.emailInput
+    )
+    val btnEnabled = uiState.nameInput.isNotEmpty()
+            && uiState.emailInput.isNotEmpty()
+            && uiState.passwordInput.isNotEmpty()
+            && uiState.passwordInput == uiState.passwordConfirmInput
     val context = LocalContext.current
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        color = Color.Transparent,
+        darkIcons = true
+    )
+
+    LaunchedEffect(key1 = uiState.isLoading) {
+        if (!uiState.isLoading && uiState.result.isNotEmpty() && uiState.errorMessage.isEmpty()) {
+            Toast.makeText(
+                context,
+                "User ${uiState.result} signed up successfully",
+                Toast.LENGTH_LONG
+            ).show()
+            navController.popBackStack()
+            navController.navigate(Screen.Login.route) { launchSingleTop = true }
+        } else if (uiState.errorMessage.isNotEmpty()) {
+            Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_LONG).show()
+        }
+    }
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -74,27 +114,27 @@ fun SignUpScreen(
                 modifier = Modifier.padding(bottom = 10.dp)
             )
             MyTextField(
-                onInputChanged = {},
-                inputText = "",
+                onInputChanged = signUpViewModel::onNameInputChanged,
+                inputText = uiState.nameInput,
                 name = "Name"
             )
             MyTextField(
-                onInputChanged = {},
-                inputText = "",
+                onInputChanged = signUpViewModel::onEmailInputChanged,
+                inputText = uiState.emailInput,
                 name = "Email"
             )
             PasswordInput(
-                onInputChanged = {},
-                inputText = "",
-                showPassword = false,
-                toggleShowPassword = {},
+                onInputChanged = signUpViewModel::onPasswordInputChanged,
+                inputText = uiState.passwordInput,
+                showPassword = uiState.showPassword,
+                toggleShowPassword = signUpViewModel::toggleShowPassword,
                 name = "Password"
             )
             PasswordInput(
-                onInputChanged = {},
-                inputText = "",
-                showPassword = false,
-                toggleShowPassword = {},
+                onInputChanged = signUpViewModel::onPasswordConfirmInputChanged,
+                inputText = uiState.passwordConfirmInput,
+                showPassword = uiState.showPassword,
+                toggleShowPassword = signUpViewModel::toggleShowPassword,
                 name = "Confirm Password"
             )
 
@@ -123,9 +163,12 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(22.dp))
             ButtonLoading(
                 name = "Sign Up",
-                isLoading = false,
-                enabled = true,
-                onClicked = {}
+                isLoading = uiState.isLoading,
+                enabled = btnEnabled,
+                onClicked = {
+                    signUpViewModel.signUp(userSignup)
+                    Log.d("Signup screen: ", uiState.errorMessage)
+                }
             )
             Spacer(modifier = Modifier.height(22.dp))
             Button(
