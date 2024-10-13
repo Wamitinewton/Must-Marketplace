@@ -6,7 +6,7 @@ import java.util.Date
 import java.util.Locale
 
 object Constants {
-    const val BASE_URL = "http://192.168.100.2:1446/"
+    const val BASE_URL = "http://127.0.0.1/api/v1/"
     const val CART_ARGUMENT_KEY = "sessionId"
     const val DETAIL_ARGUMENT_KEY = "product"
     const val ACCESS_TOKEN = "accessToken"
@@ -30,4 +30,26 @@ object Constants {
         val date = Date(timeStamp)
         return dateFormat.format(date)
     }
+
+    // Endpoints
+
+    //products
+    const val getAllPrdoucts = "products/all"
+    const val addProductss = "products/add"
+    const val deleteProduct = "products/delete/"
+    const val getProductById = "products/get/"
+    const val getProductByName = "products/by-name/"
+    const val getProductByBrand = "products/by-brand/"
+    const val getProductByCategory = "products/by-category/"
+
+    //images
+    const val addImages = "images/upload"
+
+
+    // auth
+    const val authLogin = "auth/login"
+    const val authRegister = "auth/register"
+
+    //cart
+
 }
