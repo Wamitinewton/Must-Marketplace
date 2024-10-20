@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home
+package com.example.mustmarket.features.home.presentation
 
 
 import androidx.compose.foundation.Image
@@ -48,8 +48,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
-import com.example.mustmarket.features.home.composables.AppBarPrimary
-import com.example.mustmarket.features.home.composables.TopProduct
+import com.example.mustmarket.core.SharedComposables.AppBarPrimary
+import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 
