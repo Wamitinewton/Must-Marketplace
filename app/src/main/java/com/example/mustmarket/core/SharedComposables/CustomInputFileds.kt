@@ -44,6 +44,7 @@ fun PasswordInput(
     showPassword: Boolean,
     toggleShowPassword: (Boolean) -> Unit,
     name: String,
+    errorMessage: String? = null
 ) {
 
     TextField(
@@ -64,8 +65,17 @@ fun PasswordInput(
                 showPassword = showPassword,
                 toggleShowPassword = { toggleShowPassword(it) }
             )
-        }
+        },
+        isError = errorMessage != null
     )
+    errorMessage?.let {
+        Text(
+            text = it,
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+    }
 }
 
 @Composable
@@ -73,6 +83,7 @@ fun MyTextField(
     onInputChanged: (String) -> Unit,
     inputText: String,
     name: String,
+    errorMessage: String? = null
 ) {
     TextField(
         value = inputText,
@@ -84,7 +95,17 @@ fun MyTextField(
         colors = fieldColors(),
         singleLine = true,
         keyboardOptions = myKeyboardOptions,
-        label = { TextFieldLabel(name = name) })
+        label = { TextFieldLabel(name = name) },
+        isError = errorMessage != null
+    )
+    errorMessage?.let {
+        Text(
+            text = it,
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+    }
 }
 
 @Composable

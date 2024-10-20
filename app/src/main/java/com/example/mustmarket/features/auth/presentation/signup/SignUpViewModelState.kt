@@ -9,6 +9,8 @@ data class SignUpState(
     val emailInput: String,
     val result: String,
     val showPassword: Boolean,
+    val emailError: String,
+    val passwordError: String
 )
 
 data class SignUpViewModelState(
@@ -20,6 +22,8 @@ data class SignUpViewModelState(
     val emailInput: String = "",
     val result: String = "",
     val showPassword: Boolean = false,
+    val emailError: String = "",
+    val passwordError: String = ""
 ) {
     fun toUiState(): SignUpState = SignUpState(
         isLoading,
@@ -29,6 +33,8 @@ data class SignUpViewModelState(
         passwordConfirmInput,
         emailInput,
         result,
-        showPassword
+        showPassword,
+        emailError,
+        passwordError
     )
 }

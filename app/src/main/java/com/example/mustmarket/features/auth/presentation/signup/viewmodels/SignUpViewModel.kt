@@ -1,8 +1,11 @@
 package com.example.mustmarket.features.auth.presentation.signup.viewmodels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
+import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
+import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.core.util.parsedErrorMessage
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
@@ -27,6 +30,7 @@ class SignUpViewModel @Inject constructor(
             viewModelState.value.toUiState()
         )
 
+
     fun onNameInputChanged(nameInput: String) {
         viewModelState.update {
             it.copy(nameInput = nameInput)
@@ -34,14 +38,26 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onEmailInputChanged(emailInput: String) {
+        val emailError = if (!EMAIL_REGEX.matches(emailInput)){
+            "Invalid email format"
+        } else null
         viewModelState.update {
-            it.copy(emailInput = emailInput)
+            it.copy(
+                emailInput = emailInput,
+                emailError = emailError ?: ""
+            )
         }
     }
 
     fun onPasswordInputChanged(passwordInput: String) {
+        val passwordError = if (!PASSWORD_REGEX.matches(passwordInput)){
+            "Invalid password type"
+        } else null
         viewModelState.update {
-            it.copy(passwordInput = passwordInput)
+            it.copy(
+                passwordInput = passwordInput,
+                passwordError = passwordError ?: ""
+            )
         }
     }
 

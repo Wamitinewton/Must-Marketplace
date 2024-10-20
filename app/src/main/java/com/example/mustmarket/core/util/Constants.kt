@@ -12,7 +12,7 @@ object Constants {
     const val ACCESS_TOKEN = "accessToken"
     const val REFRESH_TOKEN = "refreshToken"
 
-    val EMAIL_REGEX = "^[a-z0-9_\\.]{5,48}@[a-z0-9]{2,}(\\.[a-z0-9]{2,}){1,5}$".toRegex()
+    val EMAIL_REGEX = "^[a-z0-9_.]{5,48}@[a-z0-9]{2,}(\\.[a-z0-9]{2,}){1,5}$".toRegex()
     val PHONE_REGEX = "^[0-9]{10}$".toRegex()
     val PASSWORD_REGEX =
         "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^_&+=])(?=\\S+$).{8,}$".toRegex()
@@ -31,25 +31,5 @@ object Constants {
         return dateFormat.format(date)
     }
 
-    // Endpoints
-
-    //products
-    const val getAllPrdoucts = "products/all"
-    const val addProductss = "products/add"
-    const val deleteProduct = "products/delete/"
-    const val getProductById = "products/get/"
-    const val getProductByName = "products/by-name/"
-    const val getProductByBrand = "products/by-brand/"
-    const val getProductByCategory = "products/by-category/"
-
-    //images
-    const val addImages = "images/upload"
-
-
-    // auth
-    const val authLogin = "auth/login"
-    const val authRegister = "auth/register"
-
-    //cart
 
 }

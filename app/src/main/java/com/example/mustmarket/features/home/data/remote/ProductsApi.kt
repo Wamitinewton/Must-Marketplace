@@ -6,11 +6,11 @@ import retrofit2.http.Query
 
 interface ProductsApi {
 
-    @GET("api/v1/categories/all")
+    @GET("categories/all")
     suspend fun getCategories(
         @Query("size") size: Int
     ): List<Category>
 
-    @GET("api/v1/categories/all")
+    @GET("categories/all")
     suspend fun getAllCategories(): List<Category>
 }
