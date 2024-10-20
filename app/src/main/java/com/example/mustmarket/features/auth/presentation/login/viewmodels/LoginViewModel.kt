@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.login
+package com.example.mustmarket.features.auth.presentation.login.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +9,7 @@ import com.example.mustmarket.core.util.LoadingState
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.FinalUser
 import com.example.mustmarket.features.auth.domain.model.LoginUser
+import com.example.mustmarket.features.auth.presentation.login.LoginViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ class LoginViewModel @Inject constructor(
 
     val loadingState = MutableStateFlow(LoadingState.IDLE)
     private var _idToken = MutableLiveData("")
+
     // we are using live data to listen to token changes
     val idToken: LiveData<String>
         get() = _idToken
@@ -38,18 +40,17 @@ class LoginViewModel @Inject constructor(
     val fUser = _fUser
 
 
-
-
-    fun loginUser(loginCredentials: LoginUser){
+    fun loginUser(loginCredentials: LoginUser) {
         viewModelScope.launch {
             authUseCase.loginUseCase(loginUser = loginCredentials).onEach { result ->
                 viewModelState.update { state ->
-                    when(result){
+                    when (result) {
                         is Resource.Success -> state.copy(
                             isLoading = false,
                             result = result.data?.user?.name ?: "Some result",
                             errorMessage = ""
                         )
+
                         is Resource.Error -> {
                             state.copy(
                                 isLoading = false,
@@ -57,6 +58,7 @@ class LoginViewModel @Inject constructor(
                                 result = ""
                             )
                         }
+
                         is Resource.Loading -> state.copy(
                             isLoading = true
                         )
@@ -65,6 +67,7 @@ class LoginViewModel @Inject constructor(
             }.launchIn(this)
         }
     }
+
     fun onEmailInputChanged(emailInput: String) {
         viewModelState.update {
             it.copy(emailInput = emailInput)

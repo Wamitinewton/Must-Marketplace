@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.signup
+package com.example.mustmarket.features.auth.presentation.signup.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,6 +6,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.core.util.parsedErrorMessage
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
+import com.example.mustmarket.features.auth.presentation.signup.SignUpViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
