@@ -111,14 +111,16 @@ fun LoginScreen(
             MyTextField(
                 onInputChanged = loginViewModel::onEmailInputChanged,
                 inputText = uiState.emailInput,
-                name = "Email"
+                name = "Email",
+                errorMessage = uiState.emailError
             )
             PasswordInput(
                 onInputChanged = loginViewModel::onPasswordInputChanged,
                 inputText = uiState.passwordInput,
                 showPassword = false,
                 toggleShowPassword = loginViewModel::toggleShowPassword,
-                name = "Password"
+                name = "Password",
+                errorMessage = uiState.passwordError
             )
             Text(
                 modifier = Modifier

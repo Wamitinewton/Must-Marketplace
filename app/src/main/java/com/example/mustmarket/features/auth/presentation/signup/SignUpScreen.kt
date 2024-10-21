@@ -122,14 +122,16 @@ fun SignUpScreen(
             MyTextField(
                 onInputChanged = signUpViewModel::onEmailInputChanged,
                 inputText = uiState.emailInput,
-                name = "Email"
+                name = "Email",
+                errorMessage = uiState.emailError
             )
             PasswordInput(
                 onInputChanged = signUpViewModel::onPasswordInputChanged,
                 inputText = uiState.passwordInput,
                 showPassword = uiState.showPassword,
                 toggleShowPassword = signUpViewModel::toggleShowPassword,
-                name = "Password"
+                name = "Password",
+                errorMessage = uiState.passwordError
             )
             PasswordInput(
                 onInputChanged = signUpViewModel::onPasswordConfirmInputChanged,

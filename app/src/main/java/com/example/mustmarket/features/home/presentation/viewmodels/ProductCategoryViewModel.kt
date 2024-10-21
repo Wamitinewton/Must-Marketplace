@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.home.domain.model.Category
+import com.example.mustmarket.features.home.domain.model.ProductCategory
 import com.example.mustmarket.features.home.presentation.ProductCategoryViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,7 @@ class ProductCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun handleCategoriesResult(result: Resource<List<Category>>) {
+    private fun handleCategoriesResult(result: Resource<List<ProductCategory>>) {
         _viewModelState.update { state ->
             when (result) {
                 is Resource.Success -> state.copy(

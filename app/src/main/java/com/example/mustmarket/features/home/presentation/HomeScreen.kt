@@ -2,7 +2,6 @@ package com.example.mustmarket.features.home.presentation
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +18,17 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -35,6 +38,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,21 +47,26 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
 import com.example.mustmarket.core.SharedComposables.TopProduct
+import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    productCategoryViewModel: ProductCategoryViewModel = hiltViewModel()
 ) {
+    val uiState by productCategoryViewModel.uiState.collectAsState()
+
     Box {
         Image(
             modifier = Modifier
@@ -66,51 +76,28 @@ fun HomeScreen(
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
-        Content()
+        Content(
+            uiState = uiState
+        )
     }
 }
 
 @Composable
 fun Content(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState: ProductCategoryViewModelState
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(10.dp)
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        item(span = { GridItemSpan(2) }) {
-            AppBarPrimary()
-        }
-        item(span = { GridItemSpan(2) }) {
-            HeaderBar()
-        }
-
-        item(span = { GridItemSpan(2) }) {
-            Spacer(
-                modifier = Modifier
-                    .height(16.dp)
-                    .padding(100.dp)
-            )
-            Promotions()
-        }
-        item(span = { GridItemSpan(2) }){
-            Spacer(modifier = Modifier.height(16.dp))
-            CategorySection()
-        }
-
-        item(span = { GridItemSpan(2) }){
-            TopProduct()
-        }
-        item(span = { GridItemSpan(2) }) {
-            Spacer(modifier = Modifier.height(16.dp))
-            BestSellerSection()
-        }
-        item(span = { GridItemSpan(2) }) {
-            ProductCard()
-        }
-
+        item { AppBarPrimary() }
+        item { HeaderBar() }
+        item { Promotions() }
+        item { CategoryGridView() }
+        item { TopProduct() }
+        item { ProductCard() }
     }
 }
 
@@ -120,7 +107,8 @@ fun HeaderBar(modifier: Modifier = Modifier) {
     Card(
         Modifier
             .height(64.dp)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            ,
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -264,78 +252,84 @@ fun PromotionItem(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CategorySection() {
-    Column(Modifier.padding(horizontal = 16.dp)) {
+fun CategoryGridView() {
+    val itemsCount = 19
+    val columns = 4
+    val itemHeight = 90.dp
+    val spacing = 10.dp
+
+    val rows = (itemsCount + columns - 1) / columns
+
+    val totalHeight = (rows * itemHeight) + ((rows - 1) * spacing)
+
+    Column {
         Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Product Categories", style = MaterialTheme.typography.h6)
-            TextButton(onClick = {}) {
-                Text(text = "See More")
-            }
-        }
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(5) {
-                CategoryButton()
-            }
-        }
-    }
-}
-
-
-@Composable
-fun CategoryButton() {
-    Column(
-        Modifier.width(72.dp)
-    ) {
-        Box(
-            Modifier
-                .size(72.dp)
-                .background(
-                    color = Color(0xffEAFAF1),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(18.dp)
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg"),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-        Text(
-            text = "Category",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(25.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 15.sp
-        )
-    }
-}
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Product categories")
+        }
 
-@Composable
-fun BestSellerSection() {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = "Best sellers", style = MaterialTheme.typography.h6)
-        TextButton(onClick = {}) {
-            Text(text = "See all..", color = colorPrimary)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(totalHeight + 20.dp)
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+                contentPadding = PaddingValues(horizontal = 10.dp)
+            ) {
+                items(itemsCount) {
+                    Card(
+                        onClick = {},
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .height(itemHeight)
+                            .width(itemHeight),
+                        elevation = 6.dp,
+                    ) {
+                        Column(
+                            Modifier
+
+                                .padding(3.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg"),
+                                contentDescription = "Category image",
+                                modifier = Modifier
+                                    .wrapContentSize()
+                                    .wrapContentHeight()
+                                    .wrapContentWidth(),
+                            )
+                            Spacer(modifier = Modifier.height(9.dp))
+                            Text(
+                                modifier = Modifier.padding(top = 3.dp),
+                                text = "Category",
+
+                                style = MaterialTheme.typography.caption.copy(
+                                    color = Color.Gray
+                                ),
+                                maxLines = 1
+                            )
+                        }
+
+
+                    }
+                }
+            }
         }
     }
 }
+
 
 @Composable
 fun ProductCard() {
@@ -368,5 +362,7 @@ fun ProductCard() {
             }
         }
     }
+
 }
+
 
