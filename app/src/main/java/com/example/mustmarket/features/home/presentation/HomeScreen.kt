@@ -1,6 +1,7 @@
 package com.example.mustmarket.features.home.presentation
 
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,22 +19,19 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Person
@@ -51,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
@@ -59,6 +58,11 @@ import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
+import com.skydoves.landscapist.coil.CoilImage
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.placeholder.shimmer.Shimmer
+import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 
 @Composable
 fun HomeScreen(
@@ -66,7 +70,6 @@ fun HomeScreen(
     productCategoryViewModel: ProductCategoryViewModel = hiltViewModel()
 ) {
     val uiState by productCategoryViewModel.uiState.collectAsState()
-
     Box {
         Image(
             modifier = Modifier
@@ -82,6 +85,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Content(
     modifier: Modifier = Modifier,
@@ -93,11 +97,13 @@ fun Content(
             .fillMaxSize()
     ) {
         item { AppBarPrimary() }
-        item { HeaderBar() }
+        stickyHeader {
+            HeaderBar()
+        }
         item { Promotions() }
         item { CategoryGridView() }
         item { TopProduct() }
-        item { ProductCard() }
+
     }
 }
 
@@ -107,8 +113,7 @@ fun HeaderBar(modifier: Modifier = Modifier) {
     Card(
         Modifier
             .height(64.dp)
-            .padding(horizontal = 16.dp)
-            ,
+            .padding(horizontal = 16.dp),
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -207,22 +212,41 @@ fun VerticalDivider() {
 
 @Composable
 fun Promotions() {
-    LazyRow(
-        Modifier
-            .height(160.dp)
-            .padding(top = 20.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            PromotionItem(
-                imagePainter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg")
+    Column {
+        Row(
+            modifier = Modifier
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 3.dp),
+                text = "Promos & discounts \uD83D\uDE0A",
+
+                style = MaterialTheme.typography.body1.copy(
+                    color = Color.Black,
+                    fontSize = 20.sp
+                ),
+                maxLines = 1
             )
         }
-        item {
-            PromotionItem(
-                imagePainter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_4.jpg")
-            )
+        LazyRow(
+            Modifier
+                .height(160.dp)
+                .padding(top = 20.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                PromotionItem(
+                    imagePainter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg")
+                )
+            }
+            item {
+                PromotionItem(
+                    imagePainter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_4.jpg")
+                )
+            }
         }
     }
 }
@@ -254,8 +278,11 @@ fun PromotionItem(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CategoryGridView() {
-    val itemsCount = 19
+fun CategoryGridView(
+    viewModel: ProductCategoryViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val itemsCount = uiState.categories.size
     val columns = 4
     val itemHeight = 90.dp
     val spacing = 10.dp
@@ -264,7 +291,7 @@ fun CategoryGridView() {
 
     val totalHeight = (rows * itemHeight) + ((rows - 1) * spacing)
 
-    Column {
+    Column() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,94 +302,96 @@ fun CategoryGridView() {
             Text("Product categories")
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(totalHeight + 20.dp)
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(columns),
-                verticalArrangement = Arrangement.spacedBy(spacing),
-                horizontalArrangement = Arrangement.spacedBy(spacing),
-                contentPadding = PaddingValues(horizontal = 10.dp)
-            ) {
-                items(itemsCount) {
-                    Card(
-                        onClick = {},
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .height(itemHeight)
-                            .width(itemHeight),
-                        elevation = 6.dp,
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(
+                    Alignment.CenterHorizontally
+                ))
+            }
+            uiState.errorMessage.isNotEmpty() -> {
+                Text(
+                    text = uiState.errorMessage,
+                    color = MaterialTheme.colors.error,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(totalHeight + 40.dp)
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(columns),
+                        verticalArrangement = Arrangement.spacedBy(spacing),
+                        horizontalArrangement = Arrangement.spacedBy(spacing),
+                        contentPadding = PaddingValues(horizontal = 10.dp)
                     ) {
-                        Column(
-                            Modifier
-
-                                .padding(3.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg"),
-                                contentDescription = "Category image",
+                        items(itemsCount) { index ->
+                           val category = uiState.categories[index]
+                            Card(
+                                onClick = {},
                                 modifier = Modifier
-                                    .wrapContentSize()
-                                    .wrapContentHeight()
-                                    .wrapContentWidth(),
-                            )
-                            Spacer(modifier = Modifier.height(9.dp))
-                            Text(
-                                modifier = Modifier.padding(top = 3.dp),
-                                text = "Category",
+                                    .padding(4.dp)
+                                    .height(itemHeight)
+                                    .width(itemHeight),
+                                elevation = 6.dp,
+                            ) {
+                                Column(
+                                    Modifier
 
-                                style = MaterialTheme.typography.caption.copy(
-                                    color = Color.Gray
-                                ),
-                                maxLines = 1
-                            )
+                                        .padding(3.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    GlideImage(
+                                        imageModel = { category.categoryImage },
+                                        modifier = Modifier
+                                            .size(50.dp),
+                                        component = rememberImageComponent {
+
+                                            +ShimmerPlugin(
+                                                Shimmer.Flash(
+                                                    baseColor = Color.White,
+                                                    highlightColor = Color.LightGray,
+                                                ),
+                                            )
+                                        },
+
+                                        failure = {
+                                            Image(
+                                                contentDescription = null,
+                                                painter = painterResource(id = R.drawable.no_image),
+
+                                                )
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(9.dp))
+                                    Text(
+                                        modifier = Modifier.padding(top = 3.dp),
+                                        text = category.name,
+
+                                        style = MaterialTheme.typography.caption.copy(
+                                            color = Color.Gray
+                                        ),
+                                        maxLines = 1
+                                    )
+                                }
+
+
+                            }
                         }
-
-
                     }
                 }
             }
         }
+
+
+
     }
 }
 
 
-@Composable
-fun ProductCard() {
-    Card(
-        Modifier
-            .width(160.dp)
-    ) {
-        Column(
-            Modifier.padding(bottom = 10.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(160.dp),
-                painter = rememberAsyncImagePainter("https://theme.hstatic.net/200000420363/1001015796/14/banner_right_3.jpg"),
-                contentDescription = "",
-            )
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            ) {
-                Text(text = "Product Name", fontWeight = FontWeight.Bold, maxLines = 2)
-                Row(
-                    Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Price", color = colorPrimary)
-                    Text(text = "SL: Quantity", color = Color.Red)
-                }
-            }
-        }
-    }
 
-}
 
 
