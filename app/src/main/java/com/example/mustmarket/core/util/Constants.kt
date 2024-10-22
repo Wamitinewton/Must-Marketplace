@@ -6,7 +6,7 @@ import java.util.Date
 import java.util.Locale
 
 object Constants {
-    const val BASE_URL = "http://127.0.0.1/api/v1/"
+    const val BASE_URL = "https://sv99tncg-8080.uks1.devtunnels.ms/"
     const val CART_ARGUMENT_KEY = "sessionId"
     const val DETAIL_ARGUMENT_KEY = "product"
     const val ACCESS_TOKEN = "accessToken"

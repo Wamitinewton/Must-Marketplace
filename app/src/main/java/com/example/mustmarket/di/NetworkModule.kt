@@ -29,7 +29,7 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(@ApplicationContext context: Context): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context = context))
+            .addInterceptor(AuthInterceptor(context))
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
             .build()

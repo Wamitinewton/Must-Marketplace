@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -310,8 +311,11 @@ fun CategoryGridView(
             }
             uiState.errorMessage.isNotEmpty() -> {
                 Text(
-                    text = uiState.errorMessage,
+                    text = "Server error. Try again later",
                     color = MaterialTheme.colors.error,
+                    style = TextStyle(
+                        fontSize = 18.sp
+                    ),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
@@ -339,13 +343,12 @@ fun CategoryGridView(
                             ) {
                                 Column(
                                     Modifier
-
                                         .padding(3.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
                                     GlideImage(
-                                        imageModel = { category.categoryImage },
+                                        imageModel = { "" },
                                         modifier = Modifier
                                             .size(50.dp),
                                         component = rememberImageComponent {
