@@ -6,9 +6,10 @@ import kotlinx.serialization.Serializable
 data class NetworkProduct(
     val id: Int,
     val name: String,
-    val imageUrl: List<String>,
-    val description: String,
     val price: Double,
+    val inventory: Int,
+    val brand: String,
+    val description: String,
     val category: ProductCategory,
-    val inventory: ProductInventory
+    val imageUrl: String?
 )
