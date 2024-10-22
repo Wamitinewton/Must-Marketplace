@@ -11,7 +11,7 @@ import com.example.mustmarket.core.util.LoadingState
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.FinalUser
 import com.example.mustmarket.features.auth.domain.model.LoginUser
-import com.example.mustmarket.features.auth.presentation.login.LoginViewModelState
+import com.example.mustmarket.features.auth.presentation.login.state.LoginViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

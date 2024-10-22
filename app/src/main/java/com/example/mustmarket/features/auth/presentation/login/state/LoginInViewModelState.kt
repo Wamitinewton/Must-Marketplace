@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.login
+package com.example.mustmarket.features.auth.presentation.login.state
 
 data class LoginScreenState(
     val isLoading: Boolean,

@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.presentation
+package com.example.mustmarket.features.home.presentation.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
