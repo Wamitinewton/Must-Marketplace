@@ -56,6 +56,8 @@ class AllProductsRepositoryImpl @Inject constructor(
                     message = e.message.toString()
                 )
             )
+        } finally {
+            emit(Resource.Loading(false))
         }
     }
 }
