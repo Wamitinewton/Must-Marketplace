@@ -17,10 +17,11 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
 ) : AuthRepository {
     override suspend fun signUp(signUp: SignUpUser) = flow {
-        emit(Resource.Loading())
         try {
+            emit(Resource.Loading(true))
             val response = authApi.signUpUser(signUp)
             emit(Resource.Success(data = response))
+            emit(Resource.Loading(false))
         } catch (e: HttpException) {
             emit(
                 Resource.Error(
@@ -33,15 +34,18 @@ class AuthRepositoryImpl @Inject constructor(
                     message = e.message.toString()
                 )
             )
+        } finally {
+            emit(Resource.Loading(false))
         }
     }
 
     override suspend fun loginUser(loginCredentials: LoginUser): Flow<Resource<LoginResult>> =
         flow {
-            emit(Resource.Loading())
             try {
+                emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
                 emit(Resource.Success(data = response))
+
             } catch (e: HttpException) {
                 emit(
                     Resource.Error(
@@ -54,6 +58,8 @@ class AuthRepositoryImpl @Inject constructor(
                         message = "Couldn't reach server, check your internet connection",
                     )
                 )
+            } finally {
+                emit(Resource.Loading(false))
             }
         }
 

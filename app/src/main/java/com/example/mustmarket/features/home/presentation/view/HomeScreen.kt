@@ -82,9 +82,11 @@ fun HomeScreen(
 @Composable
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
+    productCategoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     onProductClick: (NetworkProduct) -> Unit
 ) {
     val uiState by viewModel.productsUiState.collectAsState()
+    val categoryUistate by productCategoryViewModel.uiState.collectAsState()
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
