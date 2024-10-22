@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.data.remote
 
+import com.example.mustmarket.features.home.data.remote.dto.AllProductsDto
 import com.example.mustmarket.features.home.domain.model.AllNetworkProduct
 import com.example.mustmarket.features.home.domain.model.ApiCategoryResponse
 import com.example.mustmarket.features.home.domain.model.ProductCategory
@@ -16,6 +17,6 @@ interface ProductsApi {
     @GET("api/v1/categories/all")
     suspend fun getAllCategories(): ApiCategoryResponse
 
-    @GET("products/all")
-    suspend fun getAllProducts(): AllNetworkProduct
+    @GET("api/v1/products/all")
+    suspend fun getAllProducts(): AllProductsDto
 }

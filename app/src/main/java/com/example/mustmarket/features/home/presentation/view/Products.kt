@@ -50,7 +50,7 @@ fun ProductCard(
                 modifier = Modifier.size(100.dp)
             ) {
                 GlideImage(
-                    imageModel = { "" },
+                    imageModel = { product.imageUrl },
                     modifier = Modifier.fillMaxSize(),
                     component = rememberImageComponent {
                         +ShimmerPlugin(
