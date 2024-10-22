@@ -3,7 +3,6 @@ package com.example.mustmarket.features.home.data.repository
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.home.domain.model.ApiCategoryResponse
 import com.example.mustmarket.features.home.domain.model.ProductCategory
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
