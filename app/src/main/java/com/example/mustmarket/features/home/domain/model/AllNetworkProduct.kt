@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AllNetworkProduct(
-    val result: List<NetworkProduct>
+    val message: String,
+    val data: List<NetworkProduct>
 )
