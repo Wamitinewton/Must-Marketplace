@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.presentation
+package com.example.mustmarket.features.home.presentation.state
 
 import com.example.mustmarket.features.home.domain.model.ProductCategory
 

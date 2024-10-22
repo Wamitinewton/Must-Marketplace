@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.signup
+package com.example.mustmarket.features.auth.presentation.signup.state
 
 data class SignUpState(
     val isLoading: Boolean,

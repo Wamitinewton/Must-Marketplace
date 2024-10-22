@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.presentation
+package com.example.mustmarket.features.home.presentation.view
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -47,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
 import com.example.mustmarket.core.SharedComposables.TopProduct
+import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite

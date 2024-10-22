@@ -7,10 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
-import com.example.mustmarket.features.auth.presentation.login.LoginScreen
-import com.example.mustmarket.features.auth.presentation.signup.SignUpScreen
-import com.example.mustmarket.features.auth.presentation.splash.SplashScreen
-import com.example.mustmarket.features.home.presentation.HomeScreen
+import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
+import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
+import com.example.mustmarket.features.auth.presentation.splash.view.SplashScreen
+import com.example.mustmarket.features.home.presentation.view.HomeScreen
 import com.example.mustmarket.features.product.presentation.details.ProductDetailsScreen
 
 @ExperimentalCoilApi
