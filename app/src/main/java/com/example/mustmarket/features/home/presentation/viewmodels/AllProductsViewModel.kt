@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
-    private val productsUseCases: UseCases
+    private val productsUseCases: UseCases,
 ) : ViewModel() {
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState = _viewModelState.asStateFlow()
@@ -29,7 +29,7 @@ class AllProductsViewModel @Inject constructor(
     fun onProductEvent(event: HomeScreenEvent){
         when(event){
             is HomeScreenEvent.Refresh -> {
-                getAllProducts()
+                refreshProduct()
             }
         }
     }
@@ -37,6 +37,14 @@ class AllProductsViewModel @Inject constructor(
     private fun getAllProducts() {
         viewModelScope.launch {
             productsUseCases.allProducts().collect { result ->
+                handleProductsResult(result)
+            }
+        }
+    }
+
+    private fun refreshProduct() {
+        viewModelScope.launch {
+            productsUseCases.refreshProduct().collect { result ->
                 handleProductsResult(result)
             }
         }
@@ -58,7 +66,9 @@ class AllProductsViewModel @Inject constructor(
                 )
 
                 is Resource.Loading -> state.copy(
-                    isLoading = true
+                    isLoading = true,
+                    products = emptyList(),
+                    errorMessage = ""
                 )
             }
         }

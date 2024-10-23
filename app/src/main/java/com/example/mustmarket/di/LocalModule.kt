@@ -21,4 +21,8 @@ object LocalModule {
             "products_db.db"
         ).build()
     }
+
+    @Provides
+    @Singleton
+    fun provideProductDao(db: ProductDatabase) = db.dao
 }
