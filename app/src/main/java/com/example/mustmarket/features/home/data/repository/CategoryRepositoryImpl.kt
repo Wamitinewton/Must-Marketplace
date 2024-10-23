@@ -40,6 +40,7 @@ class CategoryRepositoryImpl @Inject constructor(
             if (response.message == "Success") {
                 val categories = response.data
                     .map { it.toProductCategory() }
+                    .sortedByDescending { it.id }
                 emit(Resource.Loading(false))
                 if (categories.isEmpty()) {
                     emit(

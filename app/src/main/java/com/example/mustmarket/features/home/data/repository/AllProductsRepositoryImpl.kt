@@ -23,6 +23,7 @@ class AllProductsRepositoryImpl @Inject constructor(
                 val products = response.data
                     .filter { it.brand.isNotBlank() }
                     .map { it.toDomainProduct() }
+                    .sortedByDescending { it.id }
 
                 emit(Resource.Loading(false))
                 if (products.isEmpty()) {

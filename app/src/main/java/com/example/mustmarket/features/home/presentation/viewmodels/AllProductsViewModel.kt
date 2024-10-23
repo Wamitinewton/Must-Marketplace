@@ -6,6 +6,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
+import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
-    val productsUseCases: UseCases
+    private val productsUseCases: UseCases
 ) : ViewModel() {
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState = _viewModelState.asStateFlow()
@@ -25,7 +26,15 @@ class AllProductsViewModel @Inject constructor(
         getAllProducts()
     }
 
-    fun getAllProducts() {
+    fun onProductEvent(event: HomeScreenEvent){
+        when(event){
+            is HomeScreenEvent.Refresh -> {
+                getAllProducts()
+            }
+        }
+    }
+
+    private fun getAllProducts() {
         viewModelScope.launch {
             productsUseCases.allProducts().collect { result ->
                 handleProductsResult(result)

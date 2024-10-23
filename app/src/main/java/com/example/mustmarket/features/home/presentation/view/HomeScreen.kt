@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -50,15 +49,20 @@ import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
 import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     allProductsViewModel: AllProductsViewModel = hiltViewModel()
 ) {
+
     Box {
         Image(
             modifier = Modifier
@@ -79,78 +83,101 @@ fun HomeScreen(
 @Composable
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
+    categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     onProductClick: (NetworkProduct) -> Unit
 ) {
     val uiState by viewModel.productsUiState.collectAsState()
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 15.dp)
+    val categoryUIState by categoryViewModel.uiState.collectAsState()
+    val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = isRefreshing
+    )
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = {
+            viewModel.onProductEvent(HomeScreenEvent.Refresh)
+            categoryViewModel.onCategoryEvent(HomeScreenEvent.Refresh)
+        }
     ) {
-        item { AppBarPrimary() }
-        stickyHeader {
-            HeaderBar()
-        }
-        item { Promotions() }
-        item { CategoryGridView() }
-        item { TopProduct() }
-        item {
-            Card(
-                shape = RectangleShape,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier.padding(start = 16.dp)
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 15.dp)
+        ) {
+            item { AppBarPrimary() }
+            stickyHeader {
+                HeaderBar()
+            }
+            item { Promotions() }
+            item { CategoryGridView() }
+            item { TopProduct() }
+            item {
+                Card(
+                    shape = RectangleShape,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
                 ) {
-                    Text(
-                        text = "All Products",
-                        color = Color.White,
-                        fontSize = 18.sp
-                    )
-                }
-            }
-        }
-
-        when {
-            uiState.isLoading -> {
-                item {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-
-            uiState.errorMessage.isNotEmpty() -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier.padding(start = 16.dp)
                     ) {
                         Text(
-                            text = uiState.errorMessage,
-                            color = MaterialTheme.colors.error
+                            text = "All Products",
+                            color = Color.White,
+                            fontSize = 18.sp
                         )
                     }
                 }
             }
 
-            else -> {
-                items(uiState.products) { product ->
-                    ProductCard(
-                        product = product,
-                        onClick = { onProductClick(product) }
-                    )
+            when {
+                uiState.isLoading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+
+                uiState.errorMessage.isNotEmpty() -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = uiState.errorMessage,
+                                color = MaterialTheme.colors.error
+                            )
+                        }
+                    }
+                }
+
+                else -> {
+                    items(uiState.products.size) { index ->
+                        val product = uiState.products[index]
+                        ProductCard(
+                            product = product,
+                            onClick = { onProductClick(product) }
+                        )
+                        if (index < uiState.products.size - 1){
+                            Divider(
+                                color = Color.Gray,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
+                    }
                 }
             }
         }
