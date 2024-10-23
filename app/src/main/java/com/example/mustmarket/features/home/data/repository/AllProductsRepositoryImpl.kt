@@ -19,16 +19,19 @@ class AllProductsRepositoryImpl @Inject constructor(
         try {
             emit(Resource.Loading(true))
             val response = productsApi.getAllProducts()
-            if (response.message == "Success"){
+            if (response.message == "Success") {
                 val products = response.data
                     .filter { it.brand.isNotBlank() }
                     .map { it.toDomainProduct() }
+                    .sortedByDescending { it.id }
 
-
-                if (products.isEmpty()){
-                    emit(Resource.Error(
-                        message = "No products available"
-                    ))
+                emit(Resource.Loading(false))
+                if (products.isEmpty()) {
+                    emit(
+                        Resource.Error(
+                            message = "No products available"
+                        )
+                    )
                 } else {
                     emit(
                         Resource.Success(
@@ -56,8 +59,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                     message = e.message.toString()
                 )
             )
-        } finally {
-            emit(Resource.Loading(false))
         }
     }
 }
