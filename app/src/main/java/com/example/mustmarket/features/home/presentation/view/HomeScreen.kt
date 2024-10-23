@@ -51,17 +51,14 @@ import com.example.mustmarket.core.SharedComposables.AppBarPrimary
 import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
-import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    productCategoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     allProductsViewModel: AllProductsViewModel = hiltViewModel()
 ) {
-    val uiState by productCategoryViewModel.uiState.collectAsState()
     Box {
         Image(
             modifier = Modifier
@@ -82,11 +79,9 @@ fun HomeScreen(
 @Composable
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
-    productCategoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     onProductClick: (NetworkProduct) -> Unit
 ) {
     val uiState by viewModel.productsUiState.collectAsState()
-    val categoryUistate by productCategoryViewModel.uiState.collectAsState()
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier

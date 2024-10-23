@@ -15,7 +15,6 @@ class CategoryRepositoryImpl @Inject constructor(
     private val categoryApi: ProductsApi
 ) : CategoryRepository {
     override suspend fun getCategories(size: Int): Flow<Resource<List<ProductCategory>>> = flow {
-        emit(Resource.Loading())
         try {
             val response = categoryApi.getCategories(size)
             emit(Resource.Success(data = response))
@@ -35,14 +34,13 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllCategories(): Flow<Resource<List<ProductCategory>>> = flow {
-
         try {
             emit(Resource.Loading(true))
             val response = categoryApi.getAllCategories()
             if (response.message == "Success") {
                 val categories = response.data
                     .map { it.toProductCategory() }
-
+                emit(Resource.Loading(false))
                 if (categories.isEmpty()) {
                     emit(
                         Resource.Error(
@@ -75,8 +73,6 @@ class CategoryRepositoryImpl @Inject constructor(
                     message = e.message.toString()
                 )
             )
-        }finally {
-            emit(Resource.Loading(false))
         }
     }
 }
