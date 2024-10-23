@@ -1,5 +1,6 @@
-package com.example.mustmarket.features.auth.presentation.login
+package com.example.mustmarket.features.auth.presentation.signup.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,20 +22,19 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.*
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
@@ -42,43 +42,47 @@ import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
-import com.example.mustmarket.features.auth.domain.model.LoginUser
+import com.example.mustmarket.features.auth.domain.model.SignUpUser
+import com.example.mustmarket.features.auth.presentation.signup.viewmodels.SignUpViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
 ) {
-    val uiState by loginViewModel.uiState.collectAsState()
-    val loginCredentials = LoginUser(
-        email = uiState.emailInput,
-        password = uiState.passwordInput
+    val uiState by signUpViewModel.uiState.collectAsState()
+
+    val userSignup = SignUpUser(
+        name = uiState.nameInput,
+        password = uiState.passwordInput,
+        confirmPassword = uiState.passwordConfirmInput,
+        email = uiState.emailInput
     )
-    val btnEnabled = uiState.emailInput.isNotEmpty()
+    val btnEnabled = uiState.nameInput.isNotEmpty()
+            && uiState.emailInput.isNotEmpty()
             && uiState.passwordInput.isNotEmpty()
+            && uiState.passwordInput == uiState.passwordConfirmInput
     val context = LocalContext.current
 
     val systemUiController = rememberSystemUiController()
-
-    SideEffect {
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = true
-        )
-    }
+    systemUiController.setSystemBarsColor(
+        color = Color.Transparent,
+        darkIcons = true
+    )
 
     LaunchedEffect(key1 = uiState.isLoading) {
         if (!uiState.isLoading && uiState.result.isNotEmpty() && uiState.errorMessage.isEmpty()) {
             Toast.makeText(
                 context,
-                "User ${uiState.result} login successful",
-                Toast.LENGTH_SHORT
+                "User ${uiState.result} signed up successfully",
+                Toast.LENGTH_LONG
             ).show()
             navController.popBackStack()
-            navController.navigate(Screen.SignUp.route) { launchSingleTop = true }
+            navController.navigate(Screen.Login.route) { launchSingleTop = true }
         } else if (uiState.errorMessage.isNotEmpty()) {
-            Toast.makeText(context, "Error ${uiState.errorMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_LONG).show()
         }
     }
     Scaffold { innerPadding ->
@@ -87,52 +91,86 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(Color(0xfffcfcfc)),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Image(
-                modifier = Modifier
-                    .padding(top = 32.dp, bottom = 62.dp),
-                painter = painterResource(id = R.drawable.ic_min_carrot),
-                contentDescription = stringResource(id = R.string.logo)
+                painter = painterResource(
+                    id = R.drawable.ic_min_carrot
+                ),
+                contentDescription = null
             )
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "Login",
+                text = "Sign up",
                 style = MaterialTheme.typography.h2,
-                textAlign = TextAlign.Start
+                modifier = Modifier.padding(bottom = 6.dp)
             )
             Text(
-                modifier = Modifier
-                    .padding(bottom = 16.dp, top = 6.dp),
-                text = "Enter your email and password",
+                text = "Enter your credentials to continue",
                 style = MaterialTheme.typography.h3,
                 color = Color(0xff727272),
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(bottom = 10.dp)
             )
             MyTextField(
-                onInputChanged = loginViewModel::onEmailInputChanged,
+                onInputChanged = signUpViewModel::onNameInputChanged,
+                inputText = uiState.nameInput,
+                name = "Name"
+            )
+            MyTextField(
+                onInputChanged = signUpViewModel::onEmailInputChanged,
                 inputText = uiState.emailInput,
-                name = "Email"
+                name = "Email",
+                errorMessage = uiState.emailError
             )
             PasswordInput(
-                onInputChanged = loginViewModel::onPasswordInputChanged,
+                onInputChanged = signUpViewModel::onPasswordInputChanged,
                 inputText = uiState.passwordInput,
-                showPassword = false,
-                toggleShowPassword = loginViewModel::toggleShowPassword,
-                name = "Password"
+                showPassword = uiState.showPassword,
+                toggleShowPassword = signUpViewModel::toggleShowPassword,
+                name = "Password",
+                errorMessage = uiState.passwordError
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp, horizontal = 20.dp),
-                text = "Forgot Password",
-                style = MaterialTheme.typography.h6
+            PasswordInput(
+                onInputChanged = signUpViewModel::onPasswordConfirmInputChanged,
+                inputText = uiState.passwordConfirmInput,
+                showPassword = uiState.showPassword,
+                toggleShowPassword = signUpViewModel::toggleShowPassword,
+                name = "Confirm Password"
             )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "By continuing you agree to our",
+                    style = MaterialTheme.typography.h5
+                )
+                Text(
+                    text = "Terms of service",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primary
+                )
+                Text(text = "and ", style = MaterialTheme.typography.h5)
+                Text(
+                    text = "Privacy Policy.",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.primary
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(22.dp))
             ButtonLoading(
-                name = "Login",
+                name = "Sign Up",
                 isLoading = uiState.isLoading,
                 enabled = btnEnabled,
                 onClicked = {
-                    loginViewModel.loginUser(loginCredentials)
+                    signUpViewModel.signUp(userSignup)
+                    Log.d("Signup screen: ", uiState.errorMessage)
                 }
             )
             Spacer(modifier = Modifier.height(22.dp))
@@ -160,13 +198,18 @@ fun LoginScreen(
                     style = MaterialTheme.typography.button,
                 )
             }
-            Spacer(modifier = Modifier.height(12.dp))
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+
             Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Don't have an account?",
+                    text = "Already have an account?",
                     style = MaterialTheme.typography.h6,
                     fontFamily = FontFamily(
                         Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
@@ -177,11 +220,11 @@ fun LoginScreen(
                 IconButton(
                     onClick = {
                         navController.popBackStack()
-                        navController.navigate(Screen.SignUp.route)
+                        navController.navigate(Screen.Login.route)
                     }
                 ) {
                     Text(
-                        text = "Sign up",
+                        text = "Sign in",
                         style = MaterialTheme.typography.h6,
                         fontFamily = FontFamily(
                             Font(
@@ -190,7 +233,7 @@ fun LoginScreen(
                             )
                         ),
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colors.primary
                     )
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.composables
+package com.example.mustmarket.core.SharedComposables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

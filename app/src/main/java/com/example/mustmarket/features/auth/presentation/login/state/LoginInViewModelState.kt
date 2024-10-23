@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.login
+package com.example.mustmarket.features.auth.presentation.login.state
 
 data class LoginScreenState(
     val isLoading: Boolean,
@@ -7,6 +7,8 @@ data class LoginScreenState(
     val emailInput: String,
     val result: String,
     val showPassword: Boolean,
+    val emailError: String,
+    val passwordError: String
 )
 
 data class LoginViewModelState(
@@ -16,6 +18,8 @@ data class LoginViewModelState(
     val emailInput: String = "",
     val result: String = "",
     val showPassword: Boolean = false,
+    val emailError: String = "",
+    val passwordError: String = ""
 ) {
     fun toUiState(): LoginScreenState =
         LoginScreenState(
@@ -24,6 +28,8 @@ data class LoginViewModelState(
             passwordInput,
             emailInput,
             result,
-            showPassword
+            showPassword,
+            emailError,
+            passwordError
         )
 }

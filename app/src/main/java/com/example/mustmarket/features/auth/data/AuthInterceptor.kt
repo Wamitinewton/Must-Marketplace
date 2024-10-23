@@ -28,7 +28,7 @@ class AuthInterceptor(context: Context) : Interceptor {
 
     private fun getTokensFromResHeaders(response: Response) {
         var accessToken = response.headers.get(ACCESS_TOKEN)
-        var refreshToken = response.headers.get(REFRESH_TOKEN)
+        val refreshToken = response.headers.get(REFRESH_TOKEN)
         val newAccessToken = response.headers.get("x-access-token")
         if (newAccessToken != null) accessToken = newAccessToken
         if (accessToken != null && refreshToken != null) {

@@ -89,6 +89,14 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.18.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.18.0")
 
+    // Import landscapist libraries
+    implementation("com.github.skydoves:landscapist-bom:2.4.1")
+    implementation("com.github.skydoves:landscapist-coil:1.4.9")
+    implementation("com.github.skydoves:landscapist-glide")
+    implementation("com.github.skydoves:landscapist-placeholder")
+    implementation("com.github.skydoves:landscapist-palette")
+    implementation("com.github.skydoves:landscapist-transformation")
+
     //nav
     implementation("androidx.navigation:navigation-compose:2.8.2")
 
@@ -101,4 +109,7 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.3.0")
+
+    // swipe refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha")
 }
