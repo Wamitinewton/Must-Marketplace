@@ -23,7 +23,7 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE LOWER(name) LIKE '%' || LOWER(:query) || '%' OR UPPER(:query) == name")
     suspend fun searchProducts(query: String): List<ProductListingEntity>
 
-    @Query("SELECT * FROM products WHERE id = id")
+    @Query("SELECT * FROM products WHERE id = :id")
     suspend fun getProductById(id: Int): ProductListingEntity?
 
     @Query("SELECT COUNT(*) FROM products")

@@ -23,7 +23,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
 fun CategoryDto.toDomainCategory(): ProductCategory {
     return ProductCategory(
         id = id,
-        name = name
+        name = name,
     )
 }
 
@@ -37,7 +37,7 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         inventory = inventory,
         description = description,
         category = category,
-        lastUpdated = System.currentTimeMillis()
+        lastUpdated = System.currentTimeMillis(),
     )
 }
 
@@ -50,7 +50,7 @@ fun ProductListingEntity.toNetworkProduct(): NetworkProduct {
         brand = brand,
         description = description,
         category = category,
-        imageUrl = image
+        imageUrl = image,
     )
 }
 
