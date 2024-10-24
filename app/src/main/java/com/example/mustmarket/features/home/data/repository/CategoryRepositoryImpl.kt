@@ -42,7 +42,6 @@ class CategoryRepositoryImpl @Inject constructor(
     override suspend fun getAllCategories(): Flow<Resource<List<ProductCategory>>> = flow {
         try {
             emit(Resource.Loading(true))
-            emit(Resource.Loading(true))
             dao.getAllCategories()
                 .map { entities ->
                     Resource.Success(

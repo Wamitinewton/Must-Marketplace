@@ -17,4 +17,18 @@ sealed class Screen(
     data object Detail : Screen("detail_screen")
     data object Order : Screen("order_screen")
     data object Start : Screen("get_started_screen")
+    data object Explore: Screen("explore_screen")
+    data object Bookmarks: Screen("bookmarks_screen")
+    data object Profile: Screen("profile_screen")
+    data object Favourites: Screen("favourites_screen")
+
+    object BottomNavItems {
+        val items = listOf(
+            HomeScreen,
+            Explore,
+            Bookmarks,
+            Favourites,
+            Profile,
+        )
+    }
 }

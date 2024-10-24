@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.favourite
+package com.example.mustmarket.features.bookmarks
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,14 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun FavouritesScreen() {
+fun BookmarksScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Favourites Screen")
+        Text(text = "Bookmarks Screen")
     }
 }
-
