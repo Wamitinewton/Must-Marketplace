@@ -9,7 +9,8 @@ import com.example.mustmarket.features.home.data.local.entities.ProductListingEn
 
 @Database(
     entities = [ProductListingEntity::class, CategoryListingEntity::class],
-    version = 1
+    version = 2,
+    exportSchema = false
 )
 
 

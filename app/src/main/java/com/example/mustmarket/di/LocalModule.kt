@@ -19,7 +19,9 @@ object LocalModule {
             app,
             AppDatabase::class.java,
             "products_db.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

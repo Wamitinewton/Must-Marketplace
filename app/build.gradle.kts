@@ -112,4 +112,8 @@ dependencies {
 
     // swipe refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha")
+
+    // Paging
+    implementation("androidx.paging:paging-runtime-ktx:3.1.1")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha18")
 }

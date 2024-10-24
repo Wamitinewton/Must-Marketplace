@@ -32,7 +32,6 @@ fun ProductCard(
 ) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
@@ -82,7 +81,8 @@ fun ProductCard(
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.h6.copy(
-                        fontSize = 16.sp,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colors.primary,
                         fontWeight = FontWeight.Bold
                     )
                 )

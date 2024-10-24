@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +57,9 @@ import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 @Composable
 fun HomeScreen(
@@ -86,6 +90,7 @@ fun Content(
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     onProductClick: (NetworkProduct) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
@@ -96,8 +101,18 @@ fun Content(
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = {
-            viewModel.onProductEvent(HomeScreenEvent.Refresh)
-            categoryViewModel.onCategoryEvent(HomeScreenEvent.Refresh)
+            coroutineScope.launch {
+                supervisorScope {
+                    val productRefresh = async {
+                        viewModel.onProductEvent(HomeScreenEvent.Refresh)
+                    }
+                    val categoryRefresh = async {
+                        categoryViewModel.onCategoryEvent(HomeScreenEvent.Refresh)
+                    }
+                    productRefresh.await()
+                    categoryRefresh.await()
+                }
+            }
         }
     ) {
         LazyColumn(
@@ -112,7 +127,7 @@ fun Content(
             }
             item { Promotions() }
             item { CategoryGridView() }
-            item { TopProduct() }
+//            item { TopProduct() }
             item {
                 Card(
                     shape = RectangleShape,
@@ -170,7 +185,7 @@ fun Content(
                             product = product,
                             onClick = { onProductClick(product) }
                         )
-                        if (index < uiState.products.size - 1){
+                        if (index < uiState.products.size - 1) {
                             Divider(
                                 color = Color.Gray,
                                 modifier = Modifier
@@ -302,7 +317,7 @@ fun Promotions() {
                 text = "Promos & discounts \uD83D\uDE0A",
 
                 style = MaterialTheme.typography.body1.copy(
-                    color = Color.Black,
+
                     fontSize = 20.sp
                 ),
                 maxLines = 1
