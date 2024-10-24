@@ -32,6 +32,7 @@ fun BottomNavBar(
 
         screens.forEach { screen ->
             BottomNavigationItem(
+                alwaysShowLabel = true ,
                 icon = {
                     Icon(
                         imageVector = when (screen) {
