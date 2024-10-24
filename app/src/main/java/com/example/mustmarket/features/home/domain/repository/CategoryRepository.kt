@@ -10,4 +10,5 @@ interface CategoryRepository {
 
     suspend fun getCategories(size: Int): Flow<Resource<List<ProductCategory>>>
     suspend fun getAllCategories(): Flow<Resource<List<ProductCategory>>>
+    suspend fun refreshCategories(): Flow<Resource<List<ProductCategory>>>
 }

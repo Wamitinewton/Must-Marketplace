@@ -2,7 +2,7 @@ package com.example.mustmarket.di
 
 import android.app.Application
 import androidx.room.Room
-import com.example.mustmarket.features.home.data.local.db.ProductDatabase
+import com.example.mustmarket.features.home.data.local.db.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,15 +14,19 @@ import javax.inject.Singleton
 object LocalModule {
     @Provides
     @Singleton
-    fun provideProductDatabase(app: Application): ProductDatabase {
+    fun provideProductDatabase(app: Application): AppDatabase {
         return Room.databaseBuilder(
             app,
-            ProductDatabase::class.java,
+            AppDatabase::class.java,
             "products_db.db"
         ).build()
     }
 
     @Provides
     @Singleton
-    fun provideProductDao(db: ProductDatabase) = db.dao
+    fun provideProductDao(db: AppDatabase) = db.productDao
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(db: AppDatabase) = db.categoryDao
 }
