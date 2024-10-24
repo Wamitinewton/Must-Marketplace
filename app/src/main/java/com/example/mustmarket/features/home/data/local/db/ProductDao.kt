@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.mustmarket.features.home.data.local.entities.CategoryListingEntity
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import kotlinx.coroutines.flow.Flow
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f501be258946daff69052417e9c3153d",
+    "identityHash": "a284a0571b1479f8a904119370cf0033",
     "entities": [
       {
         "tableName": "products",
@@ -73,7 +73,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "products",
+        "tableName": "category",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -102,7 +102,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f501be258946daff69052417e9c3153d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a284a0571b1479f8a904119370cf0033')"
     ]
   }
 }

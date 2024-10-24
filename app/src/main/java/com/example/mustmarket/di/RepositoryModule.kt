@@ -7,6 +7,7 @@ import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
 import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
 import com.example.mustmarket.features.auth.domain.usecases.TokenSession
+import com.example.mustmarket.features.home.data.local.db.CategoryDao
 import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
@@ -16,6 +17,7 @@ import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.usecases.AllProducts
 import com.example.mustmarket.features.home.domain.usecases.Categories
 import com.example.mustmarket.features.home.domain.usecases.ProductCategories
+import com.example.mustmarket.features.home.domain.usecases.RefreshCategory
 import com.example.mustmarket.features.home.domain.usecases.RefreshProduct
 import dagger.Module
 import dagger.Provides
@@ -35,8 +37,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideCategoryRepository(categoryProductsApi: ProductsApi): CategoryRepository {
-        return CategoryRepositoryImpl(categoryApi = categoryProductsApi)
+    fun provideCategoryRepository(categoryProductsApi: ProductsApi, dao: CategoryDao): CategoryRepository {
+        return CategoryRepositoryImpl(categoryApi = categoryProductsApi, dao = dao)
     }
 
     @Provides
@@ -59,6 +61,7 @@ object RepositoryModule {
             productCategories = ProductCategories(repository = categoryRepository),
             categories = Categories(repository = categoryRepository),
             allProducts = AllProducts(repository = allProductsRepository),
-            refreshProduct = RefreshProduct(repository = allProductsRepository)
+            refreshProduct = RefreshProduct(repository = allProductsRepository),
+            refreshCategory = RefreshCategory(repository = categoryRepository)
         )
 }

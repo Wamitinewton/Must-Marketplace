@@ -28,7 +28,7 @@ class ProductCategoryViewModel @Inject constructor(
     fun onCategoryEvent(event: HomeScreenEvent){
         when(event){
             is HomeScreenEvent.Refresh -> {
-                getAllCategories()
+                refreshCategories()
             }
         }
     }
@@ -36,6 +36,14 @@ class ProductCategoryViewModel @Inject constructor(
     private fun getAllCategories() {
         viewModelScope.launch {
             categoryUseCases.productCategories().collect { result ->
+                handleCategoriesResult(result)
+            }
+        }
+    }
+
+    private fun refreshCategories() {
+        viewModelScope.launch {
+            categoryUseCases.refreshCategory().collect { result ->
                 handleCategoriesResult(result)
             }
         }
