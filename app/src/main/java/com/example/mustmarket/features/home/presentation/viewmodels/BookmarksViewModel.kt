@@ -22,11 +22,11 @@ class BookmarksViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<BookmarksUiState>(BookmarksUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private val _errorEvent = MutableStateFlow<String?>(null)
-    val errorEvent = _errorEvent.asStateFlow()
+    private val _errorEvent = MutableSharedFlow<String?>()
+    val errorEvent = _errorEvent.asSharedFlow()
 
-    private val _successEvent = MutableStateFlow<String?>(null)
-    val successEvent = _successEvent.asStateFlow()
+    private val _successEvent = MutableSharedFlow<String?>()
+    val successEvent = _successEvent.asSharedFlow()
 
     // tuna update flow ya kurefresh cache hapa
     private val _bookmarkStatusUpdates = MutableStateFlow<Map<Int, Boolean>>(emptyMap())
