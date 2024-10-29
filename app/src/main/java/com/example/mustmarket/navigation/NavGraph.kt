@@ -58,7 +58,7 @@ fun SetUpNavGraph(
         composable(route = Screen.Detail.route,
             enterTransition = {
                 return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                    AnimatedContentTransitionScope.SlideDirection.Left, tween(500)
                 )
             }) { ProductDetailsScreen() }
         composable(route = Screen.Explore.route,
