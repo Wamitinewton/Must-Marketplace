@@ -7,14 +7,18 @@ import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
 import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
 import com.example.mustmarket.features.auth.domain.usecases.TokenSession
+import com.example.mustmarket.features.home.data.local.db.BookmarkDao
 import com.example.mustmarket.features.home.data.local.db.CategoryDao
 import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
+import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
+import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.usecases.AllProducts
+import com.example.mustmarket.features.home.domain.usecases.Bookmarks
 import com.example.mustmarket.features.home.domain.usecases.Categories
 import com.example.mustmarket.features.home.domain.usecases.ProductCategories
 import com.example.mustmarket.features.home.domain.usecases.RefreshCategory
@@ -37,22 +41,36 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideCategoryRepository(categoryProductsApi: ProductsApi, dao: CategoryDao): CategoryRepository {
+    fun provideCategoryRepository(
+        categoryProductsApi: ProductsApi,
+        dao: CategoryDao
+    ): CategoryRepository {
         return CategoryRepositoryImpl(categoryApi = categoryProductsApi, dao = dao)
     }
 
     @Provides
     @Singleton
-    fun provideAllProductsRepository(allProductsApi: ProductsApi, dao: ProductDao): AllProductsRepository {
+    fun provideAllProductsRepository(
+        allProductsApi: ProductsApi,
+        dao: ProductDao
+    ): AllProductsRepository {
         return AllProductsRepositoryImpl(productsApi = allProductsApi, dao = dao)
     }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkRepository(dao: BookmarkDao): BookmarkRepository {
+        return BookmarkRepositoryImpl(bookmarkDao = dao)
+    }
+
 
     @Provides
     @Singleton
     fun provideUseCases(
         authRepository: AuthRepository,
         categoryRepository: CategoryRepository,
-        allProductsRepository: AllProductsRepository
+        allProductsRepository: AllProductsRepository,
+        bookmarkRepository: BookmarkRepository
     ): UseCases =
         UseCases(
             signUpUseCase = SignUpUseCase(repository = authRepository),
@@ -62,6 +80,7 @@ object RepositoryModule {
             categories = Categories(repository = categoryRepository),
             allProducts = AllProducts(repository = allProductsRepository),
             refreshProduct = RefreshProduct(repository = allProductsRepository),
-            refreshCategory = RefreshCategory(repository = categoryRepository)
+            refreshCategory = RefreshCategory(repository = categoryRepository),
+            bookmarks = Bookmarks(repository = bookmarkRepository)
         )
 }

@@ -4,6 +4,7 @@ import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
 import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
 import com.example.mustmarket.features.auth.domain.usecases.TokenSession
 import com.example.mustmarket.features.home.domain.usecases.AllProducts
+import com.example.mustmarket.features.home.domain.usecases.Bookmarks
 import com.example.mustmarket.features.home.domain.usecases.Categories
 import com.example.mustmarket.features.home.domain.usecases.ProductCategories
 import com.example.mustmarket.features.home.domain.usecases.RefreshCategory
@@ -17,5 +18,6 @@ data class UseCases(
     val categories: Categories,
     val allProducts: AllProducts,
     val refreshProduct: RefreshProduct,
-    val refreshCategory: RefreshCategory
+    val refreshCategory: RefreshCategory,
+    val bookmarks: Bookmarks
 )

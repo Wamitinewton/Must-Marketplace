@@ -1,5 +1,7 @@
 package com.example.mustmarket.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -26,19 +28,63 @@ fun SetUpNavGraph(
     navController: NavHostController,
     modifier: Modifier
 ) {
-
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route
-    ) {
-        composable(route = Screen.SignUp.route) { SignUpScreen(navController = navController) }
-        composable(route = Screen.Login.route) { LoginScreen(navController = navController) }
-        composable(route = Screen.Splash.route) { SplashScreen(navController = navController) }
-        composable(route = Screen.HomeScreen.route) { HomeScreen(navController = navController) }
-        composable(route = Screen.Detail.route) { ProductDetailsScreen() }
-        composable(route = Screen.Explore.route) { ExploreScreen() }
-        composable(route = Screen.Bookmarks.route) { BookmarksScreen() }
-        composable(route = Screen.Profile.route) { AccountScreen() }
-        composable(route = Screen.Favourites.route) { FavouritesScreen() }
+        startDestination = Screen.HomeScreen.route,
+        ) {
+        composable(route = Screen.SignUp.route, enterTransition = {
+            return@composable slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+            )
+        }) { SignUpScreen(navController = navController) }
+        composable(route = Screen.Login.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { LoginScreen(navController = navController) }
+        composable(route = Screen.Splash.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { SplashScreen(navController = navController) }
+        composable(route = Screen.HomeScreen.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { HomeScreen(navController = navController) }
+        composable(route = Screen.Detail.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { ProductDetailsScreen() }
+        composable(route = Screen.Explore.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { ExploreScreen() }
+        composable(route = Screen.Bookmarks.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { BookmarksScreen() }
+        composable(route = Screen.Profile.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { AccountScreen() }
+        composable(route = Screen.Favourites.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { FavouritesScreen() }
     }
 }
+

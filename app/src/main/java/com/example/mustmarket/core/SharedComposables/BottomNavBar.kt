@@ -17,6 +17,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mustmarket.navigation.Screen
 
 @Composable
+
+
 fun BottomNavBar(
     modifier: Modifier = Modifier,
     navController: NavController
