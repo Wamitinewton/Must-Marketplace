@@ -17,6 +17,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mustmarket.navigation.Screen
 
 @Composable
+
+
 fun BottomNavBar(
     modifier: Modifier = Modifier,
     navController: NavController
@@ -32,6 +34,7 @@ fun BottomNavBar(
 
         screens.forEach { screen ->
             BottomNavigationItem(
+                alwaysShowLabel = true ,
                 icon = {
                     Icon(
                         imageVector = when (screen) {

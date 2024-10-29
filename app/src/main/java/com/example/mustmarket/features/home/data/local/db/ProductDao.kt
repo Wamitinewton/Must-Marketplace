@@ -1,10 +1,8 @@
 package com.example.mustmarket.features.home.data.local.db
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.mustmarket.features.home.data.local.entities.CategoryListingEntity
+import androidx.room.Upsert
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProductDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertProducts(products: List<ProductListingEntity>)
 
     @Query("SELECT * FROM products ORDER BY id DESC")

@@ -31,4 +31,8 @@ object LocalModule {
     @Provides
     @Singleton
     fun provideCategoryDao(db: AppDatabase) = db.categoryDao
+
+    @Provides
+    @Singleton
+    fun provideBookmarkDao(db: AppDatabase) = db.bookmarkDao
 }

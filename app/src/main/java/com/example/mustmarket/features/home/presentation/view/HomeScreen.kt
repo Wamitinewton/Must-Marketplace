@@ -25,13 +25,17 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,10 +52,10 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
-import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
@@ -64,7 +68,7 @@ import kotlinx.coroutines.supervisorScope
 @Composable
 fun HomeScreen(
     navController: NavController,
-    allProductsViewModel: AllProductsViewModel = hiltViewModel()
+    allProductsViewModel: AllProductsViewModel = hiltViewModel(),
 ) {
 
     Box {
@@ -78,8 +82,10 @@ fun HomeScreen(
         )
         Content(
             viewModel = allProductsViewModel,
-            onProductClick = {}
-        )
+            onProductClick = {},
+
+            )
+
     }
 }
 
@@ -88,7 +94,7 @@ fun HomeScreen(
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
-    onProductClick: (NetworkProduct) -> Unit
+    onProductClick: (NetworkProduct) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.productsUiState.collectAsState()
@@ -119,7 +125,7 @@ fun Content(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 15.dp)
+                .padding(bottom = 60.dp)
         ) {
             item { AppBarPrimary() }
             stickyHeader {
@@ -182,8 +188,9 @@ fun Content(
                     items(uiState.products.size) { index ->
                         val product = uiState.products[index]
                         ProductCard(
+
                             product = product,
-                            onClick = { onProductClick(product) }
+                            onClick = { onProductClick(product) },
                         )
                         if (index < uiState.products.size - 1) {
                             Divider(

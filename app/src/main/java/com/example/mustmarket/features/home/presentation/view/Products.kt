@@ -1,24 +1,47 @@
 package com.example.mustmarket.features.home.presentation.view
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.R
 import com.example.mustmarket.core.util.Constants.formatPrice
+import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
+import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
@@ -28,8 +51,38 @@ import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 @Composable
 fun ProductCard(
     product: NetworkProduct,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val bookmarkStatuses = viewModel.bookmarkStatusUpdates.collectAsState()
+
+    val isBookmarked = bookmarkStatuses.value[product.id] ?: false
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.successEvent.collect { message ->
+            message?.let {
+                SingleToastManager.showToast(
+                    context = context,
+                    message = it,
+                    scope = scope
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.errorEvent.collect { message ->
+            message?.let {
+                SingleToastManager.showToast(
+                    context = context,
+                    message = it,
+                    scope = scope
+                )
+            }
+        }
+    }
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -107,6 +160,15 @@ fun ProductCard(
                         )
                     )
 
+                    IconButton(
+                        onClick = { viewModel.toggleBookmarkStatus(product) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Bookmark,
+                            contentDescription = "bookmarks",
+                            tint = if (isBookmarked) MaterialTheme.colors.primary else Color.Gray
+                        )
+                    }
 
                 }
             }
