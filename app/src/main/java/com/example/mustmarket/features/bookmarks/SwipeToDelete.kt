@@ -94,7 +94,10 @@ fun SwipeToDelete(
             title = {
                 Text(
                     "Confirm Deletion",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.h6.copy(
+                        fontSize = 22.sp,
+
+                    )
                 )
             },
             text = {
