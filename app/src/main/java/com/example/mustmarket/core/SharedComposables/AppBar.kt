@@ -36,34 +36,9 @@ fun AppBarPrimary(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        TextField(
-            value = "",
-            onValueChange = {},
-            label = {
-                Text(
-                    text = "Search here", fontSize = 12.sp
-                )
-            },
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search",
-                    tint = Color.Black
-
-                )
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .clickable{},
-            enabled = false
+        SearchBar(
+            autoFocus = false,
+            onSearch = {}
         )
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(onClick = { }) {
