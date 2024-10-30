@@ -38,7 +38,7 @@ class BookmarksViewModel @Inject constructor(
 
     private fun getBookmarkedProducts() {
         viewModelScope.launch {
-            bookmarksUseCases.bookmarks.getBookmarkedProducts()
+            bookmarksUseCases.homeUseCases.getBookmarkedProducts()
                 .collect { result ->
                     when (result) {
                         is Resource.Success -> {
@@ -65,7 +65,7 @@ class BookmarksViewModel @Inject constructor(
     fun removeBookmark(product: BookmarkedProduct) {
         viewModelScope.launch {
             try {
-                bookmarksUseCases.bookmarks.removeProduct(product)
+                bookmarksUseCases.homeUseCases.removeProduct(product)
                 _bookmarkStatusUpdates.value -= product.id
                 _successEvent.emit("Product removed from bookmarks")
                 getBookmarkedProducts()
@@ -81,7 +81,7 @@ class BookmarksViewModel @Inject constructor(
                 val isCurrentlyBookmarked = (_uiState.value as? BookmarksUiState.Success)?.bookmarks
                     ?.any { it.id == product.id } ?: false
 
-                bookmarksUseCases.bookmarks.toggleBookmark(product)
+                bookmarksUseCases.homeUseCases.toggleBookmark(product)
                 _bookmarkStatusUpdates.value += (product.id to !isCurrentlyBookmarked)
 
                 val successMessage = if (isCurrentlyBookmarked) {

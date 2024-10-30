@@ -36,7 +36,7 @@ class AllProductsViewModel @Inject constructor(
 
     private fun getAllProducts() {
         viewModelScope.launch {
-            productsUseCases.allProducts().collect { result ->
+            productsUseCases.homeUseCases.getAllProducts().collect { result ->
                 handleProductsResult(result)
             }
         }
@@ -44,7 +44,7 @@ class AllProductsViewModel @Inject constructor(
 
     private fun refreshProduct() {
         viewModelScope.launch {
-            productsUseCases.refreshProduct().collect { result ->
+            productsUseCases.homeUseCases.refreshProducts().collect { result ->
                 handleProductsResult(result)
             }
         }

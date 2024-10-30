@@ -4,9 +4,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
-import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
-import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
-import com.example.mustmarket.features.auth.domain.usecases.TokenSession
+import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.features.home.data.local.db.BookmarkDao
 import com.example.mustmarket.features.home.data.local.db.CategoryDao
 import com.example.mustmarket.features.home.data.local.db.ProductDao
@@ -17,12 +15,7 @@ import com.example.mustmarket.features.home.data.repository.CategoryRepositoryIm
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
-import com.example.mustmarket.features.home.domain.usecases.AllProducts
-import com.example.mustmarket.features.home.domain.usecases.Bookmarks
-import com.example.mustmarket.features.home.domain.usecases.Categories
-import com.example.mustmarket.features.home.domain.usecases.ProductCategories
-import com.example.mustmarket.features.home.domain.usecases.RefreshCategory
-import com.example.mustmarket.features.home.domain.usecases.RefreshProduct
+import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,14 +66,11 @@ object RepositoryModule {
         bookmarkRepository: BookmarkRepository
     ): UseCases =
         UseCases(
-            signUpUseCase = SignUpUseCase(repository = authRepository),
-            loginUseCase = LoginUseCase(repository = authRepository),
-            tokenLogin = TokenSession(repository = authRepository),
-            productCategories = ProductCategories(repository = categoryRepository),
-            categories = Categories(repository = categoryRepository),
-            allProducts = AllProducts(repository = allProductsRepository),
-            refreshProduct = RefreshProduct(repository = allProductsRepository),
-            refreshCategory = RefreshCategory(repository = categoryRepository),
-            bookmarks = Bookmarks(repository = bookmarkRepository)
+            authUseCase = AuthUseCase(repository = authRepository),
+            homeUseCases = HomeUseCases(
+                categoryRepository = categoryRepository,
+                productRepository = allProductsRepository,
+                bookmarksRepository = bookmarkRepository
+            )
         )
 }

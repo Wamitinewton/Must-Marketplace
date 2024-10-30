@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductCategoryViewModel @Inject constructor(
-    private val categoryUseCases: UseCases
+    private val productUseCases: UseCases
 ) : ViewModel() {
     private val _viewModelState = MutableStateFlow(ProductCategoryViewModelState())
     val uiState = _viewModelState.asStateFlow()
@@ -35,7 +36,8 @@ class ProductCategoryViewModel @Inject constructor(
 
     private fun getAllCategories() {
         viewModelScope.launch {
-            categoryUseCases.productCategories().collect { result ->
+            productUseCases.homeUseCases.getAllCategories()
+                .collect { result ->
                 handleCategoriesResult(result)
             }
         }
@@ -43,7 +45,8 @@ class ProductCategoryViewModel @Inject constructor(
 
     private fun refreshCategories() {
         viewModelScope.launch {
-            categoryUseCases.refreshCategory().collect { result ->
+            productUseCases.homeUseCases.refreshCategories()
+                .collect { result ->
                 handleCategoriesResult(result)
             }
         }
@@ -51,7 +54,8 @@ class ProductCategoryViewModel @Inject constructor(
 
     fun getCategoriesWithLimit(size: Int) {
         viewModelScope.launch {
-            categoryUseCases.categories(size).collect { result ->
+            productUseCases.homeUseCases.getCategoryBySize(size)
+                .collect { result ->
                 handleCategoriesResult(result)
             }
         }
