@@ -74,7 +74,7 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp(signUp: SignUpUser) {
         viewModelScope.launch {
-            authUseCase.signUpUseCase(signUpUser = signUp).onEach { result ->
+            authUseCase.authUseCase.registerUseCase(signUpUser = signUp).onEach { result ->
                 viewModelState.update { state ->
                     when (result) {
                         is Resource.Success -> state.copy(

@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(loginCredentials: LoginUser) {
         viewModelScope.launch {
-            authUseCase.loginUseCase(loginUser = loginCredentials).onEach { result ->
+            authUseCase.authUseCase.loginUseCase(loginUser = loginCredentials).onEach { result ->
                 viewModelState.update { state ->
                     when (result) {
                         is Resource.Success -> state.copy(
