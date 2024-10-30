@@ -72,7 +72,9 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { BookmarksScreen() }
+            }) { BookmarksScreen(
+                onProductClick = {}
+            ) }
         composable(route = Screen.Profile.route,
             enterTransition = {
                 return@composable slideIntoContainer(
