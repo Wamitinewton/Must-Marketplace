@@ -49,7 +49,7 @@ class BookmarkRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(
                 Resource.Error(
-                    message = e.localizedMessage ?: "An unexpected error occured",
+                    message = e.localizedMessage ?: "An unexpected error occurred",
                     data = false
                 )
             )
