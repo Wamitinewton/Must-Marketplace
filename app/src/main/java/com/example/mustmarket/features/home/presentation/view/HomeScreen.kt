@@ -52,6 +52,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
+import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -157,30 +159,13 @@ fun Content(
             when {
                 uiState.isLoading -> {
                     item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                        LoadingState()
                     }
                 }
 
                 uiState.errorMessage.isNotEmpty() -> {
                     item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = uiState.errorMessage,
-                                color = MaterialTheme.colors.error
-                            )
-                        }
+                     ErrorState()
                     }
                 }
 

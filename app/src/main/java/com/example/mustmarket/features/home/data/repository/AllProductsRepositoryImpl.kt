@@ -105,8 +105,6 @@ class AllProductsRepositoryImpl @Inject constructor(
             emit(Resource.Error("IO error: ${e.message}"))
         } catch (e: Exception) {
             emit(Resource.Error("Unknown error: ${e.message}"))
-        } finally {
-            emit(Resource.Loading(false))
         }
     }
 }
