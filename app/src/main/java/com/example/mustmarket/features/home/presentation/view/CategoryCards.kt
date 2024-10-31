@@ -6,16 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,129 +23,164 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
 import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
+import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.features.home.domain.model.ProductCategory
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CategoryGridView(
-    viewModel: ProductCategoryViewModel = hiltViewModel()
+    viewModel: ProductCategoryViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val itemsCount = uiState.categories.size
-    val columns = 4
-    val itemHeight = 90.dp
-    val spacing = 10.dp
 
-    val rows = (itemsCount + columns - 1) / columns
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceBetween,
 
-    val totalHeight = (rows * itemHeight) + ((rows - 1) * spacing)
+    ) {
+        CategoryHeader()
 
-    Column() {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Product categories")
-        }
 
         when {
-            uiState.isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(
-                        Alignment.CenterHorizontally
-                    )
-                )
-            }
+            uiState.isLoading -> LoadingState()
+            uiState.errorMessage.isNotEmpty() -> ErrorState()
+            else -> CategoryGrid(categories = uiState.categories)
+        }
+    }
+}
 
-            uiState.errorMessage.isNotEmpty() -> {
-                Text(
-                    text = "Server error. Try again later",
-                    color = MaterialTheme.colors.error,
-                    style = TextStyle(
-                        fontSize = 18.sp
-                    ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
+@Composable
+private fun CategoryHeader() {
+    Card(
+        shape = RectangleShape,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier.padding(start = 16.dp)
+        ) {
+            Text(
+                text = "All Categories",
+                color = Color.White,
+                fontSize = 18.sp
+            )
+        }
+    }
+}
 
-            else -> {
-                Box(
+@Composable
+fun CategoryGrid(categories: List<ProductCategory>) {
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val itemMinSize = 85.dp
+    val columns = maxOf(4, (screenWidth / itemMinSize).toInt())
+    val itemsCount = categories.size
+    val rows = (itemsCount + columns - 1) / columns
+    val itemHeight = (screenWidth / columns)
+    val spacing = 10.dp
+    val totalHeight = (rows * itemHeight) + ((rows - 1) * spacing)
+
+  Box(
+      modifier = Modifier
+          .fillMaxWidth()
+          .height(totalHeight)
+  ){
+      LazyVerticalGrid(
+          columns = GridCells.Fixed(columns),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+      ) {
+          items(categories.size) { index ->
+              CategoryItem(category = categories[index])
+          }
+      }
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun CategoryItem(
+    modifier: Modifier = Modifier,
+    category: ProductCategory
+) {
+    Card(
+        onClick = {},
+        modifier = modifier
+            .aspectRatio(1f)
+            .padding(4.dp),
+        elevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ){
+                GlideImage(
+                    imageModel = { "" },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(totalHeight + 30.dp)
-                ) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(columns),
-                        verticalArrangement = Arrangement.spacedBy(spacing),
-                        horizontalArrangement = Arrangement.spacedBy(spacing),
-                        contentPadding = PaddingValues(horizontal = 10.dp)
-                    ) {
-                        items(itemsCount) { index ->
-                            val category = uiState.categories[index]
-                            Card(
-                                onClick = {},
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .height(itemHeight)
-                                    .width(itemHeight),
-                                elevation = 6.dp,
-                            ) {
-                                Column(
-                                    Modifier.padding(3.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    GlideImage(imageModel = { "" },
-                                        modifier = Modifier.size(50.dp),
-                                        component = rememberImageComponent {
-
-                                            +ShimmerPlugin(
-                                                Shimmer.Flash(
-                                                    baseColor = Color.White,
-                                                    highlightColor = Color.LightGray,
-                                                ),
-                                            )
-                                        },
-
-                                        failure = {
-                                            Image(
-                                                contentDescription = null,
-                                                painter = painterResource(id = R.drawable.no_image),
-
-                                                )
-                                        })
-                                    Spacer(modifier = Modifier.height(9.dp))
-                                    Text(
-                                        modifier = Modifier.padding(top = 3.dp),
-                                        text = category.name,
-
-                                        style = MaterialTheme.typography.caption.copy(
-                                            color = Color.Gray
-                                        ),
-                                        maxLines = 1
-                                    )
-                                }
-
-
-                            }
-                        }
+                        .fillMaxSize(0.8f)
+                        .aspectRatio(1f),
+                    component = rememberImageComponent {
+                        +ShimmerPlugin(
+                            Shimmer.Flash(
+                                baseColor = Color.White,
+                                highlightColor = Color.Gray
+                            )
+                        )
+                    },
+                    failure = {
+                        Image(
+                            painter = painterResource(id = R.drawable.no_image),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(0.8f)
+                        )
                     }
-                }
+                )
             }
+            Text(
+                text = category.name,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                style = MaterialTheme.typography.caption.copy(
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

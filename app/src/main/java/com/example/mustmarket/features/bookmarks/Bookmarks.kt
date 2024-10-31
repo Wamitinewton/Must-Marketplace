@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mustmarket.core.SharedComposables.SearchBar
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 
@@ -48,7 +49,7 @@ fun BookmarksScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 55.dp, bottom = 60.dp),
+            .padding(bottom = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
@@ -66,6 +67,10 @@ fun BookmarksScreen(
                 color = Color.White
             )
         }
+        SearchBar(
+            autoFocus = false,
+            onSearch = {}
+        )
 
         when (uiState) {
             is BookmarksUiState.Loading -> {

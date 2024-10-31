@@ -57,7 +57,9 @@ fun SearchBar(
         val focusManager = LocalFocusManager.current
         TextField(
             value = searchInput,
-            onValueChange = {},
+            onValueChange = { newValue ->
+                searchInput = if (newValue.trim().isNotEmpty()) newValue else ""
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester = focusRequester),
@@ -65,13 +67,13 @@ fun SearchBar(
             placeholder = {
                 Text(
                     text = "Search...",
-                    color = Color.White.copy(alpha = 0.8F),
+                    color = Color.Gray,
                     fontWeight = FontWeight.Normal
                 )
             },
             colors = textFieldColors(
                 textColor = Color.White.copy(alpha = 0.78F),
-                backgroundColor = Color.Transparent,
+                backgroundColor = Color.White,
                 disabledTextColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -101,7 +103,7 @@ fun SearchBar(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                tint = Color.White,
+                                tint = Color.Black,
                                 contentDescription = null
                             )
                         }
@@ -111,7 +113,7 @@ fun SearchBar(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_search),
-                            tint = Color.White,
+                            tint = Color.Black,
                             contentDescription = null
                         )
                     }
