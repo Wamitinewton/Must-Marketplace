@@ -36,6 +36,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mustmarket.R
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -72,8 +74,8 @@ fun SearchBar(
                 )
             },
             colors = textFieldColors(
-                textColor = Color.White.copy(alpha = 0.78F),
-                backgroundColor = Color.White,
+                textColor = ThemeUtils.AppColors.Surface.themed(),
+                backgroundColor = ThemeUtils.AppColors.Text.themed(),
                 disabledTextColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent

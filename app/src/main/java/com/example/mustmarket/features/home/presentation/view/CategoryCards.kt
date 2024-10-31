@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
@@ -42,6 +44,8 @@ import com.skydoves.landscapist.placeholder.shimmer.Shimmer
 import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -57,7 +61,7 @@ fun CategoryGridView(
 
     ) {
         CategoryHeader()
-
+        Spacer(modifier = Modifier.height(8.dp))
 
         when {
             uiState.isLoading -> LoadingState()
@@ -81,7 +85,7 @@ private fun CategoryHeader() {
         ) {
             Text(
                 text = "All Categories",
-                color = Color.White,
+                color = ThemeUtils.AppColors.Text.themed(),
                 fontSize = 18.sp
             )
         }
@@ -93,7 +97,7 @@ fun CategoryGrid(categories: List<ProductCategory>) {
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val itemMinSize = 85.dp
+    val itemMinSize = 90.dp
     val columns = maxOf(4, (screenWidth / itemMinSize).toInt())
     val itemsCount = categories.size
     val rows = (itemsCount + columns - 1) / columns
@@ -113,7 +117,7 @@ fun CategoryGrid(categories: List<ProductCategory>) {
           contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
       ) {
           items(categories.size) { index ->
-              CategoryItem(category = categories[index])
+              CategoryItem(category = categories[index], height = itemMinSize)
           }
       }
   }
@@ -123,12 +127,14 @@ fun CategoryGrid(categories: List<ProductCategory>) {
 @Composable
 fun CategoryItem(
     modifier: Modifier = Modifier,
-    category: ProductCategory
+    category: ProductCategory,
+    height: Dp
 ) {
     Card(
         onClick = {},
         modifier = modifier
             .aspectRatio(1f)
+            .height(height)
             .padding(4.dp),
         elevation = 4.dp
     ) {
@@ -167,6 +173,7 @@ fun CategoryItem(
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = category.name,
                 modifier = Modifier
@@ -174,7 +181,7 @@ fun CategoryItem(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
                 style = MaterialTheme.typography.caption.copy(
-                    color = Color.Gray,
+                    color = ThemeUtils.AppColors.SecondaryText.themed(),
                     fontSize = 12.sp
                 ),
                 maxLines = 1,

@@ -43,6 +43,8 @@ import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
@@ -148,7 +150,7 @@ fun ProductCard(
                 Text(
                     text = product.description,
                     style = MaterialTheme.typography.body2,
-                    color = Color.Gray,
+                    color = ThemeUtils.AppColors.SecondaryText.themed(),
                     maxLines = 2
                 )
 

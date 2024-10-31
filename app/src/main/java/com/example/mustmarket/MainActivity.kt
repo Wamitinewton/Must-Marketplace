@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
@@ -17,7 +15,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.core.SharedComposables.BottomNavBar
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.navigation.SetUpNavGraph
-import com.example.mustmarket.ui.theme.MustMarketTheme
+import com.example.mustmarket.ui.theme.ThemeUtils.MustMarketTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalCoilApi

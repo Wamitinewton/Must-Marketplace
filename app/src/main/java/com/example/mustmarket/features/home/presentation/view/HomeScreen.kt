@@ -54,11 +54,15 @@ import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.AppBarPrimary
 import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.SharedComposables.SearchBar
+import com.example.mustmarket.core.SharedComposables.TopProduct
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.colorPrimary
 import com.example.mustmarket.ui.theme.favourite
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -73,22 +77,11 @@ fun HomeScreen(
     allProductsViewModel: AllProductsViewModel = hiltViewModel(),
 ) {
 
-    Box {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(0.dp, (-30).dp),
-            painter = painterResource(id = R.drawable.bg_main),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth
+    Content(
+        viewModel = allProductsViewModel,
+        onProductClick = {},
+
         )
-        Content(
-            viewModel = allProductsViewModel,
-            onProductClick = {},
-
-            )
-
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -127,9 +120,14 @@ fun Content(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp)
+                .padding(bottom = 60.dp, top = 40.dp)
         ) {
-            item { AppBarPrimary() }
+            item {
+                SearchBar(
+                    autoFocus = false,
+                    onSearch = {}
+                )
+            }
             stickyHeader {
                 HeaderBar()
             }
@@ -149,7 +147,7 @@ fun Content(
                     ) {
                         Text(
                             text = "All Products",
-                            color = Color.White,
+                            color = ThemeUtils.AppColors.Text.themed(),
                             fontSize = 18.sp
                         )
                     }
@@ -165,7 +163,7 @@ fun Content(
 
                 uiState.errorMessage.isNotEmpty() -> {
                     item {
-                     ErrorState()
+                        ErrorState()
                     }
                 }
 
