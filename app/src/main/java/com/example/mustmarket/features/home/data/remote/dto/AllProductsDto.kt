@@ -11,3 +11,11 @@ data class AllProductsDto(
     val data: List<NetworkProductDto>
 )
 
+@Serializable
+data class ProductDetailsDto(
+    @SerialName("message")
+    val message: String,
+    @SerialName("data")
+    val data: NetworkProductDto
+)
+

@@ -26,8 +26,8 @@ class ProductCategoryViewModel @Inject constructor(
         getAllCategories()
     }
 
-    fun onCategoryEvent(event: HomeScreenEvent){
-        when(event){
+    fun onCategoryEvent(event: HomeScreenEvent) {
+        when (event) {
             is HomeScreenEvent.Refresh -> {
                 refreshCategories()
             }
@@ -38,8 +38,12 @@ class ProductCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             productUseCases.homeUseCases.getAllCategories()
                 .collect { result ->
-                handleCategoriesResult(result)
-            }
+                    if (result is Resource.Success && result.data.isNullOrEmpty()) {
+                        refreshCategories()
+                    } else {
+                        handleCategoriesResult(result)
+                    }
+                }
         }
     }
 
@@ -47,8 +51,8 @@ class ProductCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             productUseCases.homeUseCases.refreshCategories()
                 .collect { result ->
-                handleCategoriesResult(result)
-            }
+                    handleCategoriesResult(result)
+                }
         }
     }
 
@@ -56,8 +60,8 @@ class ProductCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             productUseCases.homeUseCases.getCategoryBySize(size)
                 .collect { result ->
-                handleCategoriesResult(result)
-            }
+                    handleCategoriesResult(result)
+                }
         }
     }
 

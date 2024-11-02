@@ -7,8 +7,10 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,14 +24,45 @@ class AllProductsViewModel @Inject constructor(
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState = _viewModelState.asStateFlow()
 
+    private val _productDetailsState = MutableStateFlow(ProductDetailsState())
+    val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
     init {
         getAllProducts()
     }
 
-    fun onProductEvent(event: HomeScreenEvent){
-        when(event){
+    fun onProductEvent(event: HomeScreenEvent) {
+        when (event) {
             is HomeScreenEvent.Refresh -> {
                 refreshProduct()
+            }
+        }
+    }
+
+    fun loadProductDetails(productId: Int) {
+        viewModelScope.launch {
+            productsUseCases.homeUseCases.getProductsById(productId).collect { result ->
+                _productDetailsState.update { state ->
+                    when (result) {
+                        is Resource.Success -> state.copy(
+                            isLoading = false,
+                            products = result.data,
+                            errorMessage = "",
+                        )
+
+                        is Resource.Error -> state.copy(
+                            isLoading = false,
+                            errorMessage = result.message ?: "An unexpected error occurred",
+                            products = null
+                        )
+
+                        is Resource.Loading -> state.copy(
+                            isLoading = true,
+                            products = null,
+                            errorMessage = ""
+                        )
+                    }
+                }
             }
         }
     }
@@ -37,7 +70,11 @@ class AllProductsViewModel @Inject constructor(
     private fun getAllProducts() {
         viewModelScope.launch {
             productsUseCases.homeUseCases.getAllProducts().collect { result ->
-                handleProductsResult(result)
+                if (result is Resource.Success && result.data.isNullOrEmpty()) {
+                    refreshProduct()
+                } else {
+                    handleProductsResult(result)
+                }
             }
         }
     }

@@ -31,6 +31,8 @@ class HomeUseCases(
 
     suspend fun refreshCategories() = categoryRepository.refreshCategories()
 
+    suspend fun getProductsById(productId: Int) = productRepository.getProductsById(productId)
+
 
 }
 
