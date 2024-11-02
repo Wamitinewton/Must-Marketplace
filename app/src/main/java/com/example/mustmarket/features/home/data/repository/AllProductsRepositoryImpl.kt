@@ -10,6 +10,7 @@ import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.io.IOException
@@ -20,33 +21,17 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val dao: ProductDao
 ) : AllProductsRepository {
     override suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
-
-        try {
-            emit(Resource.Loading(true))
-            dao.getAllProducts()
-                .map { entities ->
-                    Resource.Success(
-                        entities.toNetworkProducts()
-                    )
-                }
-                .collect { cachedData ->
-                    emit(cachedData)
-                }
-
-
-        } catch (e: HttpException) {
-            emit(
-                Resource.Error(
-                    message = e.message.toString()
+        emit(Resource.Loading(true))
+        dao.getAllProducts()
+            .map { entities ->
+                Resource.Success(
+                    entities.toNetworkProducts()
                 )
-            )
-        } catch (e: IOException) {
-            emit(
-                Resource.Error(
-                    message = e.message.toString()
-                )
-            )
-        }
+            }
+            .collect { cachedData ->
+                emit(cachedData)
+            }
+
         try {
             val response = productsApi.getAllProducts()
             if (response.message == "Success") {
@@ -57,12 +42,11 @@ class AllProductsRepositoryImpl @Inject constructor(
 
                 dao.clearAllProducts()
                 dao.insertProducts(products.toProductListingEntities())
-
-                emit(Resource.Loading(false))
-                if (products.isEmpty()) {
+                val finalProducts = dao.getAllProducts().firstOrNull()
+                if (finalProducts?.toNetworkProducts().isNullOrEmpty()) {
                     emit(Resource.Error("No products found"))
                 } else {
-                    emit(Resource.Success(products))
+                    emit(Resource.Success(finalProducts?.toNetworkProducts()))
                 }
             } else {
                 emit(Resource.Error(response.message))
@@ -74,7 +58,30 @@ class AllProductsRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error("Unknown error: ${e.message}"))
         }
+        emit(Resource.Loading(false))
     }
+
+    override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> =
+        flow {
+            emit(Resource.Loading(true))
+
+            try {
+                val response = productsApi.getProductsById(productId)
+                if (response.message == "Success") {
+                    val productsDetails = response.data.toDomainProduct()
+                    emit(Resource.Success(data = productsDetails))
+                } else {
+                    emit(Resource.Error(response.message))
+                }
+            } catch (e: HttpException) {
+                emit(Resource.Error("Network error: ${e.message}"))
+            } catch (e: IOException) {
+                emit(Resource.Error("IO error: ${e.message}"))
+            } catch (e: Exception) {
+                emit(Resource.Error("Unknown error: ${e.message}"))
+            }
+            emit(Resource.Loading(false))
+        }
 
     override suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
         try {

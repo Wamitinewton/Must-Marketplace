@@ -8,5 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface AllProductsRepository {
     suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>>
 
+    suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>>
+
+
     suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>>
 }
