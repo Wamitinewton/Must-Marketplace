@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
@@ -22,10 +23,13 @@ class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
 ) : ViewModel() {
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
-    val productsUiState = _viewModelState.asStateFlow()
+    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
 
-    private val _productDetailsState = MutableStateFlow(ProductDetailsState())
+    private val _productDetailsState =
+        MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+
+    private var currentProductId: Int? = null
 
     init {
         getAllProducts()
@@ -36,30 +40,32 @@ class AllProductsViewModel @Inject constructor(
             is HomeScreenEvent.Refresh -> {
                 refreshProduct()
             }
+
         }
     }
 
     fun loadProductDetails(productId: Int) {
+        currentProductId = productId
         viewModelScope.launch {
+
+            Log.d("ProductDetails", "Loading product details for ID: $productId")
+
             productsUseCases.homeUseCases.getProductsById(productId).collect { result ->
-                _productDetailsState.update { state ->
-                    when (result) {
-                        is Resource.Success -> state.copy(
-                            isLoading = false,
-                            products = result.data,
-                            errorMessage = "",
-                        )
+                Log.d("ProductDetails", "Received result: $result")
+                when (result) {
+                    is Resource.Loading -> {
+                        _productDetailsState.value = ProductDetailsState.Loading
+                    }
 
-                        is Resource.Error -> state.copy(
-                            isLoading = false,
-                            errorMessage = result.message ?: "An unexpected error occurred",
-                            products = null
-                        )
+                    is Resource.Success -> {
+                        result.data?.let { product ->
+                            _productDetailsState.value = ProductDetailsState.Success(product)
+                        }
+                    }
 
-                        is Resource.Loading -> state.copy(
-                            isLoading = true,
-                            products = null,
-                            errorMessage = ""
+                    is Resource.Error -> {
+                        _productDetailsState.value = ProductDetailsState.Error(
+                            result.message ?: "An unexpected error occurred"
                         )
                     }
                 }

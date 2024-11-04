@@ -6,6 +6,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,11 +23,8 @@ class BookmarksViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<BookmarksUiState>(BookmarksUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private val _errorEvent = MutableSharedFlow<String?>()
-    val errorEvent = _errorEvent.asSharedFlow()
-
-    private val _successEvent = MutableSharedFlow<String?>()
-    val successEvent = _successEvent.asSharedFlow()
+    private val _events = MutableSharedFlow<BookmarkEvent>()
+    val events = _events.asSharedFlow()
 
     // tuna update flow ya kurefresh cache hapa
     private val _bookmarkStatusUpdates = MutableStateFlow<Map<Int, Boolean>>(emptyMap())
@@ -41,43 +39,42 @@ class BookmarksViewModel @Inject constructor(
             bookmarksUseCases.homeUseCases.getBookmarkedProducts()
                 .collect { result ->
                     when (result) {
-                        is Resource.Success -> {
-                            _uiState.value = BookmarksUiState.Success(result.data)
+                        is Resource.Success -> handleSuccessResult(result.data)
 
-                            _bookmarkStatusUpdates.value = result.data?.associate {
-                                it.id to true
-                            } ?: emptyMap()
-                        }
+                        is Resource.Error -> handleErrorResult(result.message)
 
-                        is Resource.Error -> {
-                            _uiState.value = BookmarksUiState.Error(result.message)
-                            _errorEvent.emit(result.message)
-                        }
-
-                        is Resource.Loading -> {
-                            _uiState.value = BookmarksUiState.Loading
-                        }
+                        is Resource.Loading ->  _uiState.value = BookmarksUiState.Loading
                     }
                 }
         }
     }
 
+    private fun handleSuccessResult(data: List<BookmarkedProduct>?) {
+        _uiState.value = BookmarksUiState.Success(data)
+        _bookmarkStatusUpdates.value = data?.associate { it.id to true } ?: emptyMap()
+    }
+
+    private suspend fun handleErrorResult(message: String?) {
+        _uiState.value = BookmarksUiState.Error(message)
+        _events.emit(BookmarkEvent.Error(message))
+    }
+
     fun removeBookmark(product: BookmarkedProduct) {
         viewModelScope.launch {
-            try {
+            runCatching {
                 bookmarksUseCases.homeUseCases.removeProduct(product)
                 _bookmarkStatusUpdates.value -= product.id
-                _successEvent.emit("Product removed from bookmarks")
+                _events.emit(BookmarkEvent.Success("Product removed from bookmarks"))
                 getBookmarkedProducts()
-            } catch (e: Exception) {
-                _errorEvent.emit(e.localizedMessage ?: "Could not remove bookmark")
+            }.onFailure { e ->
+                _events.emit(BookmarkEvent.Error(e.localizedMessage ?: "Could not remove bookmark"))
             }
         }
     }
 
     fun toggleBookmarkStatus(product: NetworkProduct) {
         viewModelScope.launch {
-            try {
+            runCatching {
                 val isCurrentlyBookmarked = (_uiState.value as? BookmarksUiState.Success)?.bookmarks
                     ?.any { it.id == product.id } ?: false
 
@@ -85,14 +82,14 @@ class BookmarksViewModel @Inject constructor(
                 _bookmarkStatusUpdates.value += (product.id to !isCurrentlyBookmarked)
 
                 val successMessage = if (isCurrentlyBookmarked) {
-                    "Product removed from bookmarks successfully"
+                    "Product removed from bookmarks"
                 } else {
                     "Product added to bookmarks successfully"
                 }
-                _successEvent.emit(successMessage)
+                _events.emit(BookmarkEvent.Success(successMessage))
                 getBookmarkedProducts()
-            } catch (e: Exception) {
-                _errorEvent.emit(e.localizedMessage ?: "Could not toggle bookmark")
+            }.onFailure { e ->
+                _events.emit(BookmarkEvent.Error(e.localizedMessage ?: "Could not toggle bookmark"))
             }
         }
     }
