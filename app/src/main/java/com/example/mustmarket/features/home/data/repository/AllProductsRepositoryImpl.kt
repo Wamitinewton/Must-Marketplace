@@ -39,7 +39,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                     .filter { it.brand.isNotBlank() }
                     .map { it.toDomainProduct() }
                     .sortedByDescending { it.id }
-
                 dao.clearAllProducts()
                 dao.insertProducts(products.toProductListingEntities())
                 val finalProducts = dao.getAllProducts().firstOrNull()

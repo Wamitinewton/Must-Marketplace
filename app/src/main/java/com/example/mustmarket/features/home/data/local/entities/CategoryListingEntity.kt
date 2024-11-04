@@ -6,5 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "category")
 data class CategoryListingEntity(
     val name: String,
-    @PrimaryKey val id: Int? = null
+    @PrimaryKey val id: Int? = null,
+    val image: String? = null,
 )
