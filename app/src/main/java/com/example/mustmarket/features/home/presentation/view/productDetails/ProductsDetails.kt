@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.presentation.view.productDetails
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -48,6 +47,8 @@ import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
+import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
@@ -56,7 +57,6 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
 import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProductDetailsScreen(
@@ -67,43 +67,48 @@ fun ProductDetailsScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val uiState by productsViewModel.productsUiState.collectAsState()
-    uiState.products
+    val detailsState by productsViewModel.productDetailsState.collectAsState()
+
     LaunchedEffect(key1 = Unit) {
-        launch {
-            viewModel.successEvent.collect { message ->
-                message?.let {
+        viewModel.events.collect { event ->
+            when (event) {
+                is BookmarkEvent.Success -> {
                     SingleToastManager.showToast(
                         context = context,
-                        message = it,
+                        message = event.message,
                         scope = scope
                     )
                 }
-            }
-        }
-        launch {
-            viewModel.errorEvent.collect { message ->
-                message?.let {
-                    SingleToastManager.showToast(
-                        context = context,
-                        message = it,
-                        scope = scope
-                    )
+
+                is BookmarkEvent.Error -> {
+                    event.message?.let { errorMessage ->
+                        SingleToastManager.showToast(
+                            context = context,
+                            message = errorMessage,
+                            scope = scope
+                        )
+                    }
                 }
             }
         }
     }
 
     LaunchedEffect(productId) {
-        productsViewModel.loadProductDetails(productId = productId)
+        Log.d("ProducDetails", "LaunchedEffect triggered with productId: $productId")
+        productsViewModel.loadProductDetails(productId)
     }
 
-    when {
-        uiState.isLoading -> LoadingState()
-        uiState.errorMessage.isNotBlank() -> ErrorState()
-        uiState.products.isNotEmpty() -> {
+    when (detailsState) {
+        is ProductDetailsState.Loading -> LoadingState()
+
+        is ProductDetailsState.Error -> {
+            ErrorState()
+        }
+
+        is ProductDetailsState.Success -> {
+            val product = (detailsState as ProductDetailsState.Success).product
             ProductDetailsContent(
-                product = uiState.products[productId],
+                product = product,
                 onBackPressed = onBackPressed,
                 bookmarksViewModel = viewModel
             )
@@ -250,22 +255,7 @@ fun ProductDetailsContent(
                         color = ThemeUtils.AppColors.SecondaryText.themed()
                     )
                 )
-                Spacer(modifier = Modifier.height(24.dp))
 
-//                Button(
-//                    onClick = {
-//
-//                    },
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .height(56.dp),
-//                    shape = RoundedCornerShape(12.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = MaterialTheme.colors.primary
-//                    )
-//                ) {
-//
-//                }
             }
         }
     }

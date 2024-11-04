@@ -1,8 +1,10 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -40,9 +43,11 @@ import com.example.mustmarket.R
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
@@ -62,25 +67,25 @@ fun ProductCard(
     val isBookmarked = bookmarkStatuses.value[product.id] ?: false
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.successEvent.collect { message ->
-            message?.let {
-                SingleToastManager.showToast(
-                    context = context,
-                    message = it,
-                    scope = scope
-                )
-            }
-        }
-    }
+        viewModel.events.collect { event ->
+            when (event) {
+                is BookmarkEvent.Success -> {
+                    SingleToastManager.showToast(
+                        context = context,
+                        message = event.message,
+                        scope = scope
+                    )
+                }
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.errorEvent.collect { message ->
-            message?.let {
-                SingleToastManager.showToast(
-                    context = context,
-                    message = it,
-                    scope = scope
-                )
+                is BookmarkEvent.Error -> {
+                    event.message?.let { errorMessage ->
+                        SingleToastManager.showToast(
+                            context = context,
+                            message = errorMessage,
+                            scope = scope
+                        )
+                    }
+                }
             }
         }
     }
@@ -98,29 +103,45 @@ fun ProductCard(
                 .height(120.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Card(
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.size(100.dp)
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                GlideImage(
-                    imageModel = { product.imageUrl },
-                    modifier = Modifier.fillMaxSize(),
+                CoilImage(
+                    imageModel = {product.imageUrl },
                     component = rememberImageComponent {
                         +ShimmerPlugin(
-                            Shimmer.Flash(
-                                baseColor = Color.White,
-                                highlightColor = Color.LightGray
-                            )
+                            shimmer = Shimmer.Flash(
+                                baseColor = Color.Gray,
+                                highlightColor = Color.White,
+                                duration = 500,
+                                dropOff = 0.65F,
+                                tilt = 20F
+                            ),
                         )
                     },
                     failure = {
-                        Image(
-                            painter = painterResource(id = R.drawable.no_image),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.LightGray,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.no_image),
+                                contentDescription = "no image",
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    },
+                    previewPlaceholder = painterResource(id = R.drawable.ic_chinese_plum_flower),
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
                 )
             }
 

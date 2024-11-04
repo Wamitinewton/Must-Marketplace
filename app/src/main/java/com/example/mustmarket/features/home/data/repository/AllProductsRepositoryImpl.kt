@@ -64,9 +64,9 @@ class AllProductsRepositoryImpl @Inject constructor(
     override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> =
         flow {
             emit(Resource.Loading(true))
-
             try {
                 val response = productsApi.getProductsById(productId)
+                emit(Resource.Loading(false))
                 if (response.message == "Success") {
                     val productsDetails = response.data.toDomainProduct()
                     emit(Resource.Success(data = productsDetails))
@@ -80,7 +80,7 @@ class AllProductsRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 emit(Resource.Error("Unknown error: ${e.message}"))
             }
-            emit(Resource.Loading(false))
+
         }
 
     override suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>> = flow {

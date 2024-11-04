@@ -164,7 +164,7 @@ fun Content(
                         ProductCard(
                             product = product,
                             onClick = {
-                                navController.navigate(Screen.Detail.createRoute(index))
+                                navController.navigate(Screen.Detail.createRoute(productId = product.id))
                             }
                         )
                         if (index < uiState.products.size - 1) {

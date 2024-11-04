@@ -7,3 +7,8 @@ sealed class BookmarksUiState {
     data class Success(val bookmarks: List<BookmarkedProduct>?): BookmarksUiState()
     data class Error(val message: String?): BookmarksUiState()
 }
+
+sealed class BookmarkEvent {
+    data class Success(val message: String) : BookmarkEvent()
+    data class Error(val message: String?): BookmarkEvent()
+}
