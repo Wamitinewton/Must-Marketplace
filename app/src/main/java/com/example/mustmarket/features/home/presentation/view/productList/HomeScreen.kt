@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.SearchBar
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
@@ -148,7 +149,7 @@ fun Content(
             when {
                 uiState.isLoading -> {
                     item {
-                        LoadingState()
+                        LoadingState(type = LoadingAnimationType.PULSING_DOTS)
                     }
                 }
 

@@ -40,9 +40,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
@@ -76,7 +79,7 @@ fun ProductDetailsScreen(
                     SingleToastManager.showToast(
                         context = context,
                         message = event.message,
-                        scope = scope
+                        scope = scope,
                     )
                 }
 
@@ -85,7 +88,7 @@ fun ProductDetailsScreen(
                         SingleToastManager.showToast(
                             context = context,
                             message = errorMessage,
-                            scope = scope
+                            scope = scope,
                         )
                     }
                 }
@@ -98,20 +101,26 @@ fun ProductDetailsScreen(
         productsViewModel.loadProductDetails(productId)
     }
 
-    when (detailsState) {
-        is ProductDetailsState.Loading -> LoadingState()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (detailsState) {
+            is ProductDetailsState.Loading -> LoadingState(type = LoadingAnimationType.BOUNCING_DOTS)
 
-        is ProductDetailsState.Error -> {
-            ErrorState()
-        }
+            is ProductDetailsState.Error -> {
+                ErrorState()
+            }
 
-        is ProductDetailsState.Success -> {
-            val product = (detailsState as ProductDetailsState.Success).product
-            ProductDetailsContent(
-                product = product,
-                onBackPressed = onBackPressed,
-                bookmarksViewModel = viewModel
-            )
+            is ProductDetailsState.Success -> {
+                val product = (detailsState as ProductDetailsState.Success).product
+                ProductDetailsContent(
+                    product = product,
+                    onBackPressed = onBackPressed,
+                    bookmarksViewModel = viewModel
+                )
+            }
         }
     }
 }
@@ -133,7 +142,10 @@ fun ProductDetailsContent(
                 title = {
                     Text(
                         product.name,
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.h6.copy(
+                            color = ThemeUtils.AppColors.Text.themed(),
+                            fontSize = 22.sp
+                        )
                     )
                 },
                 navigationIcon = {
@@ -225,10 +237,11 @@ fun ProductDetailsContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = formatPrice(product.price),
+                        text = formatPrice(product.price) + " Ksh",
                         style = MaterialTheme.typography.h6.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colors.secondaryVariant
+                            color = MaterialTheme.colors.secondaryVariant,
+                            fontSize = 20.sp
                         )
                     )
 

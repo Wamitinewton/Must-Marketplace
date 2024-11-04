@@ -10,7 +10,8 @@ import com.example.mustmarket.features.home.domain.model.ProductCategory
 fun CategoryDto.toProductCategory(): ProductCategory {
     return ProductCategory(
         id = id,
-        name = name
+        name = name,
+        categoryImage = image
     )
 }
 
@@ -24,7 +25,8 @@ fun ProductCategory.toCategoryListingEntity(): CategoryListingEntity {
 fun CategoryListingEntity.toProductCategory(): ProductCategory {
     return ProductCategory(
         id = id ?: -1,
-        name = name
+        name = name,
+        categoryImage = image
     )
 }
 

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
@@ -67,7 +68,7 @@ fun CategoryGridView(
         Spacer(modifier = Modifier.height(8.dp))
 
         when {
-            uiState.isLoading -> LoadingState()
+            uiState.isLoading -> LoadingState(type = LoadingAnimationType.PULSING_DOTS)
             uiState.errorMessage.isNotEmpty() -> ErrorState()
             else -> CategoryGrid(categories = uiState.categories)
         }
@@ -155,7 +156,7 @@ fun CategoryItem(
                 contentAlignment = Alignment.Center
             ) {
                 CoilImage(
-                    imageModel = {},
+                    imageModel = { category.categoryImage },
                     component = rememberImageComponent {
                         +ShimmerPlugin(
                             shimmer = Shimmer.Flash(

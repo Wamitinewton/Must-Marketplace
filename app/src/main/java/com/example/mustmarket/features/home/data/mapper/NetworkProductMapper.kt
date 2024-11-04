@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.data.mapper
 
+import com.example.mustmarket.core.util.Constants.BASE_URL
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
@@ -24,6 +25,7 @@ fun CategoryDto.toDomainCategory(): ProductCategory {
     return ProductCategory(
         id = id,
         name = name,
+        categoryImage = image?.firstOrNull()?.let { "$BASE_URL/" }
     )
 }
 
