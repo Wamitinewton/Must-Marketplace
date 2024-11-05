@@ -43,7 +43,7 @@ class BookmarksViewModel @Inject constructor(
 
                         is Resource.Error -> handleErrorResult(result.message)
 
-                        is Resource.Loading ->  _uiState.value = BookmarksUiState.Loading
+                        is Resource.Loading -> _uiState.value = BookmarksUiState.Loading
                     }
                 }
         }

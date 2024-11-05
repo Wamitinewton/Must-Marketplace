@@ -49,7 +49,6 @@ import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.SearchBar
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
@@ -117,31 +116,45 @@ fun Content(
             item {
                 SearchBar(
                     autoFocus = false,
-                    onSearch = {}
+                    onSearch = {
+                        if (uiState.searchQuery.isNotEmpty()) {
+                            viewModel.onProductEvent(HomeScreenEvent.Search(uiState.searchQuery))
+                        }
+                    },
+                    query = uiState.searchQuery,
+                    onQueryChange = { searchEvent ->
+                        viewModel.onProductEvent(searchEvent)
+                    },
+                    onClearQuery = {
+                        viewModel.onProductEvent(HomeScreenEvent.ClearSearch)
+                    },
+                    isSearchActive = uiState.isSearchActive
                 )
             }
-            stickyHeader {
-                HeaderBar()
-            }
-            item { Promotions() }
-            item { CategoryGridView() }
-//            item { TopProduct() }
-            item {
-                Card(
-                    shape = RectangleShape,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Box(
-                        contentAlignment = Alignment.CenterStart,
-                        modifier = Modifier.padding(start = 16.dp)
+
+            if (!uiState.isSearchActive && uiState.searchQuery.isEmpty()) {
+                stickyHeader {
+                    HeaderBar()
+                }
+                item { Promotions() }
+                item { CategoryGridView() }
+                item {
+                    Card(
+                        shape = RectangleShape,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
                     ) {
-                        Text(
-                            text = "All Products",
-                            color = ThemeUtils.AppColors.Text.themed(),
-                            fontSize = 18.sp
-                        )
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
+                            modifier = Modifier.padding(start = 16.dp)
+                        ) {
+                            Text(
+                                text = "All Products",
+                                color = ThemeUtils.AppColors.Text.themed(),
+                                fontSize = 18.sp
+                            )
+                        }
                     }
                 }
             }
@@ -159,6 +172,23 @@ fun Content(
                     }
                 }
 
+                uiState.products.isEmpty() && uiState.searchQuery.isNotEmpty() -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No products found for '${uiState.searchQuery}'",
+                                style = MaterialTheme.typography.body1,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+
                 else -> {
                     items(uiState.products.size) { index ->
                         val product = uiState.products[index]
@@ -171,8 +201,7 @@ fun Content(
                         if (index < uiState.products.size - 1) {
                             Divider(
                                 color = Color.Gray,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
@@ -180,9 +209,7 @@ fun Content(
             }
         }
     }
-
 }
-
 
 @Composable
 fun HeaderBar() {

@@ -31,6 +31,9 @@ class ProductCategoryViewModel @Inject constructor(
             is HomeScreenEvent.Refresh -> {
                 refreshCategories()
             }
+
+            is HomeScreenEvent.ClearSearch -> TODO()
+            is HomeScreenEvent.Search -> TODO()
         }
     }
 

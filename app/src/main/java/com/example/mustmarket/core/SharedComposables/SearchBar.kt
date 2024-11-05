@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mustmarket.R
+import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
@@ -44,8 +45,21 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 @Composable
 fun SearchBar(
     autoFocus: Boolean,
-    onSearch: () -> Unit
-) {
+    onQueryChange: (HomeScreenEvent.Search) -> Unit,
+    onClearQuery: () -> Unit,
+    query: String,
+    onSearch: () -> Unit = {},
+    isSearchActive: Boolean,
+
+    ) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(Unit) {
+        if (autoFocus) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Box(
         modifier = Modifier
             .padding(start = 12.dp, end = 12.dp, bottom = 8.dp)
@@ -54,13 +68,11 @@ fun SearchBar(
             .height(54.dp)
     ) {
 
-        var searchInput: String by remember { mutableStateOf("") }
-        val focusRequester = remember { FocusRequester() }
-        val focusManager = LocalFocusManager.current
+
         TextField(
-            value = searchInput,
+            value = query,
             onValueChange = { newValue ->
-                searchInput = if (newValue.trim().isNotEmpty()) newValue else ""
+                onQueryChange(HomeScreenEvent.Search(newValue.trim()))
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -68,7 +80,7 @@ fun SearchBar(
             singleLine = true,
             placeholder = {
                 Text(
-                    text = "Search...",
+                    text = "Search products...",
                     color = Color.Gray,
                     fontWeight = FontWeight.Normal
                 )
@@ -86,21 +98,20 @@ fun SearchBar(
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
-                onSearch = {},
+                onSearch = {
+                    focusManager.clearFocus()
+                    onSearch()
+                },
 
                 ),
             trailingIcon = {
-                LaunchedEffect(Unit) {
-                    if (autoFocus) {
-                        focusRequester.requestFocus()
-                    }
-                }
+
                 Row {
-                    AnimatedVisibility(visible = searchInput.trim().isNotEmpty()) {
+                    AnimatedVisibility(visible = query.isNotEmpty()) {
                         IconButton(
                             onClick = {
                                 focusManager.clearFocus()
-                                searchInput = ""
+                                onClearQuery()
                             }
                         ) {
                             Icon(
@@ -111,7 +122,10 @@ fun SearchBar(
                         }
                     }
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            focusManager.clearFocus()
+                            onSearch()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_search),

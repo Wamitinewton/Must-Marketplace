@@ -75,7 +75,11 @@ fun BookmarksScreen(
         }
         SearchBar(
             autoFocus = false,
-            onSearch = {}
+            onSearch = {},
+            onClearQuery = {},
+            onQueryChange = {},
+            isSearchActive = false,
+            query = ""
         )
 
         AnimatedVisibility(visible = showNumberIndicator) {
