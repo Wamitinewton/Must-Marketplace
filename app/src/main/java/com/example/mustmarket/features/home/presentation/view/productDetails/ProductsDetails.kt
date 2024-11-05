@@ -202,7 +202,7 @@ fun ProductDetailsContent(
                         .clip(RoundedCornerShape(16.dp))
                 ) {
                     GlideImage(
-                        imageModel = { product.imageUrl },
+                        imageModel = {  },
                         modifier = Modifier.fillMaxSize(),
                         component = rememberImageComponent {
                             +ShimmerPlugin(

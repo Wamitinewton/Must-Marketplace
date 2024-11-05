@@ -9,10 +9,16 @@ import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,8 +36,41 @@ class BookmarksViewModel @Inject constructor(
     private val _bookmarkStatusUpdates = MutableStateFlow<Map<Int, Boolean>>(emptyMap())
     val bookmarkStatusUpdates = _bookmarkStatusUpdates.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    private var searchJob: Job? = null
+
     init {
         getBookmarkedProducts()
+    }
+    private fun setUpSearchListener() {
+        _searchQuery
+            .debounce(300)
+            .distinctUntilChanged()
+            .filter { query ->
+                query.trim().length >= 2 || query.isEmpty()
+            }
+            .onEach { query ->
+                if (query.isEmpty()){
+                    getBookmarkedProducts()
+                } else {
+                    performSearch(query)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun performSearch(query: String){
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            _uiState.value = BookmarksUiState.Loading
+            bookmarksUseCases.homeUseCases.searchBookmarks(query).collect { result ->
+
+            }
+        }
+    }
+
+    private suspend fun handleSearchResult(result: Resource<List<NetworkProduct>>){
+        
     }
 
     private fun getBookmarkedProducts() {

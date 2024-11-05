@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface SearchProductsRepository {
     suspend fun searchProducts(query: String): Flow<Resource<List<NetworkProduct>>>
+
+    suspend fun searchBookmarks(query: String): Flow<Resource<List<NetworkProduct>>>
 }

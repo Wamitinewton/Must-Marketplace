@@ -2,6 +2,7 @@ package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.features.home.data.local.db.BookmarkDao
 import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProduct
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class SearchProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
-    private val dao: ProductDao
+    private val dao: ProductDao,
+    private val bookmarkDao: BookmarkDao
 ) : SearchProductsRepository {
     override suspend fun searchProducts(query: String): Flow<Resource<List<NetworkProduct>>> =
         flow {
@@ -63,6 +65,21 @@ class SearchProductsRepositoryImpl @Inject constructor(
                 emit(Resource.Error("IO error: ${e.message}"))
             } catch (e: Exception) {
                 emit(Resource.Error("Unknown error: ${e.message}"))
+            }
+        }
+
+    override suspend fun searchBookmarks(query: String): Flow<Resource<List<NetworkProduct>>> =
+        flow {
+            emit(Resource.Loading(true))
+            try {
+                val bookmarkResults = bookmarkDao.searchBookmarks(query)
+                if (bookmarkResults.isNotEmpty()) {
+                    emit(Resource.Loading(false))
+                    emit(Resource.Success(bookmarkResults.map { it.toNetworkProduct() }))
+                    return@flow
+                }
+            } catch (e: Exception) {
+                emit(Resource.Error("Local search failed: ${e.message}"))
             }
         }
 }

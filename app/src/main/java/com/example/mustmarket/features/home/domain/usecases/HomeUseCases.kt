@@ -37,6 +37,8 @@ class HomeUseCases(
 
     suspend fun searchProducts(query: String) = searchProductsRepository.searchProducts(query)
 
+    suspend fun searchBookmarks(query: String) = searchProductsRepository.searchBookmarks(query)
+
 
 }
 
