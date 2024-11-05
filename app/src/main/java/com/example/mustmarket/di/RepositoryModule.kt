@@ -12,9 +12,11 @@ import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl
+import com.example.mustmarket.features.home.data.repository.SearchProductsRepositoryImpl
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
+import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import dagger.Module
 import dagger.Provides
@@ -56,6 +58,15 @@ object RepositoryModule {
         return BookmarkRepositoryImpl(bookmarkDao = dao)
     }
 
+    @Provides
+    @Singleton
+    fun provideSearchProductRepository(
+        dao: ProductDao,
+        productsApi: ProductsApi
+    ): SearchProductsRepository {
+        return SearchProductsRepositoryImpl(dao = dao, productsApi = productsApi)
+    }
+
 
     @Provides
     @Singleton
@@ -63,14 +74,16 @@ object RepositoryModule {
         authRepository: AuthRepository,
         categoryRepository: CategoryRepository,
         allProductsRepository: AllProductsRepository,
-        bookmarkRepository: BookmarkRepository
+        bookmarkRepository: BookmarkRepository,
+        searchProductsRepository: SearchProductsRepository
     ): UseCases =
         UseCases(
             authUseCase = AuthUseCase(repository = authRepository),
             homeUseCases = HomeUseCases(
                 categoryRepository = categoryRepository,
                 productRepository = allProductsRepository,
-                bookmarksRepository = bookmarkRepository
+                bookmarksRepository = bookmarkRepository,
+                searchProductsRepository = searchProductsRepository
             )
         )
 }

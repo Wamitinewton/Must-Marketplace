@@ -6,5 +6,7 @@ data class AllProductsViewModelState(
     val isLoading: Boolean = false,
     val products: List<NetworkProduct> = emptyList(),
     val isRefreshing: Boolean = false,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false
 )

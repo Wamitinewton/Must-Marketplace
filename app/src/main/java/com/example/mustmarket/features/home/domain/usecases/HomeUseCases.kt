@@ -5,11 +5,13 @@ import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
+import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 
 class HomeUseCases(
     private val bookmarksRepository: BookmarkRepository,
     private val productRepository: AllProductsRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val searchProductsRepository: SearchProductsRepository
 ) {
     fun getBookmarkedProducts() = bookmarksRepository.getBookmarkedProducts()
 
@@ -32,6 +34,8 @@ class HomeUseCases(
     suspend fun refreshCategories() = categoryRepository.refreshCategories()
 
     suspend fun getProductsById(productId: Int) = productRepository.getProductsById(productId)
+
+    suspend fun searchProducts(query: String) = searchProductsRepository.searchProducts(query)
 
 
 }
