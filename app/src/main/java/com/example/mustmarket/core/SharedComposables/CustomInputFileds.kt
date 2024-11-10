@@ -146,7 +146,7 @@ fun ButtonLoading(
                 Text(text = name, style = MaterialTheme.typography.button)
             }
         } else {
-            CircularProgressIndicator()
+            LoadingState()
         }
     }
 }

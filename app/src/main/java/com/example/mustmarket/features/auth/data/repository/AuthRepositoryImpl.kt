@@ -17,8 +17,8 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
 ) : AuthRepository {
     override suspend fun signUp(signUp: SignUpUser) = flow {
+        emit(Resource.Loading(true))
         try {
-            emit(Resource.Loading(true))
             val response = authApi.signUpUser(signUp)
             emit(Resource.Success(data = response))
             emit(Resource.Loading(false))
@@ -34,9 +34,8 @@ class AuthRepositoryImpl @Inject constructor(
                     message = e.message.toString()
                 )
             )
-        } finally {
-            emit(Resource.Loading(false))
         }
+        emit(Resource.Loading(false))
     }
 
     override suspend fun loginUser(loginCredentials: LoginUser): Flow<Resource<LoginResult>> =

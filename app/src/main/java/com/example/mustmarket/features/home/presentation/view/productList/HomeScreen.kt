@@ -67,7 +67,7 @@ import kotlinx.coroutines.supervisorScope
 @Composable
 fun HomeScreen(
     navController: NavController,
-    allProductsViewModel: AllProductsViewModel = hiltViewModel(),
+    allProductsViewModel: AllProductsViewModel,
 ) {
 
     Content(

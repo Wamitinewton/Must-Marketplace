@@ -54,7 +54,7 @@ fun SplashScreen(
                 animateLogo = true
                 delay(2000)
                 navController.popBackStack()
-                navController.navigate(Screen.Login.route)
+                navController.navigate(Screen.HomeScreen.route)
             }
 
             this@Column.AnimatedVisibility(

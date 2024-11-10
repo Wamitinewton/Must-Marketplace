@@ -62,9 +62,10 @@ object RepositoryModule {
     @Singleton
     fun provideSearchProductRepository(
         dao: ProductDao,
-        productsApi: ProductsApi
+        productsApi: ProductsApi,
+        bookmarkDao: BookmarkDao
     ): SearchProductsRepository {
-        return SearchProductsRepositoryImpl(dao = dao, productsApi = productsApi)
+        return SearchProductsRepositoryImpl(dao = dao, productsApi = productsApi, bookmarkDao = bookmarkDao)
     }
 
 

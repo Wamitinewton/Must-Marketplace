@@ -35,22 +35,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.core.util.LoadingState
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginUser
+import com.example.mustmarket.features.auth.presentation.login.state.LoginEvent
+import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToHome: (AuthedUser) -> Unit
 ) {
-    val uiState by loginViewModel.uiState.collectAsState()
+    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+    val loadingState by loginViewModel.loadingState.collectAsStateWithLifecycle()
     val loginCredentials = LoginUser(
         email = uiState.emailInput,
         password = uiState.passwordInput
@@ -81,6 +89,16 @@ fun LoginScreen(
             Toast.makeText(context, "Error ${uiState.errorMessage}", Toast.LENGTH_SHORT).show()
         }
     }
+
+    LaunchedEffect(key1 = true) {
+        loginViewModel.uiEvent.collect { event ->
+            when (event) {
+                is LoginUiEvent.NavigateToHome -> {
+                    onNavigateToHome(event.user)
+                }
+            }
+        }
+    }
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -109,16 +127,16 @@ fun LoginScreen(
                 textAlign = TextAlign.Start
             )
             MyTextField(
-                onInputChanged = loginViewModel::onEmailInputChanged,
                 inputText = uiState.emailInput,
+                onInputChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
                 name = "Email",
                 errorMessage = uiState.emailError
             )
             PasswordInput(
-                onInputChanged = loginViewModel::onPasswordInputChanged,
+                onInputChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
                 inputText = uiState.passwordInput,
                 showPassword = false,
-                toggleShowPassword = loginViewModel::toggleShowPassword,
+                toggleShowPassword = { loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword)) },
                 name = "Password",
                 errorMessage = uiState.passwordError
             )
@@ -132,9 +150,9 @@ fun LoginScreen(
             ButtonLoading(
                 name = "Login",
                 isLoading = uiState.isLoading,
-                enabled = btnEnabled,
+                enabled = loadingState != LoadingState.Loading,
                 onClicked = {
-                    loginViewModel.loginUser(loginCredentials)
+                    loginViewModel.onEvent(LoginEvent.Login)
                 }
             )
             Spacer(modifier = Modifier.height(22.dp))

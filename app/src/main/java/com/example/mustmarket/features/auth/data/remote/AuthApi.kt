@@ -15,10 +15,10 @@ interface AuthApi {
     suspend fun login(@Header("Authorization") authToken: String): FinalUser
     // remember to return user from user sessions
 
-    @POST("auth/register")
+    @POST("api/v1/auth/register")
     suspend fun signUpUser(@Body signUp: SignUpUser): SignUpResult
 
-    @POST("auth/login")
+    @POST("api/v1/auth/login")
     suspend fun loginUser(@Body loginCredentials: LoginUser): LoginResult
 }
 
