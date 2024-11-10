@@ -116,4 +116,8 @@ dependencies {
     // Paging
     implementation("androidx.paging:paging-runtime-ktx:3.1.1")
     implementation("androidx.paging:paging-compose:1.0.0-alpha18")
+
+    // constrained layout compose
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
 }

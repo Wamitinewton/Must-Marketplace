@@ -42,7 +42,8 @@ class MainActivity : ComponentActivity() {
                 ) { paddingValues ->
                     SetUpNavGraph(
                         navController = navController,
-                        modifier = Modifier.padding(paddingValues)
+                        modifier = Modifier.padding(paddingValues),
+                        onNavigateToHome = {}
                     )
 
                 }

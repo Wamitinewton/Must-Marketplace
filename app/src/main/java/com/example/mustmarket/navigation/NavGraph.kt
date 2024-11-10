@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.AccountScreen
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
+import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.auth.presentation.splash.view.SplashScreen
@@ -21,6 +24,7 @@ import com.example.mustmarket.features.explore.ExploreScreen
 import com.example.mustmarket.features.favourite.FavouritesScreen
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
+import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
@@ -28,11 +32,13 @@ import com.example.mustmarket.features.home.presentation.view.productList.HomeSc
 @Composable
 fun SetUpNavGraph(
     navController: NavHostController,
+    onNavigateToHome: (AuthedUser) -> Unit,
+    productViewModel:AllProductsViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route,
+        startDestination = Screen.Splash.route,
         ) {
         composable(route = Screen.SignUp.route, enterTransition = {
             return@composable slideIntoContainer(
@@ -44,7 +50,7 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { LoginScreen(navController = navController) }
+            }) { LoginScreen(navController = navController, onNavigateToHome = onNavigateToHome) }
         composable(route = Screen.Splash.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -56,7 +62,7 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { HomeScreen(navController = navController) }
+            }) { HomeScreen(navController = navController,allProductsViewModel= productViewModel) }
         composable(route = Screen.Detail.route,
             arguments = listOf(
                 navArgument("productId") { type = NavType.IntType }
@@ -69,6 +75,7 @@ fun SetUpNavGraph(
             val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
             ProductDetailsScreen(
                 productId = productId,
+                navController = navController,
                 onBackPressed = { navController.popBackStack() }
             )
         }

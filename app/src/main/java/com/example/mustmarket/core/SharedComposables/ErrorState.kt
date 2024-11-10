@@ -10,11 +10,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.mustmarket.R
 
 @Composable
 fun ErrorState(
@@ -91,5 +98,45 @@ fun AnimatedErrorEntrance(
         )
     ) {
         content()
+    }
+}
+
+
+@Composable
+fun NoSearchResultsState(searchQuery: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search), // Make sure you have this icon in your resources
+                contentDescription = "No results found",
+                modifier = Modifier.size(48.dp),
+                tint = Color.Gray
+            )
+            Text(
+                text = "No products found",
+                style = MaterialTheme.typography.h6,
+                color = Color.Gray
+            )
+            Text(
+                text = "We couldn't find any products matching '$searchQuery'",
+                style = MaterialTheme.typography.body2,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Try checking your spelling or using different keywords",
+                style = MaterialTheme.typography.caption,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }

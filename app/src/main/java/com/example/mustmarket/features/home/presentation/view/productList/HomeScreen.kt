@@ -48,6 +48,7 @@ import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
 import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -66,7 +67,7 @@ import kotlinx.coroutines.supervisorScope
 @Composable
 fun HomeScreen(
     navController: NavController,
-    allProductsViewModel: AllProductsViewModel = hiltViewModel(),
+    allProductsViewModel: AllProductsViewModel,
 ) {
 
     Content(
@@ -166,26 +167,38 @@ fun Content(
                     }
                 }
 
+                !uiState.isLoading && uiState.searchQuery.isNotEmpty() -> {
+                    when {
+                        uiState.products.isEmpty() -> {
+                            item {
+                                NoSearchResultsState(searchQuery = uiState.searchQuery)
+                            }
+                        }
+
+                        else -> {
+                            items(uiState.products.size) { index ->
+                                val product = uiState.products[index]
+                                ProductCard(
+                                    product = product,
+                                    onClick = {
+                                        navController.navigate(Screen.Detail.createRoute(productId = product.id))
+                                    }
+                                )
+                                if (index < uiState.products.size - 1) {
+                                    Divider(
+                                        color = Color.Gray,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                }
+
                 uiState.errorMessage.isNotEmpty() -> {
                     item {
                         ErrorState()
-                    }
-                }
-
-                uiState.products.isEmpty() && uiState.searchQuery.isNotEmpty() -> {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No products found for '${uiState.searchQuery}'",
-                                style = MaterialTheme.typography.body1,
-                                color = Color.Gray
-                            )
-                        }
                     }
                 }
 

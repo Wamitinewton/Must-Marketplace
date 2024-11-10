@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,9 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +44,6 @@ import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
-import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
@@ -109,39 +105,32 @@ fun ProductCard(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CoilImage(
-                    imageModel = {product.imageUrl },
+                GlideImage(
+                    imageModel = {  },
+                    modifier = Modifier.fillMaxSize(),
                     component = rememberImageComponent {
                         +ShimmerPlugin(
-                            shimmer = Shimmer.Flash(
-                                baseColor = Color.Gray,
-                                highlightColor = Color.White,
-                                duration = 500,
-                                dropOff = 0.65F,
-                                tilt = 20F
-                            ),
+                            Shimmer.Flash(
+                                baseColor = Color.White,
+                                highlightColor = Color.LightGray
+                            )
                         )
                     },
                     failure = {
                         Box(
-                            contentAlignment = Alignment.CenterStart,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.LightGray,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Image(
+                            Icon(
                                 painter = painterResource(id = R.drawable.no_image),
-                                contentDescription = "no image",
-                                contentScale = ContentScale.Crop
+                                contentDescription = "No Image",
+                                modifier = Modifier.size(100.dp),
+                                tint = Color.Gray
                             )
                         }
-                    },
-                    previewPlaceholder = painterResource(id = R.drawable.ic_chinese_plum_flower),
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                    }
                 )
             }
 

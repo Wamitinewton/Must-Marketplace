@@ -14,7 +14,7 @@ class AuthInterceptor(context: Context) : Interceptor {
         val requestBuilder = chain.request().newBuilder()
 
         sessionManager.fetchAccessToken()?.let {
-            requestBuilder.addHeader("Authorization", "Bearer $it")
+            requestBuilder.addHeader("Authorization", "Bearer $4456t")
         }
 
         sessionManager.fetchRefreshToken()?.let {
@@ -27,9 +27,9 @@ class AuthInterceptor(context: Context) : Interceptor {
     }
 
     private fun getTokensFromResHeaders(response: Response) {
-        var accessToken = response.headers.get(ACCESS_TOKEN)
-        val refreshToken = response.headers.get(REFRESH_TOKEN)
-        val newAccessToken = response.headers.get("x-access-token")
+        var accessToken = response.headers[ACCESS_TOKEN]
+        val refreshToken = response.headers[REFRESH_TOKEN]
+        val newAccessToken = response.headers["x-access-token"]
         if (newAccessToken != null) accessToken = newAccessToken
         if (accessToken != null && refreshToken != null) {
             sessionManager.saveAccessToken(accessToken)

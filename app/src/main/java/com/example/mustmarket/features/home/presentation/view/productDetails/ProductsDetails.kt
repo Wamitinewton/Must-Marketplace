@@ -1,7 +1,10 @@
 package com.example.mustmarket.features.home.presentation.view.productDetails
 
 import android.util.Log
+import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -30,20 +35,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.ExperimentalMotionApi
+import androidx.constraintlayout.compose.MotionLayout
+import androidx.constraintlayout.compose.MotionScene
 import androidx.core.graphics.ColorUtils
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.BottomNavBar
 import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
@@ -60,13 +77,16 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.shimmer.Shimmer
 import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @Composable
 fun ProductDetailsScreen(
     productId: Int,
     onBackPressed: () -> Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
-    productsViewModel: AllProductsViewModel = hiltViewModel()
+    productsViewModel: AllProductsViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -118,7 +138,8 @@ fun ProductDetailsScreen(
                 ProductDetailsContent(
                     product = product,
                     onBackPressed = onBackPressed,
-                    bookmarksViewModel = viewModel
+                    bookmarksViewModel = viewModel,
+                    navController = navController
                 )
             }
         }
@@ -126,17 +147,105 @@ fun ProductDetailsScreen(
 }
 
 
+@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun ProductDetailsContent(
     product: NetworkProduct,
     onBackPressed: () -> Unit,
-    bookmarksViewModel: BookmarksViewModel
+    bookmarksViewModel: BookmarksViewModel,
+    navController: NavController
 ) {
     val bookmarkStatuses = bookmarksViewModel.bookmarkStatusUpdates.collectAsState()
     val isBookmarked = bookmarkStatuses.value[product.id] ?: false
+    val scope = rememberCoroutineScope()
+
+    var progress by remember { mutableFloatStateOf(0f) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
+
+    val topBarHeight = 56.dp
+    val topPadding = 16.dp
+
+    val motionScene = remember {
+        MotionScene {
+            val card = createRefFor("card")
+            val image = createRefFor("image")
+            val cardContent = createRefFor("cardContent")
+
+            defaultTransition(
+                from = constraintSet {
+                    constrain(image) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.value(350.dp)
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+
+                    constrain(card) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                        top.linkTo(image.bottom, margin = (-17).dp)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    constrain(cardContent) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                        top.linkTo(card.top)
+                        bottom.linkTo(card.bottom)
+                        start.linkTo(card.start)
+                        end.linkTo(card.end)
+                    }
+                },
+                to = constraintSet {
+                    constrain(image) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.value(0.dp)
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    constrain(card) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    constrain(cardContent) {
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                        top.linkTo(card.top, margin = (topBarHeight + topPadding))
+                        bottom.linkTo(card.bottom)
+                        start.linkTo(card.start)
+                        end.linkTo(card.end)
+                    }
+                }
+            ) {
+                keyAttributes(image) {
+                    frame(0) {
+                        alpha = 1f
+                    }
+                    frame(100) {
+                        alpha = 0f
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = rememberScaffoldState(),
+        bottomBar = {
+            BottomAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 8.dp,
+            ) {
+                BottomNavBar(modifier = Modifier.fillMaxWidth(), navController = navController)
+            }
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -172,104 +281,163 @@ fun ProductDetailsContent(
             )
         }
     ) { paddingValues ->
-        Box(
+        MotionLayout(
+            motionScene = motionScene,
+            progress = progress,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colors.surface,
-                                MaterialTheme.colors.surface.copy(alpha = 0.5f)
-                            )
-                        )
-                    )
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 15.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                ) {
-                    GlideImage(
-                        imageModel = { product.imageUrl },
-                        modifier = Modifier.fillMaxSize(),
-                        component = rememberImageComponent {
-                            +ShimmerPlugin(
-                                Shimmer.Flash(
-                                    baseColor = Color.White,
-                                    highlightColor = Color.LightGray
-                                )
-                            )
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onVerticalDrag = { change, dragAmount ->
+                            dragOffset += dragAmount
+                            val newProgress = (progress - (dragAmount / 1000f)).coerceIn(0f, 1f)
+                            progress = newProgress
+                            change.consume()
+
                         },
-                        failure = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.LightGray),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.no_image),
-                                    contentDescription = "No Image",
-                                    modifier = Modifier.size(100.dp),
-                                    tint = Color.Gray
-                                )
+                        onDragEnd = {
+                            scope.launch {
+                                if (abs(dragOffset) > 100) {
+                                    if (dragOffset < 0) {
+                                        animate(
+                                            initialValue = progress,
+                                            targetValue = 1f
+                                        ) { value, _ ->
+                                            progress = value
+                                        }
+                                    } else {
+                                        animate(
+                                            initialValue = progress,
+                                            targetValue = 0f
+                                        ) { value, _ ->
+                                            progress = value
+
+                                        }
+                                    }
+                                } else {
+                                    animate(
+                                        initialValue = progress,
+                                        targetValue = if (progress < 0.5f) 0f else 1f
+                                    ) { value, _ ->
+                                        progress = value
+                                    }
+                                }
+                                dragOffset = 0f
                             }
                         }
                     )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = formatPrice(product.price) + " Ksh",
-                        style = MaterialTheme.typography.h6.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colors.secondaryVariant,
-                            fontSize = 20.sp
+                }
+
+        ) {
+            Box(
+                modifier = Modifier
+                    .layoutId("image")
+                    .padding(top = 20.dp)
+
+            ) {
+                GlideImage(
+                    imageModel = { },
+                    modifier = Modifier.fillMaxSize(),
+                    component = rememberImageComponent {
+                        +ShimmerPlugin(
+                            Shimmer.Flash(
+                                baseColor = Color.White,
+                                highlightColor = Color.LightGray
+                            )
                         )
+                    },
+                    failure = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.no_image),
+                                contentDescription = "No Image",
+                                modifier = Modifier.size(100.dp),
+                                tint = Color.Gray
+                            )
+                        }
+                    }
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .layoutId("card")
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                     )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .height(4.dp)
+                            .background(
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+                                shape = RoundedCornerShape(2.dp)
+                            )
+                            .align(Alignment.CenterHorizontally)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(24.dp)
-                        )
                         Text(
-                            text = "4.5",
-                            style = MaterialTheme.typography.subtitle1
+                            text = formatPrice(product.price) + "Ksh",
+                            style = MaterialTheme.typography.h6.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colors.secondaryVariant,
+                                fontSize = 20.sp
+                            )
                         )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Rating",
+                                tint = Color.Yellow,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = "4.5",
+                                style = MaterialTheme.typography.subtitle1
+                            )
+                        }
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.body1.copy(
-                        color = ThemeUtils.AppColors.SecondaryText.themed()
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = product.description,
+                        style = MaterialTheme.typography.body1.copy(
+                            color = ThemeUtils.AppColors.SecondaryText.themed(),
+                            lineHeight = 24.sp
+                        )
                     )
-                )
-
+                }
             }
+
         }
     }
 }

@@ -11,8 +11,11 @@ import com.example.mustmarket.core.util.LoadingState
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.FinalUser
 import com.example.mustmarket.features.auth.domain.model.LoginUser
+import com.example.mustmarket.features.auth.presentation.login.state.LoginEvent
+import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
 import com.example.mustmarket.features.auth.presentation.login.state.LoginViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,72 +34,118 @@ class LoginViewModel @Inject constructor(
             viewModelState.value.toUiState()
         )
 
+    private val _uiEvent = Channel<LoginUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
     val loadingState = MutableStateFlow(LoadingState.IDLE)
-    private var _idToken = MutableLiveData("")
 
-    // we are using live data to listen to token changes
-    val idToken: LiveData<String>
-        get() = _idToken
+    fun onEvent(event: LoginEvent) {
+        when (event) {
+            is LoginEvent.EmailChanged -> onEmailInputChanged(event.email)
+            is LoginEvent.PasswordChanged -> onPasswordInputChanged(event.password)
+            is LoginEvent.TogglePasswordVisibility -> toggleShowPassword(event.show)
+            LoginEvent.Login -> validateAndLogin()
+            LoginEvent.ClearError -> clearError()
+        }
+    }
 
-    private var _fUser = MutableLiveData<FinalUser>()
-    val fUser = _fUser
+    private fun validateAndLogin() {
+        val currentState = viewModelState.value
 
+        if (currentState.emailError.isNotEmpty() || currentState.passwordError.isNotEmpty()) {
+            return
+        }
+        if (currentState.emailInput.isEmpty() || currentState.passwordInput.isEmpty()) {
+            viewModelState.update {
+                it.copy(
+                    errorMessage = "Please fill all fields"
+                )
+            }
+            return
+        }
+        loginUser(
+            LoginUser(
+                email = currentState.emailInput.trim(),
+                password = currentState.passwordInput
+            )
+        )
+    }
 
-    fun loginUser(loginCredentials: LoginUser) {
+    private fun loginUser(loginCredentials: LoginUser) {
         viewModelScope.launch {
-            authUseCase.authUseCase.loginUseCase(loginUser = loginCredentials).onEach { result ->
-                viewModelState.update { state ->
-                    when (result) {
-                        is Resource.Success -> state.copy(
-                            isLoading = false,
-                            result = result.data?.user?.name ?: "Some result",
-                            errorMessage = ""
-                        )
+            authUseCase.authUseCase.loginUseCase(loginCredentials).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { loginResult ->
+                            viewModelState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    result = loginResult.user.name,
+                                    errorMessage = ""
+                                )
+                            }
 
-                        is Resource.Error -> {
+                            _uiEvent.send(LoginUiEvent.NavigateToHome(loginResult.user))
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        viewModelState.update { state ->
                             state.copy(
                                 isLoading = false,
-                                errorMessage = result.message ?: "Some error",
+                                errorMessage = result.message ?: "An excepted error occurred",
                                 result = ""
                             )
                         }
+                        loadingState.value = LoadingState.Loading
+                    }
 
-                        is Resource.Loading -> state.copy(
-                            isLoading = true
-                        )
+                    is Resource.Loading -> {
+                        viewModelState.update { it.copy(isLoading = true) }
+                        loadingState.value = LoadingState.Loading
                     }
                 }
-            }.launchIn(this)
+            }
         }
     }
 
-    fun onEmailInputChanged(emailInput: String) {
-        val emailError = if (!EMAIL_REGEX.matches(emailInput)){
+    private fun onEmailInputChanged(emailInput: String) {
+        val emailError = if (emailInput.isNotEmpty() && !EMAIL_REGEX.matches(emailInput)) {
             "Invalid email format"
-        } else null
+        } else ""
+
         viewModelState.update {
             it.copy(
                 emailInput = emailInput,
-                emailError = emailError ?: ""
+                emailError = emailError
             )
         }
     }
 
-    fun onPasswordInputChanged(passwordInput: String) {
-        val passwordError = if (!PASSWORD_REGEX.matches(passwordInput)){
-            "Invalid password type"
-        } else null
+    private fun onPasswordInputChanged(password: String) {
+        val passwordError = if (password.isNotEmpty() && !PASSWORD_REGEX.matches(password)) {
+            "Invalid password format"
+        } else ""
+
         viewModelState.update {
             it.copy(
-                passwordInput = passwordInput,
-                passwordError = passwordError ?: ""
+                passwordInput = password,
+                passwordError = passwordError
             )
         }
     }
 
-    fun toggleShowPassword(show: Boolean) {
+    private fun toggleShowPassword(show: Boolean) {
         viewModelState.update {
             it.copy(showPassword = show)
         }
     }
+
+    private fun clearError() {
+        viewModelState.update {
+            it.copy(errorMessage = "")
+        }
+        loadingState.value = LoadingState.IDLE
+    }
+
 }
