@@ -1,7 +1,5 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -24,12 +21,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -37,21 +30,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
-import com.skydoves.landscapist.components.rememberImageComponent
-import com.skydoves.landscapist.glide.GlideImage
-import com.skydoves.landscapist.placeholder.shimmer.Shimmer
-import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.features.home.domain.model.ProductCategory
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
-import com.skydoves.landscapist.coil.CoilImage
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CategoryGridView(
     viewModel: ProductCategoryViewModel = hiltViewModel(),
@@ -155,39 +142,9 @@ fun CategoryItem(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                CoilImage(
-                    imageModel = { category.categoryImage },
-                    component = rememberImageComponent {
-                        +ShimmerPlugin(
-                            shimmer = Shimmer.Flash(
-                                baseColor = Color.Gray,
-                                highlightColor = Color.White,
-                                duration = 500,
-                                dropOff = 0.65F,
-                                tilt = 20F
-                            ),
-                        )
-                    },
-                    failure = {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.LightGray,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.no_image),
-                                contentDescription = "no image",
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    },
-                    previewPlaceholder = painterResource(id = R.drawable.ic_chinese_plum_flower),
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                ImageLoaderUtil(
+                    imageUrl = category.categoryImage,
+                    contentDescription = null
                 )
             }
             Spacer(modifier = Modifier.height(3.dp))

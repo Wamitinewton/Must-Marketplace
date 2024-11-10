@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
 import com.skydoves.landscapist.components.rememberImageComponent
@@ -159,25 +160,9 @@ fun SwipeToDelete(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.size(100.dp)
                     ) {
-                        GlideImage(
-                            imageModel = { product.imageUrl },
-                            modifier = Modifier.fillMaxSize(),
-                            component = rememberImageComponent {
-                                +ShimmerPlugin(
-                                    Shimmer.Flash(
-                                        baseColor = Color.White,
-                                        highlightColor = Color.LightGray
-                                    )
-                                )
-                            },
-                            failure = {
-                                Image(
-                                    painter = painterResource(id = R.drawable.no_image),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
+                        ImageLoaderUtil(
+                            imageUrl = product.imageUrl,
+                            contentDescription = "bookmark-image"
                         )
                     }
 
