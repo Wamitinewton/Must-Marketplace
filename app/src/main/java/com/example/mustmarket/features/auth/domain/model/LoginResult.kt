@@ -7,5 +7,4 @@ import kotlinx.serialization.Serializable
 data class LoginResult(
     val accessToken: String,
     val refreshToken: String,
-    val user: AuthedUser
 )

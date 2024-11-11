@@ -7,10 +7,6 @@ import java.util.Locale
 
 object Constants {
     const val BASE_URL = "https://sv99tncg-8080.uks1.devtunnels.ms/"
-    const val CART_ARGUMENT_KEY = "sessionId"
-    const val DETAIL_ARGUMENT_KEY = "product"
-    const val ACCESS_TOKEN = "accessToken"
-    const val REFRESH_TOKEN = "refreshToken"
 
     val EMAIL_REGEX = "^[a-z0-9_.]{5,48}@[a-z0-9]{2,}(\\.[a-z0-9]{2,}){1,5}$".toRegex()
     val PHONE_REGEX = "^[0-9]{10}$".toRegex()

@@ -3,6 +3,7 @@ package com.example.mustmarket.di
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
+import com.example.mustmarket.features.auth.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.features.home.data.local.db.BookmarkDao
@@ -30,8 +31,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authApi: AuthApi): AuthRepository {
-        return AuthRepositoryImpl(authApi = authApi)
+    fun provideAuthRepository(authApi: AuthApi, sessionManager: SessionManager): AuthRepository {
+        return AuthRepositoryImpl(authApi = authApi, sessionManager)
     }
 
     @Provides

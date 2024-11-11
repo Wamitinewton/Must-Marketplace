@@ -1,151 +1,139 @@
 package com.example.mustmarket.features.auth.presentation.login.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
-import com.example.mustmarket.core.util.LoadingState
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.domain.model.FinalUser
-import com.example.mustmarket.features.auth.domain.model.LoginUser
-import com.example.mustmarket.features.auth.presentation.login.state.LoginEvent
-import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
-import com.example.mustmarket.features.auth.presentation.login.state.LoginViewModelState
+import com.example.mustmarket.features.auth.datastore.SessionManager
+import com.example.mustmarket.features.auth.domain.model.LoginRequest
+import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
+import com.example.mustmarket.features.auth.presentation.login.state.AuthState
+import com.example.mustmarket.features.auth.presentation.login.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authUseCase: UseCases
+    private val authUseCase: UseCases,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val viewModelState = MutableStateFlow(LoginViewModelState())
-    val uiState = viewModelState
-        .map { it.toUiState() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            viewModelState.value.toUiState()
-        )
-
-    private val _uiEvent = Channel<LoginUiEvent>()
+    private val _uiEvent = Channel<LoginEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    val loadingState = MutableStateFlow(LoadingState.IDLE)
+    private val _authUiState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState())
+    val authUiState: StateFlow<LoginState> get() = _authUiState
 
-    fun onEvent(event: LoginEvent) {
-        when (event) {
-            is LoginEvent.EmailChanged -> onEmailInputChanged(event.email)
-            is LoginEvent.PasswordChanged -> onPasswordInputChanged(event.password)
-            is LoginEvent.TogglePasswordVisibility -> toggleShowPassword(event.show)
-            LoginEvent.Login -> validateAndLogin()
-            LoginEvent.ClearError -> clearError()
-        }
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    init {
+        checkSession()
     }
 
-    private fun validateAndLogin() {
-        val currentState = viewModelState.value
-
-        if (currentState.emailError.isNotEmpty() || currentState.passwordError.isNotEmpty()) {
-            return
-        }
-        if (currentState.emailInput.isEmpty() || currentState.passwordInput.isEmpty()) {
-            viewModelState.update {
-                it.copy(
-                    errorMessage = "Please fill all fields"
-                )
-            }
-            return
-        }
-        loginUser(
-            LoginUser(
-                email = currentState.emailInput.trim(),
-                password = currentState.passwordInput
-            )
-        )
+    private fun checkSession() {
+        _isLoggedIn.value = sessionManager.isSessionValid()
     }
 
-    private fun loginUser(loginCredentials: LoginUser) {
+    private fun logInWithEmailAndPassword() {
+        val email = _authUiState.value.emailInput
+        val password = _authUiState.value.passwordInput
+
         viewModelScope.launch {
-            authUseCase.authUseCase.loginUseCase(loginCredentials).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        result.data?.let { loginResult ->
-                            viewModelState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    result = loginResult.user.name,
-                                    errorMessage = ""
-                                )
-                            }
-
-                            _uiEvent.send(LoginUiEvent.NavigateToHome(loginResult.user))
-                        }
+            if (email.isEmpty() || password.isEmpty()) {
+                _authUiState.value = _authUiState.value.copy(
+                    authState = AuthState.LOGGED_OUT,
+                    isLoading = false,
+                    errorMessage = "All Inputs Are Required"
+                )
+                return@launch
+            }
+            val result = authUseCase.authUseCase.loginUseCase(
+                LoginRequest(
+                    email = email,
+                    password = password
+                )
+            )
+            result.collectLatest { loginResult ->
+                when (loginResult) {
+                    is Resource.Loading -> {
+                        _authUiState.value = _authUiState.value.copy(
+                            authState = AuthState.LOGGED_OUT,
+                            isLoading = true,
+                            errorMessage = ""
+                        )
                     }
 
                     is Resource.Error -> {
-                        viewModelState.update { state ->
-                            state.copy(
-                                isLoading = false,
-                                errorMessage = result.message ?: "An excepted error occurred",
-                                result = ""
-                            )
-                        }
-                        loadingState.value = LoadingState.Loading
+                        _authUiState.value = _authUiState.value.copy(
+                            authState = AuthState.LOGGED_OUT,
+                            isLoading = false,
+                            errorMessage = loginResult.message.toString()
+                        )
                     }
 
-                    is Resource.Loading -> {
-                        viewModelState.update { it.copy(isLoading = true) }
-                        loadingState.value = LoadingState.Loading
+                    is Resource.Success -> {
+                        _authUiState.value = _authUiState.value.copy(
+                            authState = AuthState.AUTHENTICATED,
+                            isLoading = false,
+                            errorMessage = ""
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun onEmailInputChanged(emailInput: String) {
-        val emailError = if (emailInput.isNotEmpty() && !EMAIL_REGEX.matches(emailInput)) {
-            "Invalid email format"
-        } else ""
+    fun onEvent(event: LoginEvent) {
+        when (event) {
+            is LoginEvent.EmailChanged -> {
+                val emailError =
+                    if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
+                        "Invalid email format"
+                    } else ""
+                _authUiState.value = _authUiState.value.copy(
+                    emailInput = event.email,
+                    emailError = emailError
+                )
+            }
 
-        viewModelState.update {
-            it.copy(
-                emailInput = emailInput,
-                emailError = emailError
-            )
+            LoginEvent.ClearError -> {
+                _authUiState.value = _authUiState.value.copy(
+                    errorMessage = ""
+                )
+            }
+
+            LoginEvent.Login -> {
+                logInWithEmailAndPassword()
+            }
+
+            is LoginEvent.PasswordChanged -> {
+                val passwordError =
+                    if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
+                        "Invalid password format"
+                    } else ""
+                _authUiState.value = _authUiState.value.copy(
+                    passwordInput = event.password,
+                    passwordError = passwordError
+                )
+            }
+
+            is LoginEvent.TogglePasswordVisibility -> {
+                _authUiState.value = _authUiState.value.copy(
+                    showPassword = event.show
+                )
+            }
         }
     }
 
-    private fun onPasswordInputChanged(password: String) {
-        val passwordError = if (password.isNotEmpty() && !PASSWORD_REGEX.matches(password)) {
-            "Invalid password format"
-        } else ""
-
-        viewModelState.update {
-            it.copy(
-                passwordInput = password,
-                passwordError = passwordError
-            )
-        }
-    }
-
-    private fun toggleShowPassword(show: Boolean) {
-        viewModelState.update {
-            it.copy(showPassword = show)
-        }
-    }
-
-    private fun clearError() {
-        viewModelState.update {
-            it.copy(errorMessage = "")
-        }
-        loadingState.value = LoadingState.IDLE
-    }
 
 }

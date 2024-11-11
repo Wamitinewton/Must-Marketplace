@@ -57,7 +57,6 @@ fun SignUpScreen(
     val userSignup = SignUpUser(
         name = uiState.nameInput,
         password = uiState.passwordInput,
-        confirmPassword = uiState.passwordConfirmInput,
         email = uiState.emailInput
     )
     val btnEnabled = uiState.nameInput.isNotEmpty()

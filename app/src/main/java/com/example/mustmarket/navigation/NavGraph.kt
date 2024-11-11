@@ -14,8 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.AccountScreen
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.auth.presentation.splash.view.SplashScreen
@@ -32,8 +30,7 @@ import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsV
 @Composable
 fun SetUpNavGraph(
     navController: NavHostController,
-    onNavigateToHome: (AuthedUser) -> Unit,
-    productViewModel:AllProductsViewModel = hiltViewModel(),
+    productViewModel: AllProductsViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
     NavHost(
@@ -50,7 +47,7 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { LoginScreen(navController = navController, onNavigateToHome = onNavigateToHome) }
+            }) { LoginScreen(navController = navController,) }
         composable(route = Screen.Splash.route,
             enterTransition = {
                 return@composable slideIntoContainer(
