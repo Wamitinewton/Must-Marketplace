@@ -1,6 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.login.state
-
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
+package com.example.mustmarket.features.auth.presentation.login.event
 
 sealed class LoginEvent {
 
@@ -9,8 +7,4 @@ sealed class LoginEvent {
     data class TogglePasswordVisibility(val show: Boolean) : LoginEvent()
     data object Login : LoginEvent()
     data object ClearError : LoginEvent()
-}
-
-sealed class LoginUiEvent {
-    data class NavigateToHome(val user: AuthedUser) : LoginUiEvent()
 }

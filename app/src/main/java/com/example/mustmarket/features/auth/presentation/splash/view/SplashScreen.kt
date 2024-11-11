@@ -22,18 +22,36 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
+import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.example.mustmarket.navigation.Screen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navController: NavController,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     var animateLogo by remember { mutableStateOf(false) }
+    val isLoggedIn by loginViewModel.isLoggedIn.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        delay(2000)
+        animateLogo = true
+        delay(2000)
+        if (isLoggedIn) {
+            navController.popBackStack()
+            navController.navigate(Screen.HomeScreen.route)
+        } else {
+            navController.popBackStack()
+            navController.navigate(Screen.Login.route)
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -44,18 +62,11 @@ fun SplashScreen(
     ) {
         Box(
             contentAlignment = Alignment.Center
-        ){
+        ) {
             LoopReverseLottieLoader(
                 modifier = Modifier.size(270.dp),
                 lottieFile = R.raw.business
             )
-            LaunchedEffect(Unit) {
-                delay(2000)
-                animateLogo = true
-                delay(2000)
-                navController.popBackStack()
-                navController.navigate(Screen.HomeScreen.route)
-            }
 
             this@Column.AnimatedVisibility(
                 visible = animateLogo.not(),

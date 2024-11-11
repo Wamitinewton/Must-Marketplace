@@ -78,7 +78,7 @@ class SignUpViewModel @Inject constructor(
                 viewModelState.update { state ->
                     when (result) {
                         is Resource.Success -> state.copy(
-                            result = result.data?.name ?: "Some result",
+//                            result = result.data?.name ?: "Some result",
                             errorMessage = "",
                             isLoading = false,
                         )

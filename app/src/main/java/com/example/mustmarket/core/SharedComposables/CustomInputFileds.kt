@@ -9,7 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mustmarket.R
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 
 @Composable
@@ -47,31 +56,34 @@ fun PasswordInput(
     errorMessage: String? = null
 ) {
 
-    TextField(
+
+    OutlinedTextField(
         modifier = Modifier
             .background(Color.Transparent)
             .padding(bottom = 16.dp),
         value = inputText,
         onValueChange = { onInputChanged(it) },
-        textStyle = MaterialTheme.typography.h4,
-        colors = fieldColors(),
+        textStyle = MaterialTheme.typography.h4.copy(
+            color = ThemeUtils.AppColors.Text.themed()
+        ),
         label = { TextFieldLabel(name = name) },
         singleLine = true,
         keyboardOptions = myKeyboardOptions,
-        visualTransformation = if (showPassword) VisualTransformation.None
-        else PasswordVisualTransformation(),
         trailingIcon = {
-            PasswordTrailingIcon(
-                showPassword = showPassword,
-                toggleShowPassword = { toggleShowPassword(it) }
-            )
+            IconButton(onClick = { !showPassword }) {
+                Icon(
+                    imageVector = if (showPassword) Icons.Filled.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = if (showPassword) "Hide Password" else "Show password"
+                )
+            }
         },
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
         isError = errorMessage != null
     )
     errorMessage?.let {
         Text(
             text = it,
-            color = MaterialTheme.colors.error,
+            color = Color.Gray,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -85,14 +97,15 @@ fun MyTextField(
     name: String,
     errorMessage: String? = null
 ) {
-    TextField(
+    OutlinedTextField(
         value = inputText,
         onValueChange = { onInputChanged(it) },
-        textStyle = MaterialTheme.typography.h4,
+        textStyle = MaterialTheme.typography.h4.copy(
+            color = ThemeUtils.AppColors.Text.themed()
+        ),
         modifier = Modifier
             .background(Color.Transparent)
             .padding(bottom = 16.dp),
-        colors = fieldColors(),
         singleLine = true,
         keyboardOptions = myKeyboardOptions,
         label = { TextFieldLabel(name = name) },

@@ -1,17 +1,6 @@
 package com.example.mustmarket.features.auth.presentation.login.state
 
-data class LoginScreenState(
-    val isLoading: Boolean,
-    val errorMessage: String,
-    val passwordInput: String,
-    val emailInput: String,
-    val result: String,
-    val showPassword: Boolean,
-    val emailError: String,
-    val passwordError: String
-)
-
-data class LoginViewModelState(
+data class LoginState(
     val isLoading: Boolean = false,
     val errorMessage: String = "",
     val passwordInput: String = "",
@@ -19,17 +8,6 @@ data class LoginViewModelState(
     val result: String = "",
     val showPassword: Boolean = false,
     val emailError: String = "",
-    val passwordError: String = ""
-) {
-    fun toUiState(): LoginScreenState =
-        LoginScreenState(
-            isLoading,
-            errorMessage,
-            passwordInput,
-            emailInput,
-            result,
-            showPassword,
-            emailError,
-            passwordError
-        )
-}
+    val passwordError: String = "",
+    val authState: AuthState = AuthState.LOGGED_OUT
+)

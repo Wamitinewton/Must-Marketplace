@@ -21,6 +21,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,39 +35,34 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.*
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
-import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
-import com.example.mustmarket.core.util.LoadingState
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.auth.domain.model.LoginUser
-import com.example.mustmarket.features.auth.presentation.login.state.LoginEvent
-import com.example.mustmarket.features.auth.presentation.login.state.LoginUiEvent
+import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
+import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
+import com.example.mustmarket.features.auth.domain.model.LoginRequest
+import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToHome: (AuthedUser) -> Unit
 ) {
-    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val loadingState by loginViewModel.loadingState.collectAsStateWithLifecycle()
-    val loginCredentials = LoginUser(
-        email = uiState.emailInput,
-        password = uiState.passwordInput
-    )
-    val btnEnabled = uiState.emailInput.isNotEmpty()
-            && uiState.passwordInput.isNotEmpty()
+    val uiState by loginViewModel.authUiState.collectAsStateWithLifecycle()
+
+    val emailIsValid = uiState.emailInput.isNotEmpty() && EMAIL_REGEX.matches(uiState.emailInput)
+    val passwordIsValid = uiState.passwordInput.isNotEmpty() && PASSWORD_REGEX.matches(uiState.passwordInput)
+    val btnEnabled = emailIsValid && passwordIsValid
     val context = LocalContext.current
 
     val systemUiController = rememberSystemUiController()
@@ -90,21 +88,12 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(key1 = true) {
-        loginViewModel.uiEvent.collect { event ->
-            when (event) {
-                is LoginUiEvent.NavigateToHome -> {
-                    onNavigateToHome(event.user)
-                }
-            }
-        }
-    }
-    Scaffold { innerPadding ->
+    Scaffold(
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(Color(0xfffcfcfc)),
+                .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -115,7 +104,10 @@ fun LoginScreen(
             )
             Text(
                 text = "Login",
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.h2.copy(
+                    color = ThemeUtils.AppColors.Teal200,
+                    fontSize = 26.sp
+                ),
                 textAlign = TextAlign.Start
             )
             Text(
@@ -135,7 +127,7 @@ fun LoginScreen(
             PasswordInput(
                 onInputChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
                 inputText = uiState.passwordInput,
-                showPassword = false,
+                showPassword = uiState.showPassword,
                 toggleShowPassword = { loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword)) },
                 name = "Password",
                 errorMessage = uiState.passwordError
@@ -145,12 +137,14 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(vertical = 10.dp, horizontal = 20.dp),
                 text = "Forgot Password",
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6.copy(
+                    color = ThemeUtils.AppColors.Teal200
+                )
             )
             ButtonLoading(
                 name = "Login",
                 isLoading = uiState.isLoading,
-                enabled = loadingState != LoadingState.Loading,
+                enabled  = btnEnabled,
                 onClicked = {
                     loginViewModel.onEvent(LoginEvent.Login)
                 }
@@ -187,7 +181,9 @@ fun LoginScreen(
             ) {
                 Text(
                     text = "Don't have an account?",
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.h6.copy(
+                        color = Color(0xff727272),
+                    ),
                     fontFamily = FontFamily(
                         Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
                     ),
