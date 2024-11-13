@@ -1,7 +1,7 @@
 package com.example.mustmarket.di
 
 import android.content.Context
-import com.example.mustmarket.core.util.Constants.BASE_URL
+import com.example.mustmarket.BuildConfig
 import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
@@ -37,12 +37,13 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
+        val baseUrl = BuildConfig.SERVER_BASE_URL
         val json = Json {
             ignoreUnknownKeys = true
             isLenient = true
         }
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

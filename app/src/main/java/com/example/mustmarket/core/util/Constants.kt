@@ -6,8 +6,6 @@ import java.util.Date
 import java.util.Locale
 
 object Constants {
-    const val BASE_URL = "https://sv99tncg-8080.uks1.devtunnels.ms/"
-
     val EMAIL_REGEX = "^[a-z0-9_.]{5,48}@[a-z0-9]{2,}(\\.[a-z0-9]{2,}){1,5}$".toRegex()
     val PHONE_REGEX = "^[0-9]{10}$".toRegex()
     val PASSWORD_REGEX =

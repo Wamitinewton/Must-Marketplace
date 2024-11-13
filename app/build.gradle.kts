@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,6 +12,9 @@ plugins {
     id("androidx.room")
 }
 
+
+
+
 android {
     room {
         schemaDirectory("$projectDir/schemas")
@@ -17,6 +23,14 @@ android {
     compileSdk = 34
 
     defaultConfig {
+
+        val keystoreFile = file("keys.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val serverBaseUrl = properties.getProperty("SERVER_BASE_URL") ?: ""
+        buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
+
         applicationId = "com.example.mustmarket"
         minSdk = 29
         targetSdk = 34
@@ -24,11 +38,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
+
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isCrunchPngs = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -44,6 +61,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -68,8 +86,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.2.0")
 
     // Dagger  -Hilt
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation(libs.androidx.hilt.navigation.compose)
@@ -122,4 +140,6 @@ dependencies {
     // constrained layout compose
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+
+    implementation("com.google.errorprone:error_prone_annotations:2.11.0")
 }
