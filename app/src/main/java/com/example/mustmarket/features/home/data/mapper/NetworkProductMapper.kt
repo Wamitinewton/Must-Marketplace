@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.home.data.mapper
 
-import com.example.mustmarket.core.util.Constants.BASE_URL
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
@@ -17,7 +16,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-        imageUrl = images.firstOrNull()?.downloadUrl?.let { "$BASE_URL/api/v1/images/image/download/7" }
+        imageUrl = images.firstOrNull()?.downloadUrl?.let { "" }
     )
 }
 
@@ -25,7 +24,7 @@ fun CategoryDto.toDomainCategory(): ProductCategory {
     return ProductCategory(
         id = id,
         name = name,
-        categoryImage = image?.firstOrNull()?.let { "$BASE_URL/api/v1/images/image/download/7" }
+        categoryImage = image?.firstOrNull()?.let { "" }
     )
 }
 

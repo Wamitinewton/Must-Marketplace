@@ -68,6 +68,7 @@ fun PasswordInput(
         ),
         label = { TextFieldLabel(name = name) },
         singleLine = true,
+
         keyboardOptions = myKeyboardOptions,
         trailingIcon = {
             IconButton(onClick = { !showPassword }) {
