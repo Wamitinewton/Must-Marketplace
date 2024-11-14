@@ -29,6 +29,8 @@ import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -58,7 +60,7 @@ fun SplashScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(ThemeUtils.AppColors.Background.themed())
     ) {
         Box(
             contentAlignment = Alignment.Center

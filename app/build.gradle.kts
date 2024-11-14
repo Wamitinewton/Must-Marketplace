@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -23,12 +22,20 @@ android {
     compileSdk = 34
 
     defaultConfig {
-
-        val keystoreFile = file("keys.properties")
         val properties = Properties()
-        properties.load(keystoreFile.inputStream())
+        try {
+            val keystoreFile = rootProject.file("app/keys.properties")
+            if (keystoreFile.exists()) {
+                properties.load(keystoreFile.inputStream())
+            } else {
+                throw GradleException("keys.properties file not found")
+            }
+        } catch (e: Exception) {
+            logger.warn("Warning: ${e.message}")
+        }
 
-        val serverBaseUrl = properties.getProperty("SERVER_BASE_URL") ?: ""
+        val serverBaseUrl = properties.getProperty("SERVER_BASE_URL")
+            ?: throw GradleException("SERVER_BASE_URL not found in keys.properties")
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
 
         applicationId = "com.example.mustmarket"
@@ -38,7 +45,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
 

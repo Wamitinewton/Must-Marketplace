@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -84,6 +85,7 @@ fun SignUpScreen(
             Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_LONG).show()
         }
     }
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -95,148 +97,161 @@ fun SignUpScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Image(
-                painter = painterResource(
-                    id = R.drawable.ic_min_carrot
-                ),
+                painter = painterResource(id = R.drawable.ic_min_carrot),
                 contentDescription = null
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Sign up",
-                style = MaterialTheme.typography.h2,
-                modifier = Modifier.padding(bottom = 6.dp)
-            )
-            Text(
-                text = "Enter your credentials to continue",
-                style = MaterialTheme.typography.h3,
-                color = Color(0xff727272),
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-            MyTextField(
-                onInputChanged = signUpViewModel::onNameInputChanged,
-                inputText = uiState.nameInput,
-                name = "Name"
-            )
-            MyTextField(
-                onInputChanged = signUpViewModel::onEmailInputChanged,
-                inputText = uiState.emailInput,
-                name = "Email",
-                errorMessage = uiState.emailError
-            )
-            PasswordInput(
-                onInputChanged = signUpViewModel::onPasswordInputChanged,
-                inputText = uiState.passwordInput,
-                showPassword = uiState.showPassword,
-                toggleShowPassword = signUpViewModel::toggleShowPassword,
-                name = "Password",
-                errorMessage = uiState.passwordError
-            )
-            PasswordInput(
-                onInputChanged = signUpViewModel::onPasswordConfirmInputChanged,
-                inputText = uiState.passwordConfirmInput,
-                showPassword = uiState.showPassword,
-                toggleShowPassword = signUpViewModel::toggleShowPassword,
-                name = "Confirm Password"
-            )
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "By continuing you agree to our",
-                    style = MaterialTheme.typography.h5
-                )
-                Text(
-                    text = "Terms of service",
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.primary
-                )
-                Text(text = "and ", style = MaterialTheme.typography.h5)
-                Text(
-                    text = "Privacy Policy.",
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.primary
-                )
-
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-            ButtonLoading(
-                name = "Sign Up",
-                isLoading = uiState.isLoading,
-                enabled = btnEnabled,
-                onClicked = {
-                    signUpViewModel.signUp(userSignup)
-                    Log.d("Signup screen: ", uiState.errorMessage)
-                }
-            )
-            Spacer(modifier = Modifier.height(22.dp))
-            Button(
-                onClick = {
-                    Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
-                },
+            Card(
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = Color(0xff5383ec)
-                )
+                    .weight(1f)
+                    .padding(top = 16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Sign in with Google",
-                    style = MaterialTheme.typography.button,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Already have an account?",
-                    style = MaterialTheme.typography.h6,
-                    fontFamily = FontFamily(
-                        Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
-                    ),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                IconButton(
-                    onClick = {
-                        navController.popBackStack()
-                        navController.navigate(Screen.Login.route)
-                    }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
                 ) {
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Sign in",
-                        style = MaterialTheme.typography.h6,
-                        fontFamily = FontFamily(
-                            Font(
-                                R.font.gilroysemibold,
-                                weight = FontWeight.SemiBold
-                            )
-                        ),
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colors.primary
+                        text = "Sign up",
+                        style = MaterialTheme.typography.h2,
+                        modifier = Modifier.padding(bottom = 6.dp)
                     )
+                    Text(
+                        text = "Enter your credentials to continue",
+                        style = MaterialTheme.typography.h3,
+                        color = Color(0xff727272),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+
+                    MyTextField(
+                        onInputChanged = signUpViewModel::onNameInputChanged,
+                        inputText = uiState.nameInput,
+                        name = "Name"
+                    )
+                    MyTextField(
+                        onInputChanged = signUpViewModel::onEmailInputChanged,
+                        inputText = uiState.emailInput,
+                        name = "Email",
+                        errorMessage = uiState.emailError
+                    )
+                    PasswordInput(
+                        onInputChanged = signUpViewModel::onPasswordInputChanged,
+                        inputText = uiState.passwordInput,
+                        showPassword = uiState.showPassword,
+                        toggleShowPassword = signUpViewModel::toggleShowPassword,
+                        name = "Password",
+                        errorMessage = uiState.passwordError
+                    )
+                    PasswordInput(
+                        onInputChanged = signUpViewModel::onPasswordConfirmInputChanged,
+                        inputText = uiState.passwordConfirmInput,
+                        showPassword = uiState.showPassword,
+                        toggleShowPassword = signUpViewModel::toggleShowPassword,
+                        name = "Confirm Password"
+                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "By continuing you agree to our",
+                            style = MaterialTheme.typography.h5
+                        )
+                        Text(
+                            text = "Terms of service",
+                            style = MaterialTheme.typography.h5,
+                            color = MaterialTheme.colors.primary
+                        )
+                        Text(text = "and ", style = MaterialTheme.typography.h5)
+                        Text(
+                            text = "Privacy Policy.",
+                            style = MaterialTheme.typography.h5,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(22.dp))
+                    ButtonLoading(
+                        name = "Sign Up",
+                        isLoading = uiState.isLoading,
+                        enabled = btnEnabled,
+                        onClicked = {
+                            signUpViewModel.signUp(userSignup)
+                            Log.d("Signup screen: ", uiState.errorMessage)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(22.dp))
+                    Button(
+                        onClick = {
+                            Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            backgroundColor = Color(0xff5383ec)
+                        )
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Sign in with Google",
+                            style = MaterialTheme.typography.button,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(22.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Already have an account?",
+                            style = MaterialTheme.typography.h6,
+                            fontFamily = FontFamily(
+                                Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
+                            ),
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        IconButton(
+                            onClick = {
+                                navController.popBackStack()
+                                navController.navigate(Screen.Login.route)
+                            }
+                        ) {
+                            Text(
+                                text = "Sign in",
+                                style = MaterialTheme.typography.h6,
+                                fontFamily = FontFamily(
+                                    Font(
+                                        R.font.gilroysemibold,
+                                        weight = FontWeight.SemiBold
+                                    )
+                                ),
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colors.primary
+                            )
+                        }
+                    }
                 }
             }
-
         }
     }
 }

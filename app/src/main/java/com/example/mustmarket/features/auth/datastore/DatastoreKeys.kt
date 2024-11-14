@@ -5,5 +5,5 @@ object DatastoreKeys {
     const val KEY_ACCESS_TOKEN = "access_token"
     const val KEY_REFRESH_TOKEN = "refresh_token"
     const val KEY_TOKEN_EXPIRY = "token_expiry"
-    const val DEFAULT_TOKEN_EXPIRY_HOURS = 1L
+    const val DEFAULT_TOKEN_EXPIRY_HOURS = 240L
 }
