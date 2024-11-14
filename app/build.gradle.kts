@@ -24,7 +24,7 @@ android {
     defaultConfig {
         val properties = Properties()
         try {
-            val keystoreFile = rootProject.file("app/keys.properties")
+            val keystoreFile = rootProject.file("keys.properties")
             if (keystoreFile.exists()) {
                 properties.load(keystoreFile.inputStream())
             } else {
