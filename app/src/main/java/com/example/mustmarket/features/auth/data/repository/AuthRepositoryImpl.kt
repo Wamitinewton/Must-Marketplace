@@ -53,7 +53,6 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
                 emit(Resource.Success(data = response))
-                sessionManger.saveTokens(response.accessToken, response.refreshToken)
             } catch (e: HttpException) {
                 emit(
                     Resource.Error(

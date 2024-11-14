@@ -26,6 +26,9 @@ class LoginViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+    private val _navigateToHome = Channel<Unit>()
+    val navigateToHome = _navigateToHome.receiveAsFlow()
+
     private val _uiEvent = Channel<LoginEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -86,6 +89,11 @@ class LoginViewModel @Inject constructor(
                             isLoading = false,
                             errorMessage = ""
                         )
+                        sessionManager.saveTokens(
+                            loginResult.data!!.refreshToken,
+                            loginResult.data.accessToken,
+                        )
+                        _navigateToHome.send(Unit)
                     }
                 }
             }
