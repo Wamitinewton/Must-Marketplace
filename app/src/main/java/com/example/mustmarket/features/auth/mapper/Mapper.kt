@@ -16,7 +16,7 @@ internal fun UserDto.toAuthedUser(): AuthedUser {
     return AuthedUser(
         email = email ?: "",
         id = id ?: 0,
-        userName = username ?: "",
+        userName = name ?: "",
     )
 }
 

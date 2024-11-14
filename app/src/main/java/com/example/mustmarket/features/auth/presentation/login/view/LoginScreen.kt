@@ -157,6 +157,14 @@ fun LoginScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        loginViewModel.navigateToHome.collect {
+            navController.navigate(Screen.HomeScreen.route) {
+                popUpTo(Screen.Login.route) { inclusive = true }
+            }
+        }
+    }
+
     fun handleLoginClick() {
         if (networkState == NetworkConnectionState.Available) {
             loginViewModel.onEvent(LoginEvent.Login)
