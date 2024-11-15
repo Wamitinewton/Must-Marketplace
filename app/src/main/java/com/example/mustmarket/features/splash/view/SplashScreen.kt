@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.presentation.splash.view
+package com.example.mustmarket.features.splash.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -51,7 +51,7 @@ fun SplashScreen(
             navController.navigate(Screen.HomeScreen.route)
         } else {
             navController.popBackStack()
-            navController.navigate(Screen.Login.route)
+            navController.navigate(Screen.Onboarding.route)
         }
     }
 

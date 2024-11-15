@@ -6,6 +6,10 @@ import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import kotlinx.coroutines.flow.Flow
 
 interface AllProductsRepository {
+    suspend fun shouldRefresh(): Boolean
+
+    suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>>
+
     suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>>
 
     suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>>

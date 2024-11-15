@@ -40,8 +40,10 @@ fun LoopReverseLottieLoader(
 @Composable
 fun LottieLoader(
     modifier: Modifier = Modifier,
-    @RawRes lottieFile: Int
-) {
+    @RawRes lottieFile: Int,
+    enableMergePaths: Boolean = true,
+
+    ) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(lottieFile),
         onRetry = { failCount, exception ->
@@ -52,6 +54,7 @@ fun LottieLoader(
     LottieAnimation(
         composition = composition,
         progress = progress,
-        modifier = modifier
+        modifier = modifier,
+        enableMergePaths = true
     )
 }
