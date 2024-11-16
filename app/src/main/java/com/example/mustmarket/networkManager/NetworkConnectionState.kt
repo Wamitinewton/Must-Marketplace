@@ -1,4 +1,4 @@
-package com.example.mustmarket.core.networkManager
+package com.example.mustmarket.networkManager
 
 sealed class NetworkConnectionState {
     data object Available : NetworkConnectionState()

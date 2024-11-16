@@ -2,9 +2,6 @@ package com.example.mustmarket.features.auth.presentation.login.view
 
 import android.app.Activity
 import android.widget.Toast
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,10 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -33,41 +31,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.core.SharedComposables.ButtonLoading
+import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.NetworkAlertDialog
 import com.example.mustmarket.core.SharedComposables.PasswordInput
-import com.example.mustmarket.core.networkManager.NetworkConnectionState
-import com.example.mustmarket.core.networkManager.rememberConnectivityState
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.networkManager.NetworkConnectionState
+import com.example.mustmarket.networkManager.rememberConnectivityState
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.ThemeUtils.themedColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -82,9 +75,6 @@ fun LoginScreen(
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
 
-    val alpha = remember { Animatable(0f) }
-    val scale = remember { Animatable(0.5f) }
-    val rotation = remember { Animatable(0f) }
 
     val networkState by rememberConnectivityState()
     var showNetworkDialog by remember { mutableStateOf(false) }
@@ -100,35 +90,10 @@ fun LoginScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
-        coroutineScope {
-            launch {
-                rotation.animateTo(
-                    targetValue = 720f,
-                    animationSpec = tween(
-                        durationMillis = 1500,
-                        easing = FastOutSlowInEasing
-                    )
-                )
-            }
-            launch {
-                scale.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(
-                        durationMillis = 1500,
-                        easing = FastOutSlowInEasing
-                    )
-                )
-            }
-            launch {
-                alpha.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(
-                        durationMillis = 1500,
-                        easing = FastOutSlowInEasing
-                    )
-                )
-            }
+
+    LaunchedEffect(key1 = uiState.errorMessage) {
+        if (uiState.errorMessage.isNotEmpty()) {
+            loginViewModel.onEvent(LoginEvent.ClearError)
         }
     }
 
@@ -174,192 +139,144 @@ fun LoginScreen(
     }
 
 
-    ConstraintLayout(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFE8F5E9),
-                        Color(0xFFC8E6C9),
-                        Color(0xFFA5D6A7)
+                        ThemeUtils.AppColors.Surface.themed(),
+                        ThemeUtils.AppColors.Surface.themed(),
+                        ThemeUtils.AppColors.Surface.themed(),
                     )
                 )
             )
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        val (logo, welcomeText, card) = createRefs()
-
-        Image(
-            modifier = Modifier
-                .constrainAs(logo) {
-                    top.linkTo(parent.top, 32.dp)
-                    centerHorizontallyTo(parent)
-                },
-            painter = painterResource(id = R.drawable.ic_min_carrot),
-            contentDescription = stringResource(id = R.string.logo)
+        LoopReverseLottieLoader(
+            lottieFile = R.raw.welcome,
+            modifier = Modifier.size(200.dp)
         )
 
         Text(
-            text = "Welcome Back",
-            style = MaterialTheme.typography.h5.copy(
-                color = MaterialTheme.colors.primary,
-                fontSize = 27.sp,
-                fontWeight = FontWeight.Bold
+            text = "Log In",
+            style = MaterialTheme.typography.h2.copy(
+                color = MaterialTheme.colors.primary
             ),
-            modifier = Modifier
-                .alpha(alpha.value)
-                .graphicsLayer(
-                    rotationZ = rotation.value,
-                    scaleX = scale.value,
-                    scaleY = scale.value
-                )
-                .constrainAs(welcomeText) {
-                    top.linkTo(logo.bottom, 40.dp)
-                    centerHorizontallyTo(parent)
-                }
+            modifier = Modifier.padding(bottom = 6.dp)
+        )
+        Text(
+            text = "Enter your credentials to continue",
+            style = MaterialTheme.typography.h3,
+            color = Color(0xff727272),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 10.dp)
         )
 
-        Card(
+        MyTextField(
+            inputText = uiState.emailInput,
+            onInputChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
+            name = "Email",
+            errorMessage = uiState.emailError
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        PasswordInput(
+            onInputChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
+            inputText = uiState.passwordInput,
+            showPassword = uiState.showPassword,
+            toggleShowPassword = {
+                loginViewModel.onEvent(
+                    LoginEvent.TogglePasswordVisibility(
+                        !uiState.showPassword
+                    )
+                )
+            },
+            name = "Password",
+            errorMessage = uiState.passwordError
+        )
+
+        Text(
             modifier = Modifier
-                .constrainAs(card) {
-                    top.linkTo(welcomeText.bottom, 200.dp)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
-            backgroundColor = ThemeUtils.AppColors.Background.themed(),
-            elevation = 8.dp
+                .fillMaxWidth()
+                .padding(vertical = 10.dp, horizontal = 22.dp),
+            text = "Forgot Password",
+            style = MaterialTheme.typography.h6.copy(
+                color = MaterialTheme.colors.primary
+            )
+        )
+
+        ButtonLoading(
+            name = "Login",
+            isLoading = uiState.isLoading,
+            enabled = btnEnabled,
+            onClicked = ::handleLoginClick
+        )
+
+        Spacer(modifier = Modifier.height(22.dp))
+
+        Button(
+            onClick = {
+                Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .height(48.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                backgroundColor = Color(0xff5383ec)
+            )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Sign in with Google",
+                style = MaterialTheme.typography.button,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Don't have an account?",
+                style = MaterialTheme.typography.h6.copy(
+                    color = Color(0xff727272),
+                ),
+                fontFamily = FontFamily(
+                    Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
+                ),
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                    navController.navigate(Screen.SignUp.route)
+                }
             ) {
                 Text(
-                    text = "Login",
-                    style = MaterialTheme.typography.h2.copy(
-                        color = ThemeUtils.AppColors.Teal200,
-                        fontSize = 26.sp
+                    text = "Sign up",
+                    style = MaterialTheme.typography.h6,
+                    fontFamily = FontFamily(
+                        Font(
+                            R.font.gilroysemibold,
+                            weight = FontWeight.SemiBold
+                        )
                     ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colors.primary,
                 )
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp, top = 6.dp),
-                    text = "Enter your email and password",
-                    style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.themedColor(ThemeUtils.AppColors.SecondaryText),
-                    textAlign = TextAlign.Start
-                )
-
-                MyTextField(
-                    inputText = uiState.emailInput,
-                    onInputChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
-                    name = "Email",
-                    errorMessage = uiState.emailError
-                )
-
-                PasswordInput(
-                    onInputChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-                    inputText = uiState.passwordInput,
-                    showPassword = uiState.showPassword,
-                    toggleShowPassword = {
-                        loginViewModel.onEvent(
-                            LoginEvent.TogglePasswordVisibility(
-                                !uiState.showPassword
-                            )
-                        )
-                    },
-                    name = "Password",
-                    errorMessage = uiState.passwordError
-                )
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp),
-                    text = "Forgot Password",
-                    style = MaterialTheme.typography.h6.copy(
-                        color = ThemeUtils.AppColors.Teal200
-                    )
-                )
-
-                ButtonLoading(
-                    name = "Login",
-                    isLoading = uiState.isLoading,
-                    enabled = btnEnabled,
-                    onClicked = ::handleLoginClick
-                )
-
-                Spacer(modifier = Modifier.height(22.dp))
-
-                Button(
-                    onClick = {
-                        Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        backgroundColor = Color(0xff5383ec)
-                    )
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.google),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Sign in with Google",
-                        style = MaterialTheme.typography.button,
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Don't have an account?",
-                        style = MaterialTheme.typography.h6.copy(
-                            color = Color(0xff727272),
-                        ),
-                        fontFamily = FontFamily(
-                            Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
-                        ),
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                            navController.navigate(Screen.SignUp.route)
-                        }
-                    ) {
-                        Text(
-                            text = "Sign up",
-                            style = MaterialTheme.typography.h6,
-                            fontFamily = FontFamily(
-                                Font(
-                                    R.font.gilroysemibold,
-                                    weight = FontWeight.SemiBold
-                                )
-                            ),
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colors.primary,
-                        )
-                    }
-                }
             }
         }
     }
