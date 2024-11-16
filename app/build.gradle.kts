@@ -15,6 +15,13 @@ plugins {
 
 
 android {
+    packaging {
+        resources {
+            excludes += "win32-x86-64/attach_hotspot_windows.dll"
+            pickFirsts += "win32-x86-64/attach_hotspot_windows.dll"
+        }
+    }
+
     room {
         schemaDirectory("$projectDir/schemas")
     }
