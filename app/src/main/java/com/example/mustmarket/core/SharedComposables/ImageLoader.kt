@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,7 +26,7 @@ fun ImageLoaderUtil(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
-    shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+    shape: Shape = RoundedCornerShape(16.dp),
     showProgressIndicator: Boolean = true,
     progressIndicatorSize: Int = 48,
     progressIndicatorColor: Color = MaterialTheme.colors.primary,

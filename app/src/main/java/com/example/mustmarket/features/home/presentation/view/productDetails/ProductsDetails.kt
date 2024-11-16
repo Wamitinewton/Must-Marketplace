@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
@@ -336,18 +337,19 @@ fun ProductDetailsContent(
                ImageLoaderUtil(
                    imageUrl = product.imageUrl,
                    contentDescription = null,
+                   shape = RectangleShape
                )
             }
 
             Box(
                 modifier = Modifier
                     .layoutId("card")
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .clip(RectangleShape)
                     .background(MaterialTheme.colors.surface)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                        shape = RectangleShape
                     )
             ) {
                 Column(

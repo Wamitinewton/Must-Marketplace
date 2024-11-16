@@ -12,8 +12,10 @@ import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.mapper.toAuthedUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import java.io.IOException
 import javax.inject.Inject
+import retrofit2.HttpException as RetrofitHttpException
 
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
@@ -31,12 +33,15 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Error(response.message))
             }
 
-        } catch (e: HttpException) {
-            emit(
-                Resource.Error(
-                    message = e.message.toString(),
-                )
-            )
+        } catch (e: RetrofitHttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            val errorMessage = try {
+                JSONObject(errorBody ?: "").getString("message")
+                    ?: "An unknown error occurred"
+            } catch (e: Exception) {
+                "An unknown error occurred"
+            }
+            emit(Resource.Error(message = errorMessage))
         } catch (e: IOException) {
             emit(
                 Resource.Error(
@@ -53,12 +58,28 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
                 emit(Resource.Success(data = response))
-            } catch (e: HttpException) {
-                emit(
-                    Resource.Error(
-                        message = e.message.toString()
-                    )
-                )
+                sessionManger.saveTokens(response.accessToken, response.refreshToken)
+            } catch (e: RetrofitHttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = when (e.code()) {
+                    401 -> try {
+                        JSONObject(errorBody ?: "").getString("message")
+                            ?: "Invalid email or password"
+                    } catch (e: Exception) {
+                        "Invalid email or password"
+                    }
+
+                    403 -> "Account is locked. Please contact support"
+                    404 -> "Account not found"
+                    else -> try {
+                        JSONObject(errorBody ?: "").getString("message")
+                            ?: "An unexpected error occurred"
+                    } catch (e: Exception) {
+                        "An unexpected error occurred"
+                    }
+                }
+                emit(Resource.Error(message = errorMessage))
+
             } catch (e: IOException) {
                 emit(
                     Resource.Error(
