@@ -20,44 +20,61 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao
 ) : AllProductsRepository {
-    override suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
-        emit(Resource.Loading(true))
-        dao.getAllProducts()
-            .map { entities ->
-                Resource.Success(
-                    entities.toNetworkProducts()
-                )
-            }
-            .collect { cachedData ->
-                emit(cachedData)
-            }
 
-        try {
+
+    override suspend fun shouldRefresh(): Boolean {
+        return dao.getAllProducts().firstOrNull()?.isEmpty() ?: true
+    }
+
+    override suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>> {
+        return try {
             val response = productsApi.getAllProducts()
             if (response.message == "Success") {
                 val products = response.data
                     .filter { it.brand.isNotBlank() }
                     .map { it.toDomainProduct() }
                     .sortedByDescending { it.id }
+
                 dao.clearAllProducts()
                 dao.insertProducts(products.toProductListingEntities())
-                val finalProducts = dao.getAllProducts().firstOrNull()
-                if (finalProducts?.toNetworkProducts().isNullOrEmpty()) {
-                    emit(Resource.Error("No products found"))
+
+                val cachedProducts = dao.getAllProducts().firstOrNull()
+                if (cachedProducts.isNullOrEmpty()) {
+                    Resource.Error("Failed to cache products")
                 } else {
-                    emit(Resource.Success(finalProducts?.toNetworkProducts()))
+                    Resource.Success(cachedProducts.toNetworkProducts())
                 }
             } else {
-                emit(Resource.Error(response.message))
+                Resource.Error(response.message)
             }
         } catch (e: HttpException) {
-            emit(Resource.Error("Network error: ${e.message}"))
+            Resource.Error("Network error: ${e.message}")
         } catch (e: IOException) {
-            emit(Resource.Error("IO error: ${e.message}"))
+            Resource.Error("IO error: ${e.message}")
         } catch (e: Exception) {
-            emit(Resource.Error("Unknown error: ${e.message}"))
+            Resource.Error("Unknown error: ${e.message}")
         }
-        emit(Resource.Loading(false))
+    }
+
+    override suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
+        if (shouldRefresh()) {
+            emit(Resource.Loading(true))
+            val refreshResult = fetchAndCacheProducts()
+            emit(refreshResult)
+            emit(Resource.Loading(false))
+        }
+
+        dao.getAllProducts()
+            .map { entities ->
+                if (entities.isEmpty()) {
+                    Resource.Error("No products found")
+                } else {
+                    Resource.Success(entities.toNetworkProducts())
+                }
+            }
+            .collect { cachedData ->
+                emit(cachedData)
+            }
     }
 
     override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> =
@@ -83,34 +100,9 @@ class AllProductsRepositoryImpl @Inject constructor(
         }
 
     override suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
-        try {
-            emit(Resource.Loading(true))
-            val response = productsApi
-                .getAllProducts()
-            if (response.message == "Success") {
-                val products = response.data
-                    .filter { it.brand.isNotBlank() }
-                    .map { it.toDomainProduct() }
-                    .sortedByDescending { it.id }
-
-                dao.clearAllProducts()
-                dao.insertProducts(products.toProductListingEntities())
-
-                emit(Resource.Loading(false))
-                if (products.isEmpty()) {
-                    emit(Resource.Error("No products found"))
-                } else {
-                    emit(Resource.Success(products))
-                }
-            } else {
-                emit(Resource.Error(response.message))
-            }
-        } catch (e: HttpException) {
-            emit(Resource.Error("Network error: ${e.message}"))
-        } catch (e: IOException) {
-            emit(Resource.Error("IO error: ${e.message}"))
-        } catch (e: Exception) {
-            emit(Resource.Error("Unknown error: ${e.message}"))
-        }
+        emit(Resource.Loading(true))
+        val result = fetchAndCacheProducts()
+        emit(result)
+        emit(Resource.Loading(false))
     }
 }

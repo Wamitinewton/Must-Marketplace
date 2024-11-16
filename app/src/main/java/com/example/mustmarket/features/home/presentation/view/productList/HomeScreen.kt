@@ -167,6 +167,8 @@ fun Content(
                     }
                 }
 
+
+
                 !uiState.isLoading && uiState.searchQuery.isNotEmpty() -> {
                     when {
                         uiState.products.isEmpty() -> {
@@ -196,11 +198,6 @@ fun Content(
 
                 }
 
-                uiState.errorMessage.isNotEmpty() -> {
-                    item {
-                        ErrorState()
-                    }
-                }
 
                 else -> {
                     items(uiState.products.size) { index ->

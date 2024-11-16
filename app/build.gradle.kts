@@ -24,7 +24,7 @@ android {
     defaultConfig {
         val properties = Properties()
         try {
-            val keystoreFile = rootProject.file("app/keys.properties")
+            val keystoreFile = rootProject.file("keys.properties")
             if (keystoreFile.exists()) {
                 properties.load(keystoreFile.inputStream())
             } else {
@@ -109,8 +109,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     //accompanist-compose
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.18.0")
-    implementation("com.google.accompanist:accompanist-pager:0.18.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.24.10-beta")
+    implementation("com.google.accompanist:accompanist-pager:0.24.10-beta")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.18.0")
 
     // Import landscapist libraries

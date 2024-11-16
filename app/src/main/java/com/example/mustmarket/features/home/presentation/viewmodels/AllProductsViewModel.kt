@@ -1,9 +1,7 @@
 package com.example.mustmarket.features.home.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.query
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
@@ -37,7 +35,7 @@ class AllProductsViewModel @Inject constructor(
         MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
-    private var currentProductId: Int? = null
+
     private val _searchQuery = MutableStateFlow("")
     private var searchJob: Job? = null
 
@@ -76,7 +74,7 @@ class AllProductsViewModel @Inject constructor(
     private fun performSearch(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            _viewModelState.update { it.copy(isLoading = true) }
+            _viewModelState.update { it.copy(isLoading = true, isSearchActive = true) }
 
             productsUseCases.homeUseCases.searchProducts(query).collect { result ->
                 handleProductsResult(result)
@@ -85,6 +83,7 @@ class AllProductsViewModel @Inject constructor(
     }
 
     private fun clearSearch() {
+        searchJob?.cancel()
         _searchQuery.value = ""
         _viewModelState.update {
             it.copy(
@@ -97,33 +96,22 @@ class AllProductsViewModel @Inject constructor(
 
     private fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
-        _viewModelState.update { it.copy(searchQuery = query) }
+        _viewModelState.update { it.copy(searchQuery = query, isSearchActive = query.isNotEmpty()) }
     }
 
     fun loadProductDetails(productId: Int) {
-        currentProductId = productId
         viewModelScope.launch {
-
-            Log.d("ProductDetails", "Loading product details for ID: $productId")
-
             productsUseCases.homeUseCases.getProductsById(productId).collect { result ->
-                Log.d("ProductDetails", "Received result: $result")
-                when (result) {
-                    is Resource.Loading -> {
-                        _productDetailsState.value = ProductDetailsState.Loading
-                    }
+                _productDetailsState.value = when (result) {
+                    is Resource.Success -> result.data?.let {
+                        ProductDetailsState.Success(it)
+                    }!!
 
-                    is Resource.Success -> {
-                        result.data?.let { product ->
-                            _productDetailsState.value = ProductDetailsState.Success(product)
-                        }
-                    }
+                    is Resource.Error -> ProductDetailsState.Error(
+                        result.message ?: "An unexpected error occurred"
+                    )
 
-                    is Resource.Error -> {
-                        _productDetailsState.value = ProductDetailsState.Error(
-                            result.message ?: "An unexpected error occurred"
-                        )
-                    }
+                    is Resource.Loading -> ProductDetailsState.Loading
                 }
             }
         }
@@ -132,19 +120,17 @@ class AllProductsViewModel @Inject constructor(
     private fun getAllProducts() {
         viewModelScope.launch {
             productsUseCases.homeUseCases.getAllProducts().collect { result ->
-                if (result is Resource.Success && result.data.isNullOrEmpty()) {
-                    refreshProduct()
-                } else {
-                    handleProductsResult(result)
-                }
+                handleProductsResult(result)
             }
         }
     }
 
     private fun refreshProduct() {
         viewModelScope.launch {
+            _viewModelState.update { it.copy(isRefreshing = true) }
             productsUseCases.homeUseCases.refreshProducts().collect { result ->
                 handleProductsResult(result)
+                _viewModelState.update { it.copy(isRefreshing = false) }
             }
         }
     }
@@ -164,11 +150,7 @@ class AllProductsViewModel @Inject constructor(
                     products = emptyList()
                 )
 
-                is Resource.Loading -> state.copy(
-                    isLoading = true,
-                    products = emptyList(),
-                    errorMessage = ""
-                )
+                is Resource.Loading -> state
             }
         }
     }
