@@ -45,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
-import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
@@ -166,7 +165,6 @@ fun Content(
                         LoadingState(type = LoadingAnimationType.PULSING_DOTS)
                     }
                 }
-
 
 
                 !uiState.isLoading && uiState.searchQuery.isNotEmpty() -> {
@@ -388,12 +386,3 @@ fun PromotionItem(
         }
     }
 }
-
-
-
-
-
-
-
-
-

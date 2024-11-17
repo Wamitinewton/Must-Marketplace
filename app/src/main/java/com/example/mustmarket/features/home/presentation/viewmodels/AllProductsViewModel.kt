@@ -14,11 +14,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +31,7 @@ import javax.inject.Inject
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
 ) : ViewModel() {
+
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
 
@@ -35,21 +39,28 @@ class AllProductsViewModel @Inject constructor(
         MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
-
     private val _searchQuery = MutableStateFlow("")
     private var searchJob: Job? = null
 
     init {
-        getAllProducts()
+        initializeProducts()
         setUpSearchListener()
+    }
+
+    private fun initializeProducts() {
+        viewModelScope.launch {
+            val currentProducts = productsUiState.value.products
+            if (currentProducts.isEmpty()) {
+                loadProducts(forceRefresh = true)
+            }
+        }
     }
 
     fun onProductEvent(event: HomeScreenEvent) {
         when (event) {
-            is HomeScreenEvent.Refresh -> refreshProduct()
+            is HomeScreenEvent.Refresh -> loadProducts(forceRefresh = true)
             is HomeScreenEvent.Search -> onSearchQueryChange(event.query)
             is HomeScreenEvent.ClearSearch -> clearSearch()
-
         }
     }
 
@@ -58,14 +69,11 @@ class AllProductsViewModel @Inject constructor(
         _searchQuery
             .debounce(300)
             .distinctUntilChanged()
-            .filter { query ->
-                query.trim().length >= 2 || query.isEmpty()
-            }
+            .filter { query -> query.trim().length >= 2 || query.isEmpty() }
             .onEach { query ->
-                if (query.isEmpty()) {
-                    getAllProducts()
-                } else {
-                    performSearch(query)
+                when {
+                    query.isEmpty() -> loadProducts(forceRefresh = false)
+                    else -> performSearch(query)
                 }
             }
             .launchIn(viewModelScope)
@@ -75,10 +83,8 @@ class AllProductsViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             _viewModelState.update { it.copy(isLoading = true, isSearchActive = true) }
-
-            productsUseCases.homeUseCases.searchProducts(query).collect { result ->
-                handleProductsResult(result)
-            }
+            productsUseCases.homeUseCases.searchProducts(query)
+                .collect { result -> handleProductsResult(result) }
         }
     }
 
@@ -86,12 +92,9 @@ class AllProductsViewModel @Inject constructor(
         searchJob?.cancel()
         _searchQuery.value = ""
         _viewModelState.update {
-            it.copy(
-                searchQuery = "",
-                isSearchActive = false
-            )
+            it.copy(searchQuery = "", isSearchActive = false)
         }
-        getAllProducts()
+        loadProducts(forceRefresh = false)
     }
 
     private fun onSearchQueryChange(query: String) {
@@ -101,37 +104,33 @@ class AllProductsViewModel @Inject constructor(
 
     fun loadProductDetails(productId: Int) {
         viewModelScope.launch {
-            productsUseCases.homeUseCases.getProductsById(productId).collect { result ->
-                _productDetailsState.value = when (result) {
-                    is Resource.Success -> result.data?.let {
-                        ProductDetailsState.Success(it)
-                    }!!
+            productsUseCases.homeUseCases.getProductsById(productId)
+                .collect { result ->
+                    _productDetailsState.value = when (result) {
+                        is Resource.Success -> result.data?.let {
+                            ProductDetailsState.Success(it)
+                        } ?: ProductDetailsState.Error("Product not found")
 
-                    is Resource.Error -> ProductDetailsState.Error(
-                        result.message ?: "An unexpected error occurred"
-                    )
+                        is Resource.Error -> ProductDetailsState.Error(
+                            result.message ?: "An unexpected error occurred"
+                        )
 
-                    is Resource.Loading -> ProductDetailsState.Loading
+                        is Resource.Loading -> ProductDetailsState.Loading
+                    }
                 }
-            }
         }
     }
 
-    private fun getAllProducts() {
+    private fun loadProducts(forceRefresh: Boolean) {
         viewModelScope.launch {
-            productsUseCases.homeUseCases.getAllProducts().collect { result ->
-                handleProductsResult(result)
-            }
-        }
-    }
-
-    private fun refreshProduct() {
-        viewModelScope.launch {
-            _viewModelState.update { it.copy(isRefreshing = true) }
-            productsUseCases.homeUseCases.refreshProducts().collect { result ->
-                handleProductsResult(result)
-                _viewModelState.update { it.copy(isRefreshing = false) }
-            }
+            _viewModelState.update { it.copy(isLoading = true) }
+            productsUseCases.homeUseCases.getAllProducts(forceRefresh = forceRefresh)
+                .collect { result ->
+                    handleProductsResult(result)
+                    if (forceRefresh) {
+                        _viewModelState.update { it.copy(isRefreshing = false) }
+                    }
+                }
         }
     }
 
@@ -150,8 +149,9 @@ class AllProductsViewModel @Inject constructor(
                     products = emptyList()
                 )
 
-                is Resource.Loading -> state
+                is Resource.Loading -> state.copy(isLoading = result.isLoading)
             }
         }
     }
 }
+
