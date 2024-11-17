@@ -7,7 +7,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.coroutine_debugger.CoroutineDebugger
+import com.example.mustmarket.coroutine.CoroutineDebugger
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.presentation.signup.event.SignupEvent
 import com.example.mustmarket.features.auth.presentation.signup.state.SignUpViewModelState
@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 

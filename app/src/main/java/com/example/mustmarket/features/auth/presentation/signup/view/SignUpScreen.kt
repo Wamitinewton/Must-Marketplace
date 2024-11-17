@@ -64,11 +64,14 @@ import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.NetworkAlertDialog
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.core.SharedComposables.SocialAuthButton
 import com.example.mustmarket.networkManager.NetworkConnectionState
 import com.example.mustmarket.networkManager.rememberConnectivityState
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
+import com.example.mustmarket.features.auth.presentation.auth_utils.AuthHeader
+import com.example.mustmarket.features.auth.presentation.auth_utils.SignUpPrompt
 import com.example.mustmarket.features.auth.presentation.signup.event.SignupEvent
 import com.example.mustmarket.features.auth.presentation.signup.viewmodels.SignUpViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
@@ -164,99 +167,44 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        LoopReverseLottieLoader(
-            lottieFile = R.raw.welcome,
-            modifier = Modifier.size(200.dp)
+        AuthHeader(
+            authText = "Create an account with us",
+            authTitle = "Sign Up"
         )
 
-        Text(
-            text = "Sign up",
-            style = MaterialTheme.typography.h2.copy(
-                color = MaterialTheme.colors.primary
-            ),
-            modifier = Modifier.padding(bottom = 6.dp)
-        )
-
-        Text(
-            text = "Create an account with us to continue",
-            style = MaterialTheme.typography.h3,
-            color = Color(0xff727272),
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-
-        MyTextField(
-            onInputChanged = { signUpViewModel.onEvent(SignupEvent.UsernameChanged(it)) },
-            inputText = uiState.nameInput,
-            name = "Name"
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        MyTextField(
-            onInputChanged = { signUpViewModel.onEvent(SignupEvent.EmailChanged(it)) },
-            inputText = uiState.emailInput,
-            name = "Email",
-            errorMessage = uiState.emailError
-        )
-
-        PasswordInput(
-            onInputChanged = { signUpViewModel.onEvent(SignupEvent.PasswordChanged(it)) },
-            inputText = uiState.passwordInput,
+        SignUpForm(
+            emailInput = uiState.emailInput,
+            userNameInput = uiState.nameInput,
+            passwordInput = uiState.passwordInput,
+            confirmPasswordInput = uiState.passwordConfirmInput,
             showPassword = uiState.showPassword,
-            toggleShowPassword = {
-                signUpViewModel.onEvent(
-                    SignupEvent.TogglePasswordVisibility(
-                        !uiState.showPassword
-                    )
-                )
-            },
-            name = "Password",
-            errorMessage = uiState.passwordError
-        )
-
-        PasswordInput(
-            onInputChanged = {
+            showConfirmPassword = uiState.showPassword,
+            emailError = uiState.emailError,
+            userNameError = uiState.nameError,
+            passwordError = uiState.passwordError,
+            confirmPasswordError = uiState.passwordConfirmError,
+            onEmailChanged = { signUpViewModel.onEvent(SignupEvent.EmailChanged(it)) },
+            onUserNameChanged = { signUpViewModel.onEvent(SignupEvent.UsernameChanged(it)) },
+            onPasswordChanged = { signUpViewModel.onEvent(SignupEvent.PasswordChanged(it)) },
+            onConfirmPasswordChanged = {
                 signUpViewModel.onEvent(
                     SignupEvent.ConfirmPasswordChanged(
                         it
                     )
                 )
             },
-            inputText = uiState.passwordConfirmInput,
-            showPassword = uiState.showPassword,
-            toggleShowPassword = {
-                signUpViewModel.onEvent(
-                    SignupEvent.ToggleConfirmPasswordVisibility(
-                        !uiState.showPassword
-                    )
-                )
+            onTogglePassword = {
+                signUpViewModel.onEvent(SignupEvent.TogglePasswordVisibility(!uiState.showPassword))
             },
-            name = "Confirm Password"
+            onToggleConfirmPassword = {
+                signUpViewModel.onEvent(SignupEvent.ToggleConfirmPasswordVisibility(!uiState.showPassword))
+
+            },
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "By continuing you agree to our",
-                style = MaterialTheme.typography.h5
-            )
-            Text(
-                text = "Terms of service",
-                style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.primary
-            )
-            Text(text = "and ", style = MaterialTheme.typography.h5)
-            Text(
-                text = "Privacy Policy.",
-                style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.primary
-            )
-        }
+        TermsAndServices()
 
         Spacer(modifier = Modifier.height(22.dp))
 
@@ -269,68 +217,23 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(22.dp))
 
-        Button(
-            onClick = {
-                Toast.makeText(context, "Feature not added", Toast.LENGTH_LONG).show()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color(0xff5383ec)
-            )
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.google),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Sign in with Google",
-                style = MaterialTheme.typography.button,
-            )
-        }
+        SocialAuthButton(
+            onClick = {},
+            iconId = R.drawable.google,
+            text = "Continue with Google"
+        )
 
         Spacer(modifier = Modifier.height(22.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Already have an account?",
-                style = MaterialTheme.typography.h5,
-                fontFamily = FontFamily(
-                    Font(R.font.gilroysemibold, weight = FontWeight.SemiBold)
-                ),
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            IconButton(
-                onClick = {
-                    navController.popBackStack()
-                    navController.navigate(Screen.Login.route)
-                }
-            ) {
-                Text(
-                    text = "Sign in",
-                    style = MaterialTheme.typography.h6,
-                    fontFamily = FontFamily(
-                        Font(
-                            R.font.gilroysemibold,
-                            weight = FontWeight.SemiBold
-                        )
-                    ),
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colors.primary
-                )
-            }
-        }
+        SignUpPrompt(
+            onSignUpClick = {
+                navController.popBackStack()
+                navController.navigate(Screen.Login.route)
+            },
+            authCheck = "Already have an account?",
+            authMethod = "Log in"
+
+        )
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
