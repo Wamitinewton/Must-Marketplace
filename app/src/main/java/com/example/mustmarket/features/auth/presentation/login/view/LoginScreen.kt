@@ -85,23 +85,7 @@ fun LoginScreen(
         )
     }
 
-    LaunchedEffect(key1 = uiState.isLoading) {
-        if (!uiState.isLoading && uiState.result.isNotEmpty() && uiState.errorMessage.isEmpty()) {
-            if (networkState == NetworkConnectionState.Available) {
-                Toast.makeText(
-                    context,
-                    "User ${uiState.result} login successful",
-                    Toast.LENGTH_SHORT
-                ).show()
-                navController.popBackStack()
-                navController.navigate(Screen.SignUp.route) { launchSingleTop = true }
-            } else {
-                showNetworkDialog = true
-            }
-        } else if (uiState.errorMessage.isNotEmpty()) {
-            Toast.makeText(context, "Error ${uiState.errorMessage}", Toast.LENGTH_SHORT).show()
-        }
-    }
+
 
     LaunchedEffect(Unit) {
         loginViewModel.navigateToHome.collect {
@@ -174,7 +158,11 @@ fun LoginScreen(
         SignUpPrompt(
             onSignUpClick = {
                 navController.popBackStack()
-                navController.navigate(Screen.SignUp.route)
+                navController.navigate(Screen.SignUp.route){
+                    popUpTo(Screen.Login.route)
+
+                    launchSingleTop = true
+                }
             },
             authCheck = "Don't have an account?",
             authMethod = "Sign Up"

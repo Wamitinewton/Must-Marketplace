@@ -54,15 +54,14 @@ fun OnboardingScreen(
             pagerState = pagerState,
             pageCount = pages.size,
             modifier = Modifier.fillMaxSize(),
-            bubbleColors = pages.map { page ->
-                if (pagerState.currentPage == page.id - 1) {
-                    page.color
-                } else {
-                    Color.Gray.copy(alpha = 0.5f)
-                }
+            bubbleColors = pages.map {
+                Color.Gray.copy(alpha = 0.5f)
             },
             onGetStartedClick = {
-                navController.navigate(Screen.Login.route)
+                navController.popBackStack()
+                navController.navigate(Screen.Login.route){
+                    popUpTo(Screen.Login.route)
+                }
             }
         ) { page ->
             Column(

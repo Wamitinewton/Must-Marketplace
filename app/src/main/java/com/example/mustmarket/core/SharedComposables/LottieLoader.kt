@@ -33,7 +33,7 @@ fun LoopReverseLottieLoader(
         anim.value,
         modifier = modifier,
         enableMergePaths = remember { enableMergePaths },
-        alignment = alignment
+        alignment = alignment,
     )
 }
 

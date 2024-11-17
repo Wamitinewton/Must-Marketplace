@@ -78,6 +78,7 @@ import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -101,6 +102,8 @@ fun SignUpScreen(
     val networkState by rememberConnectivityState()
     var showNetworkDialog by remember { mutableStateOf(false) }
 
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
     systemUiController.setSystemBarsColor(
         color = Color.Transparent,
         darkIcons = true
@@ -117,31 +120,25 @@ fun SignUpScreen(
         )
     }
 
-    LaunchedEffect(key1 = uiState.isLoading) {
-        if (!uiState.isLoading && uiState.result.isNotEmpty() && uiState.errorMessage.isEmpty()) {
-            if (networkState == NetworkConnectionState.Available) {
-                Toast.makeText(
-                    context,
-                    "User ${uiState.result} login successful",
-                    Toast.LENGTH_SHORT
-                ).show()
-                navController.popBackStack()
-                navController.navigate(Screen.SignUp.route) { launchSingleTop = true }
-            } else {
-                showNetworkDialog = true
-            }
-        } else if (uiState.errorMessage.isNotEmpty()) {
-            Toast.makeText(context, "Error ${uiState.errorMessage}", Toast.LENGTH_SHORT).show()
-        }
-    }
+
 
     LaunchedEffect(Unit) {
         signUpViewModel.navigateToLogin.collect {
+            showSuccessDialog = true
+            delay(7000)
+            showSuccessDialog = false
             navController.navigate(Screen.Login.route) {
                 popUpTo(Screen.SignUp.route) { inclusive = true }
             }
         }
     }
+
+    if (showSuccessDialog) {
+        SignUpSuccess(
+            onDismiss = { showSuccessDialog = false }
+        )
+    }
+
 
     fun handleSignupClick() {
         if (networkState == NetworkConnectionState.Available) {
