@@ -1,4 +1,4 @@
-package com.example.mustmarket.coroutine_debugger
+package com.example.mustmarket.coroutine
 
 data class CoroutineInfo(
     val id: String,

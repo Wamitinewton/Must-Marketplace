@@ -32,6 +32,11 @@ object ThemeUtils {
             dark = Color.White
         )
 
+        val InvertText = ThemeColorPair(
+            dark = Color(0xFF181725),
+            light = Color.White
+        )
+
         val SecondaryText = ThemeColorPair(
             light = Color(0xFF7C7C7C),
             dark = Color(0xFFB0B0B0)

@@ -1,4 +1,4 @@
-package com.example.mustmarket.coroutine_debugger
+package com.example.mustmarket.coroutine
 
 import kotlinx.coroutines.Job
 
