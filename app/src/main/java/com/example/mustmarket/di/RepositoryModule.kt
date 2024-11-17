@@ -1,5 +1,6 @@
 package com.example.mustmarket.di
 
+import android.content.SharedPreferences
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
@@ -19,10 +20,12 @@ import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
+import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -48,9 +51,11 @@ object RepositoryModule {
     @Singleton
     fun provideAllProductsRepository(
         allProductsApi: ProductsApi,
-        dao: ProductDao
+        dao: ProductDao,
+        preferences: SecureProductStorage,
+        @IODispatcher ioDispatcher: CoroutineDispatcher
     ): AllProductsRepository {
-        return AllProductsRepositoryImpl(productsApi = allProductsApi, dao = dao)
+        return AllProductsRepositoryImpl(productsApi = allProductsApi, dao = dao, preferences = preferences, ioDispatcher = ioDispatcher)
     }
 
     @Provides

@@ -10,7 +10,7 @@ interface AllProductsRepository {
 
     suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>>
 
-    suspend fun getAllProducts(): Flow<Resource<List<NetworkProduct>>>
+    suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>>
 
     suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>>
 

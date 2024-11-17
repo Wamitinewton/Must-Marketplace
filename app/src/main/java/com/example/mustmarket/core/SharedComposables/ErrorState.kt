@@ -34,7 +34,8 @@ import com.example.mustmarket.R
 @Composable
 fun ErrorState(
     modifier: Modifier = Modifier,
-    visible: Boolean = true
+    visible: Boolean = true,
+    onRetry: () -> Unit = {}
 ) {
     AnimatedErrorEntrance(
         visible = visible,

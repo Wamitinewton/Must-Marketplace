@@ -6,6 +6,7 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.coroutine.CoroutineDebugger
 import com.example.mustmarket.features.auth.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
@@ -25,6 +26,8 @@ class LoginViewModel @Inject constructor(
     private val authUseCase: UseCases,
     private val sessionManager: SessionManager
 ) : ViewModel() {
+
+    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
     private val _navigateToHome = Channel<Unit>()
     val navigateToHome = _navigateToHome.receiveAsFlow()

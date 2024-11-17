@@ -54,12 +54,16 @@ fun OnboardingScreen(
             pagerState = pagerState,
             pageCount = pages.size,
             modifier = Modifier.fillMaxSize(),
-            bubbleColors = pages.map {
-                Color.Gray.copy(alpha = 0.5f)
+            bubbleColors = pages.map { page ->
+                if (pagerState.currentPage == page.id - 1) {
+                    page.color
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }
             },
             onGetStartedClick = {
                 navController.popBackStack()
-                navController.navigate(Screen.Login.route){
+                navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Login.route)
                 }
             }
@@ -68,7 +72,10 @@ fun OnboardingScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-               LoopReverseLottieLoader(lottieFile = pages[page].content.animation, modifier = Modifier.size(300.dp))
+                LoopReverseLottieLoader(
+                    lottieFile = pages[page].content.animation,
+                    modifier = Modifier.size(300.dp)
+                )
 
                 Text(
                     text = stringResource(id = pages[page].content.title),
@@ -107,7 +114,7 @@ fun PagerTopAppBar(page: Int, modifier: Modifier = Modifier) {
         backgroundColor = Color.Transparent,
         elevation = 0.dp,
         navigationIcon = {
-            IconButton(onClick = {  }) {
+            IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "Left Icon",
