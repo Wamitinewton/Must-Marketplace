@@ -2,6 +2,7 @@ package com.example.mustmarket.di
 
 import android.content.SharedPreferences
 import com.example.mustmarket.UseCases
+import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.datastore.SessionManager
@@ -53,9 +54,16 @@ object RepositoryModule {
         allProductsApi: ProductsApi,
         dao: ProductDao,
         preferences: SecureProductStorage,
-        @IODispatcher ioDispatcher: CoroutineDispatcher
+        @IODispatcher ioDispatcher: CoroutineDispatcher,
+        retryUtil: RetryUtil
     ): AllProductsRepository {
-        return AllProductsRepositoryImpl(productsApi = allProductsApi, dao = dao, preferences = preferences, ioDispatcher = ioDispatcher)
+        return AllProductsRepositoryImpl(
+            productsApi = allProductsApi,
+            dao = dao,
+            preferences = preferences,
+            ioDispatcher = ioDispatcher,
+            retryUtil = retryUtil
+        )
     }
 
     @Provides
@@ -71,7 +79,11 @@ object RepositoryModule {
         productsApi: ProductsApi,
         bookmarkDao: BookmarkDao
     ): SearchProductsRepository {
-        return SearchProductsRepositoryImpl(dao = dao, productsApi = productsApi, bookmarkDao = bookmarkDao)
+        return SearchProductsRepositoryImpl(
+            dao = dao,
+            productsApi = productsApi,
+            bookmarkDao = bookmarkDao
+        )
     }
 
 

@@ -1,22 +1,19 @@
 package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
-import com.example.mustmarket.core.util.RepositoryError
+import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.home.data.local.db.ProductDao
-import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
-import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
+import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import com.example.mustmarket.features.home.secureStorage.StorageKeys.BATCH_SIZE
 import com.example.mustmarket.features.home.secureStorage.StorageKeys.CACHE_DURATION
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.INITIAL_RETRY_DELAY
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.MAX_RETRY_ATTEMPTS
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.RETRY_FACTOR
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -36,12 +33,10 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
     private val preferences: SecureProductStorage,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val retryUtil: RetryUtil
 ) : AllProductsRepository {
 
-    companion object {
-
-    }
 
     private val cacheMutex = Mutex()
 
@@ -53,13 +48,15 @@ class AllProductsRepositoryImpl @Inject constructor(
         cacheEmpty || cacheExpired
     }
 
-    private suspend fun processAndCacheProducts(
+    override suspend fun processAndCacheProducts(
         rawProducts: List<NetworkProduct>
-    ): Resource<List<NetworkProduct>> {
-        return try {
+    ): Resource<List<NetworkProduct>> = withContext(ioDispatcher) {
+        try {
             val processedProducts = rawProducts
+                .asSequence()
                 .filter { it.brand.isNotBlank() }
                 .sortedByDescending { it.id }
+                .toList()
 
             dao.clearAllProducts()
 
@@ -71,12 +68,13 @@ class AllProductsRepositoryImpl @Inject constructor(
 
             preferences.updateLastUpdateTimestamp()
 
-            val cachedProducts = dao.getAllProducts().firstOrNull()
-            if (!cachedProducts.isNullOrEmpty()) {
-                Resource.Success(cachedProducts.toNetworkProducts())
-            } else {
-                Resource.Error("No products found")
-            }
+            dao.getAllProducts().firstOrNull()?.let { cachedProducts ->
+                if (cachedProducts.isNotEmpty()) {
+                    Resource.Success(cachedProducts.toNetworkProducts())
+                } else {
+                    Resource.Error("No products found")
+                }
+            } ?: Resource.Error("Failed to verify cached products")
         } catch (e: Exception) {
             handleError(e)
         }
@@ -85,21 +83,23 @@ class AllProductsRepositoryImpl @Inject constructor(
     override suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>> =
         withContext(ioDispatcher) {
             try {
-                retryWithExponentialBackoff {
-                    val response = productsApi.getAllProducts()
 
-                    if (response.message == "Success") {
-                        cacheMutex.withLock {
-                            processAndCacheProducts(response.data.map { it.toDomainProduct() })
-                        }
-                    } else {
-                        Resource.Error(response.message)
+                val response = retryUtil.executeWithRetry {
+                    productsApi.getAllProducts()
+                }
+
+                if (response.message == "Success") {
+                    cacheMutex.withLock {
+                        processAndCacheProducts(response.data.map { it.toDomainProduct() })
                     }
+                } else {
+                    Resource.Error(response.message)
                 }
             } catch (e: Exception) {
                 handleError(e)
             }
         }
+
 
     override suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>> =
 
@@ -155,18 +155,18 @@ class AllProductsRepositoryImpl @Inject constructor(
         flow {
             emit(Resource.Loading(true))
             try {
-                val response = retryWithExponentialBackoff {
+                val response = retryUtil.executeWithRetry {
                     productsApi.getProductsById(productId)
                 }
                 emit(Resource.Loading(false))
-                emit(
+
                     if (response.message == "Success") {
-                        Resource.Success(response.data.toDomainProduct())
+                       emit(Resource.Success(response.data.toDomainProduct()))
 
                     } else {
-                        Resource.Error(response.message)
+                        emit(Resource.Error(response.message))
                     }
-                )
+
 
             } catch (e: Exception) {
                 emit(handleError(e))
@@ -202,23 +202,5 @@ class AllProductsRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun <T> retryWithExponentialBackoff(
-        times: Int = MAX_RETRY_ATTEMPTS,
-        initialDelay: Long = INITIAL_RETRY_DELAY,
-        factor: Double = RETRY_FACTOR,
-        block: suspend () -> T
-    ): T {
-        var currentDelay = initialDelay
-        repeat(times - 1) { attempt ->
-            try {
-                return block()
-            } catch (e: Exception) {
-                if (e is RepositoryError) throw e
 
-                kotlinx.coroutines.delay(currentDelay)
-                currentDelay = (currentDelay * factor).toLong()
-            }
-        }
-        return block()
-    }
 }

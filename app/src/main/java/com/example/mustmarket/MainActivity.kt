@@ -13,7 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.core.SharedComposables.BottomNavBar
-import com.example.mustmarket.coroutine.CoroutineDebugger
+import com.example.mustmarket.core.coroutine.CoroutineDebugger
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.navigation.SetUpNavGraph
 import com.example.mustmarket.ui.theme.ThemeUtils.MustMarketTheme

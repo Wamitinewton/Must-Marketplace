@@ -37,8 +37,8 @@ import com.example.mustmarket.features.auth.presentation.auth_utils.SignUpPrompt
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.example.mustmarket.navigation.Screen
-import com.example.mustmarket.networkManager.NetworkConnectionState
-import com.example.mustmarket.networkManager.rememberConnectivityState
+import com.example.mustmarket.core.networkManager.NetworkConnectionState
+import com.example.mustmarket.core.networkManager.rememberConnectivityState
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
