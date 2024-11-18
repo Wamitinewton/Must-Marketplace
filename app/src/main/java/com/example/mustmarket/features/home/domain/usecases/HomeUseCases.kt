@@ -27,7 +27,7 @@ class HomeUseCases(
 
     suspend fun shouldRefresh() = productRepository.shouldRefresh()
 
-    suspend fun getAllProducts(forceRefresh: Boolean = false) =
+    suspend fun getAllProducts(forceRefresh: Boolean) =
         productRepository.getAllProducts(forceRefresh = forceRefresh)
 
     suspend fun getCategoryBySize(size: Int) = categoryRepository.getCategories(size)

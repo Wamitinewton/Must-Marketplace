@@ -65,8 +65,8 @@ import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.NetworkAlertDialog
 import com.example.mustmarket.core.SharedComposables.PasswordInput
 import com.example.mustmarket.core.SharedComposables.SocialAuthButton
-import com.example.mustmarket.networkManager.NetworkConnectionState
-import com.example.mustmarket.networkManager.rememberConnectivityState
+import com.example.mustmarket.core.networkManager.NetworkConnectionState
+import com.example.mustmarket.core.networkManager.rememberConnectivityState
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.features.auth.domain.model.SignUpUser

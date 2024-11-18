@@ -1,12 +1,13 @@
 package com.example.mustmarket.features.auth.presentation.login.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.coroutine.CoroutineDebugger
+import com.example.mustmarket.core.coroutine.CoroutineDebugger
 import com.example.mustmarket.features.auth.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
@@ -49,71 +50,103 @@ class LoginViewModel @Inject constructor(
         _isLoggedIn.value = sessionManager.isSessionValid()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        coroutineDebugger.cancelAllCoroutines()
+        val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
+        if (activeCoroutines.isNotEmpty()) {
+            Log.d(
+                "register",
+                "⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:"
+            )
+            activeCoroutines.forEach { info ->
+                Log.d(
+                    "register",
+                    "📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms"
+                )
+            }
+        }
+    }
+
     private fun logInWithEmailAndPassword() {
         val email = _authUiState.value.emailInput
         val password = _authUiState.value.passwordInput
 
-        viewModelScope.launch {
+        coroutineDebugger.launchTracked(
+            scope = viewModelScope,
+            tag = "Login_process"
+        ) {
             if (email.isEmpty() || password.isEmpty()) {
                 _authUiState.value = _authUiState.value.copy(
                     authState = AuthState.LOGGED_OUT,
                     isLoading = false,
                     errorMessage = "All Inputs Are Required"
                 )
-                return@launch
+                return@launchTracked
             }
-            val result = authUseCase.authUseCase.loginUseCase(
-                LoginRequest(
-                    email = email,
-                    password = password
+            coroutineDebugger.launchTracked(
+                scope = viewModelScope,
+                tag = "login_NetworkRequest"
+            ) {
+                val result = authUseCase.authUseCase.loginUseCase(
+                    LoginRequest(
+                        email = email,
+                        password = password
+                    )
                 )
-            )
-            result.collectLatest { loginResult ->
-                when (loginResult) {
-                    is Resource.Loading -> {
-                        _authUiState.value = _authUiState.value.copy(
-                            authState = AuthState.LOGGED_OUT,
-                            isLoading = true,
-                            errorMessage = ""
-                        )
-                    }
+                result.collectLatest { loginResult ->
+                    when (loginResult) {
+                        is Resource.Loading -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.LOGGED_OUT,
+                                isLoading = true,
+                                errorMessage = ""
+                            )
+                        }
 
-                    is Resource.Error -> {
-                        _authUiState.value = _authUiState.value.copy(
-                            authState = AuthState.LOGGED_OUT,
-                            isLoading = false,
-                            errorMessage = loginResult.message.toString()
-                        )
-                    }
+                        is Resource.Error -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.LOGGED_OUT,
+                                isLoading = false,
+                                errorMessage = loginResult.message.toString()
+                            )
+                        }
 
-                    is Resource.Success -> {
-                        _authUiState.value = _authUiState.value.copy(
-                            authState = AuthState.AUTHENTICATED,
-                            isLoading = false,
-                            errorMessage = ""
-                        )
-                        sessionManager.saveTokens(
-                            loginResult.data!!.refreshToken,
-                            loginResult.data.accessToken,
-                        )
-                        _navigateToHome.send(Unit)
+                        is Resource.Success -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.AUTHENTICATED,
+                                isLoading = false,
+                                errorMessage = ""
+                            )
+                            sessionManager.saveTokens(
+                                loginResult.data!!.refreshToken,
+                                loginResult.data.accessToken,
+                            )
+                            _navigateToHome.send(Unit)
+                        }
                     }
                 }
             }
+
         }
     }
 
     fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.EmailChanged -> {
-                val emailError =
-                    if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
-                        "Invalid email format"
-                    } else ""
-                _authUiState.value = _authUiState.value.copy(
-                    emailInput = event.email,
-                    emailError = emailError
-                )
+                coroutineDebugger.launchTracked(
+                    scope = viewModelScope,
+                    tag = "EmailValidation"
+                ) {
+                    val emailError =
+                        if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
+                            "Invalid email format"
+                        } else ""
+                    _authUiState.value = _authUiState.value.copy(
+                        emailInput = event.email,
+                        emailError = emailError
+                    )
+                }
             }
 
             LoginEvent.ClearError -> {
@@ -127,14 +160,19 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginEvent.PasswordChanged -> {
-                val passwordError =
-                    if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
-                        "Invalid password format"
-                    } else ""
-                _authUiState.value = _authUiState.value.copy(
-                    passwordInput = event.password,
-                    passwordError = passwordError
-                )
+                coroutineDebugger.launchTracked(
+                    scope = viewModelScope,
+                    tag = "PasswordValidation"
+                ) {
+                    val passwordError =
+                        if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
+                            "Invalid password format"
+                        } else ""
+                    _authUiState.value = _authUiState.value.copy(
+                        passwordInput = event.password,
+                        passwordError = passwordError
+                    )
+                }
             }
 
             is LoginEvent.TogglePasswordVisibility -> {

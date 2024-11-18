@@ -1,4 +1,4 @@
-package com.example.mustmarket.networkManager
+package com.example.mustmarket.core.networkManager
 
 import android.content.Context
 import android.net.ConnectivityManager

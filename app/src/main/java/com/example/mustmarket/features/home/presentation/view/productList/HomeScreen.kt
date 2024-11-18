@@ -49,7 +49,7 @@ import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
-import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.navigation.Screen
