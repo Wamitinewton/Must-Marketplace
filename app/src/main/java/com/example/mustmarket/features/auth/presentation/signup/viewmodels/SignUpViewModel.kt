@@ -8,6 +8,7 @@ import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.presentation.signup.event.SignupEvent
 import com.example.mustmarket.features.auth.presentation.signup.state.SignUpViewModelState
@@ -94,7 +95,7 @@ class SignUpViewModel @Inject constructor(
                             )
 
                             is Resource.Success -> {
-                                updateSignupState(result = "Success")
+                                result.data?.let { updateSignupState(result = it) }
                                 _navigateToLogin.send(Unit)
                             }
                         }
@@ -106,7 +107,7 @@ class SignUpViewModel @Inject constructor(
     private fun updateSignupState(
         isLoading: Boolean = _authUiState.value.isLoading,
         errorMessage: String = _authUiState.value.errorMessage,
-        result: String = _authUiState.value.result,
+        result: AuthedUser = _authUiState.value.result!!,
     ) {
         _authUiState.value = _authUiState.value.copy(
             isLoading = isLoading,

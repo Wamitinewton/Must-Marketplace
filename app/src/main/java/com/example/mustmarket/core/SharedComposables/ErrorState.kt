@@ -116,7 +116,7 @@ fun NoSearchResultsState(searchQuery: String) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_search), // Make sure you have this icon in your resources
+                painter = painterResource(id = R.drawable.ic_search),
                 contentDescription = "No results found",
                 modifier = Modifier.size(48.dp),
                 tint = Color.Gray
