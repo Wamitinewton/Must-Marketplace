@@ -25,7 +25,7 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
     namespace = "com.example.mustmarket"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         val properties = Properties()
@@ -46,7 +46,7 @@ android {
 
         applicationId = "com.example.mustmarket"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
