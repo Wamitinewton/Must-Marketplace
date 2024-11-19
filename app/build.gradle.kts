@@ -45,7 +45,7 @@ android {
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
 
         applicationId = "com.example.mustmarket"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
