@@ -119,8 +119,8 @@ class LoginViewModel @Inject constructor(
                                 errorMessage = ""
                             )
                             sessionManager.saveTokens(
-                                loginResult.data!!.refreshToken,
-                                loginResult.data.accessToken,
+                                loginResult.data?.data!!.refreshToken,
+                                loginResult.data.data.accessToken,
                             )
                             _navigateToHome.send(Unit)
                         }

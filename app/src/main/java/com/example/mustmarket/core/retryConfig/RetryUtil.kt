@@ -14,7 +14,7 @@ class RetryUtil @Inject constructor() {
         var currentDelay = config.initialDelayMillis
         var lastException: Exception? = null
 
-        repeat(config.maxAttempts - 1) { attempt ->
+        repeat(config.maxAttempts - 1) {
             try {
                 return block()
             } catch (e: Exception) {

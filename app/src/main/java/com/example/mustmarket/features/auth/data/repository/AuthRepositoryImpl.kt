@@ -10,6 +10,7 @@ import com.example.mustmarket.features.auth.domain.model.LoginResult
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.mapper.toAuthedUser
+import com.example.mustmarket.features.auth.mapper.toLoginResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
@@ -30,7 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(data = user))
                 emit(Resource.Loading(false))
             } else {
-                emit(Resource.Error(response.message))
+                emit(Resource.Error(response.data.toString()))
             }
 
         } catch (e: RetrofitHttpException) {
@@ -57,8 +58,8 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
-                emit(Resource.Success(data = response))
-                sessionManger.saveTokens(response.accessToken, response.refreshToken)
+                emit(Resource.Success(data = response.toLoginResult()))
+                sessionManger.saveTokens(response.data.accessToken, response.data.refreshToken)
             } catch (e: RetrofitHttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 val errorMessage = when (e.code()) {
