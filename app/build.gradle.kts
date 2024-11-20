@@ -25,7 +25,7 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
     namespace = "com.example.mustmarket"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         val properties = Properties()
@@ -45,8 +45,8 @@ android {
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
 
         applicationId = "com.example.mustmarket"
-        minSdk = 29
-        targetSdk = 35
+        minSdk = 28
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -148,9 +148,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation("android.arch.core:core-testing:1.1.1")
-    testImplementation("app.cash.turbine:turbine:1.0.0")
-    testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
 }
