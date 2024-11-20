@@ -97,7 +97,11 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { AccountScreen() }
+            }) {
+            AccountScreen(
+                navController = navController
+            )
+        }
         composable(route = Screen.Favourites.route,
             enterTransition = {
                 return@composable slideIntoContainer(
