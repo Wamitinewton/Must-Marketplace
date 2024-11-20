@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.mustmarket.features.settings.SettingsScreen
 
 @Composable
 fun AccountScreen(modifier: Modifier = Modifier) {
@@ -16,6 +17,10 @@ fun AccountScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        SettingsScreen(
+            //navController = navController
+        )
         Text(text = "Account Screen")
+
     }
 }
