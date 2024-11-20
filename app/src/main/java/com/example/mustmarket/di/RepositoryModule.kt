@@ -1,26 +1,32 @@
 package com.example.mustmarket.di
 
+import android.content.SharedPreferences
 import com.example.mustmarket.UseCases
+import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
+import com.example.mustmarket.features.auth.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
-import com.example.mustmarket.features.auth.domain.usecases.LoginUseCase
-import com.example.mustmarket.features.auth.domain.usecases.SignUpUseCase
-import com.example.mustmarket.features.auth.domain.usecases.TokenSession
+import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
+import com.example.mustmarket.features.home.data.local.db.BookmarkDao
+import com.example.mustmarket.features.home.data.local.db.CategoryDao
 import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
+import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl
+import com.example.mustmarket.features.home.data.repository.SearchProductsRepositoryImpl
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
+import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
-import com.example.mustmarket.features.home.domain.usecases.AllProducts
-import com.example.mustmarket.features.home.domain.usecases.Categories
-import com.example.mustmarket.features.home.domain.usecases.ProductCategories
-import com.example.mustmarket.features.home.domain.usecases.RefreshProduct
+import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
+import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
+import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -29,36 +35,74 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authApi: AuthApi): AuthRepository {
-        return AuthRepositoryImpl(authApi = authApi)
+    fun provideAuthRepository(authApi: AuthApi, sessionManager: SessionManager): AuthRepository {
+        return AuthRepositoryImpl(authApi = authApi, sessionManager)
     }
 
     @Provides
     @Singleton
-    fun provideCategoryRepository(categoryProductsApi: ProductsApi): CategoryRepository {
-        return CategoryRepositoryImpl(categoryApi = categoryProductsApi)
+    fun provideCategoryRepository(
+        categoryProductsApi: ProductsApi,
+        dao: CategoryDao
+    ): CategoryRepository {
+        return CategoryRepositoryImpl(categoryApi = categoryProductsApi, dao = dao)
     }
 
     @Provides
     @Singleton
-    fun provideAllProductsRepository(allProductsApi: ProductsApi, dao: ProductDao): AllProductsRepository {
-        return AllProductsRepositoryImpl(productsApi = allProductsApi, dao = dao)
+    fun provideAllProductsRepository(
+        allProductsApi: ProductsApi,
+        dao: ProductDao,
+        preferences: SecureProductStorage,
+        @IODispatcher ioDispatcher: CoroutineDispatcher,
+        retryUtil: RetryUtil
+    ): AllProductsRepository {
+        return AllProductsRepositoryImpl(
+            productsApi = allProductsApi,
+            dao = dao,
+            preferences = preferences,
+            ioDispatcher = ioDispatcher,
+            retryUtil = retryUtil
+        )
     }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkRepository(dao: BookmarkDao): BookmarkRepository {
+        return BookmarkRepositoryImpl(bookmarkDao = dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchProductRepository(
+        dao: ProductDao,
+        productsApi: ProductsApi,
+        bookmarkDao: BookmarkDao
+    ): SearchProductsRepository {
+        return SearchProductsRepositoryImpl(
+            dao = dao,
+            productsApi = productsApi,
+            bookmarkDao = bookmarkDao
+        )
+    }
+
 
     @Provides
     @Singleton
     fun provideUseCases(
         authRepository: AuthRepository,
         categoryRepository: CategoryRepository,
-        allProductsRepository: AllProductsRepository
+        allProductsRepository: AllProductsRepository,
+        bookmarkRepository: BookmarkRepository,
+        searchProductsRepository: SearchProductsRepository
     ): UseCases =
         UseCases(
-            signUpUseCase = SignUpUseCase(repository = authRepository),
-            loginUseCase = LoginUseCase(repository = authRepository),
-            tokenLogin = TokenSession(repository = authRepository),
-            productCategories = ProductCategories(repository = categoryRepository),
-            categories = Categories(repository = categoryRepository),
-            allProducts = AllProducts(repository = allProductsRepository),
-            refreshProduct = RefreshProduct(repository = allProductsRepository)
+            authUseCase = AuthUseCase(repository = authRepository),
+            homeUseCases = HomeUseCases(
+                categoryRepository = categoryRepository,
+                productRepository = allProductsRepository,
+                bookmarksRepository = bookmarkRepository,
+                searchProductsRepository = searchProductsRepository
+            )
         )
 }

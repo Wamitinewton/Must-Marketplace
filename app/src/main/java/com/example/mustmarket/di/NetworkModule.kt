@@ -1,8 +1,8 @@
 package com.example.mustmarket.di
 
 import android.content.Context
-import com.example.mustmarket.core.util.Constants.BASE_URL
-import com.example.mustmarket.features.auth.data.AuthInterceptor
+import com.example.mustmarket.BuildConfig
+import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -13,7 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -38,12 +37,13 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
+        val baseKey = BuildConfig.SERVER_BASE_URL
         val json = Json {
             ignoreUnknownKeys = true
             isLenient = true
         }
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseKey)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
@@ -57,4 +57,6 @@ object NetworkModule {
     @Singleton
     fun provideCategoryApi(retrofit: Retrofit): ProductsApi =
         retrofit.create(ProductsApi::class.java)
+
+
 }

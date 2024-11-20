@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.ProductCategory
-import com.example.mustmarket.features.home.presentation.state.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductCategoryViewModel @Inject constructor(
-    private val categoryUseCases: UseCases
+    private val productUseCases: UseCases
 ) : ViewModel() {
     private val _viewModelState = MutableStateFlow(ProductCategoryViewModelState())
     val uiState = _viewModelState.asStateFlow()
@@ -25,27 +25,45 @@ class ProductCategoryViewModel @Inject constructor(
         getAllCategories()
     }
 
-    fun onCategoryEvent(event: HomeScreenEvent){
-        when(event){
+    fun onCategoryEvent(event: HomeScreenEvent) {
+        when (event) {
             is HomeScreenEvent.Refresh -> {
-                getAllCategories()
+                refreshCategories()
             }
+
+            is HomeScreenEvent.ClearSearch -> TODO()
+            is HomeScreenEvent.Search -> TODO()
         }
     }
 
     private fun getAllCategories() {
         viewModelScope.launch {
-            categoryUseCases.productCategories().collect { result ->
-                handleCategoriesResult(result)
-            }
+            productUseCases.homeUseCases.getAllCategories()
+                .collect { result ->
+                    if (result is Resource.Success && result.data.isNullOrEmpty()) {
+                        refreshCategories()
+                    } else {
+                        handleCategoriesResult(result)
+                    }
+                }
+        }
+    }
+
+    private fun refreshCategories() {
+        viewModelScope.launch {
+            productUseCases.homeUseCases.refreshCategories()
+                .collect { result ->
+                    handleCategoriesResult(result)
+                }
         }
     }
 
     fun getCategoriesWithLimit(size: Int) {
         viewModelScope.launch {
-            categoryUseCases.categories(size).collect { result ->
-                handleCategoriesResult(result)
-            }
+            productUseCases.homeUseCases.getCategoryBySize(size)
+                .collect { result ->
+                    handleCategoriesResult(result)
+                }
         }
     }
 

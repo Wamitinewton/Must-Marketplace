@@ -63,7 +63,7 @@ fun ProductDetailsScreen(modifier: Modifier = Modifier) {
                 }
                 IconButton(
                     onClick = {}
-               ) {
+                ) {
                     Icon(
                         painter = if (true) {
                             painterResource(id = R.drawable.ic_dialog_email)
@@ -77,14 +77,17 @@ fun ProductDetailsScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-    ) {paddingvalues->
+    ) { paddingvalues ->
         Details(
-            modifier = Modifier.fillMaxSize()
-                .padding(horizontal = paddingvalues.calculateRightPadding(layoutDirection = LayoutDirection.Ltr), vertical = paddingvalues.calculateTopPadding())
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = paddingvalues.calculateRightPadding(layoutDirection = LayoutDirection.Ltr),
+                    vertical = paddingvalues.calculateTopPadding()
+                )
         )
     }
 }
-
 
 
 @Composable
@@ -94,7 +97,7 @@ fun Details(modifier: Modifier = Modifier) {
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data ="https://images.unsplash.com/photo-1710905219584-8521769e3678?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWFjYm9vayUyMG0zfGVufDB8fDB8fHww")
+                        .data(data = "https://images.unsplash.com/photo-1710905219584-8521769e3678?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWFjYm9vayUyMG0zfGVufDB8fDB8fHww")
                         .apply(block = fun ImageRequest.Builder.() {
                             crossfade(true)
                             placeholder(R.drawable.ic_menu_sort_alphabetically)
@@ -135,35 +138,6 @@ fun Details(modifier: Modifier = Modifier) {
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
-//                    val rating: Float by remember { mutableStateOf(product.rating.rate.toFloat()) }
-
-//                    Row(
-//                        horizontalArrangement = Arrangement.SpaceAround,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        RatingBar(
-//                            value = rating,
-//                            config = RatingBarConfig()
-//                                .activeColor(YellowMain)
-//                                .inactiveColor(GrayColor)
-//                                .stepSize(StepSize.HALF)
-//                                .numStars(5)
-//                                .isIndicator(true)
-//                                .size(16.dp)
-//                                .padding(3.dp)
-//                                .style(RatingBarStyle.HighLighted),
-//                            onValueChange = {},
-//                            onRatingChanged = {}
-//                        )
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text(
-//                            text = "(${product.rating.count})",
-//                            color = Color.Black,
-//                            fontSize = 16.sp,
-//                            fontWeight = FontWeight.Light
-//                        )
-//                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 

@@ -1,40 +1,19 @@
 package com.example.mustmarket.features.auth.presentation.signup.state
 
-data class SignUpState(
-    val isLoading: Boolean,
-    val errorMessage: String,
-    val nameInput: String,
-    val passwordInput: String,
-    val passwordConfirmInput: String,
-    val emailInput: String,
-    val result: String,
-    val showPassword: Boolean,
-    val emailError: String,
-    val passwordError: String
-)
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
+import com.example.mustmarket.features.auth.presentation.login.state.AuthState
 
 data class SignUpViewModelState(
     val isLoading: Boolean = false,
     val errorMessage: String = "",
-    val nameInput: String = "",
     val passwordInput: String = "",
-    val passwordConfirmInput: String = "",
     val emailInput: String = "",
-    val result: String = "",
+    val nameInput: String = "",
+    val passwordConfirmInput: String = "",
+    val result: AuthedUser? = null,
     val showPassword: Boolean = false,
     val emailError: String = "",
-    val passwordError: String = ""
-) {
-    fun toUiState(): SignUpState = SignUpState(
-        isLoading,
-        errorMessage,
-        nameInput,
-        passwordInput,
-        passwordConfirmInput,
-        emailInput,
-        result,
-        showPassword,
-        emailError,
-        passwordError
-    )
-}
+    val nameError: String = "",
+    val passwordConfirmError: String = "",
+    val passwordError: String = "",
+)

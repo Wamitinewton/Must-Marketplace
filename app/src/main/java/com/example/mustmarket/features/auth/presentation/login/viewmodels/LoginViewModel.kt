@@ -1,102 +1,187 @@
 package com.example.mustmarket.features.auth.presentation.login.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
-import com.example.mustmarket.core.util.LoadingState
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.domain.model.FinalUser
-import com.example.mustmarket.features.auth.domain.model.LoginUser
-import com.example.mustmarket.features.auth.presentation.login.state.LoginViewModelState
+import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.features.auth.datastore.SessionManager
+import com.example.mustmarket.features.auth.domain.model.LoginRequest
+import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
+import com.example.mustmarket.features.auth.presentation.login.state.AuthState
+import com.example.mustmarket.features.auth.presentation.login.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authUseCase: UseCases
+    private val authUseCase: UseCases,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val viewModelState = MutableStateFlow(LoginViewModelState())
-    val uiState = viewModelState
-        .map { it.toUiState() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            viewModelState.value.toUiState()
-        )
+    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
-    val loadingState = MutableStateFlow(LoadingState.IDLE)
-    private var _idToken = MutableLiveData("")
+    private val _navigateToHome = Channel<Unit>()
+    val navigateToHome = _navigateToHome.receiveAsFlow()
 
-    // we are using live data to listen to token changes
-    val idToken: LiveData<String>
-        get() = _idToken
+    private val _uiEvent = Channel<LoginEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
-    private var _fUser = MutableLiveData<FinalUser>()
-    val fUser = _fUser
+    private val _authUiState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState())
+    val authUiState: StateFlow<LoginState> get() = _authUiState
 
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    fun loginUser(loginCredentials: LoginUser) {
-        viewModelScope.launch {
-            authUseCase.loginUseCase(loginUser = loginCredentials).onEach { result ->
-                viewModelState.update { state ->
-                    when (result) {
-                        is Resource.Success -> state.copy(
-                            isLoading = false,
-                            result = result.data?.user?.name ?: "Some result",
-                            errorMessage = ""
-                        )
+    init {
+        checkSession()
+    }
 
-                        is Resource.Error -> {
-                            state.copy(
-                                isLoading = false,
-                                errorMessage = result.message ?: "Some error",
-                                result = ""
+    private fun checkSession() {
+        _isLoggedIn.value = sessionManager.isSessionValid()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        coroutineDebugger.cancelAllCoroutines()
+        val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
+        if (activeCoroutines.isNotEmpty()) {
+            Log.d(
+                "register",
+                "⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:"
+            )
+            activeCoroutines.forEach { info ->
+                Log.d(
+                    "register",
+                    "📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms"
+                )
+            }
+        }
+    }
+
+    private fun logInWithEmailAndPassword() {
+        val email = _authUiState.value.emailInput
+        val password = _authUiState.value.passwordInput
+
+        coroutineDebugger.launchTracked(
+            scope = viewModelScope,
+            tag = "Login_process"
+        ) {
+            if (email.isEmpty() || password.isEmpty()) {
+                _authUiState.value = _authUiState.value.copy(
+                    authState = AuthState.LOGGED_OUT,
+                    isLoading = false,
+                    errorMessage = "All Inputs Are Required"
+                )
+                return@launchTracked
+            }
+            coroutineDebugger.launchTracked(
+                scope = viewModelScope,
+                tag = "login_NetworkRequest"
+            ) {
+                val result = authUseCase.authUseCase.loginUseCase(
+                    LoginRequest(
+                        email = email,
+                        password = password
+                    )
+                )
+                result.collectLatest { loginResult ->
+                    when (loginResult) {
+                        is Resource.Loading -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.LOGGED_OUT,
+                                isLoading = true,
+                                errorMessage = ""
                             )
                         }
 
-                        is Resource.Loading -> state.copy(
-                            isLoading = true
-                        )
+                        is Resource.Error -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.LOGGED_OUT,
+                                isLoading = false,
+                                errorMessage = loginResult.message.toString()
+                            )
+                        }
+
+                        is Resource.Success -> {
+                            _authUiState.value = _authUiState.value.copy(
+                                authState = AuthState.AUTHENTICATED,
+                                isLoading = false,
+                                errorMessage = ""
+                            )
+                            sessionManager.saveTokens(
+                                loginResult.data!!.refreshToken,
+                                loginResult.data.accessToken,
+                            )
+                            _navigateToHome.send(Unit)
+                        }
                     }
                 }
-            }.launchIn(this)
+            }
+
         }
     }
 
-    fun onEmailInputChanged(emailInput: String) {
-        val emailError = if (!EMAIL_REGEX.matches(emailInput)){
-            "Invalid email format"
-        } else null
-        viewModelState.update {
-            it.copy(
-                emailInput = emailInput,
-                emailError = emailError ?: ""
-            )
+    fun onEvent(event: LoginEvent) {
+        when (event) {
+            is LoginEvent.EmailChanged -> {
+                coroutineDebugger.launchTracked(
+                    scope = viewModelScope,
+                    tag = "EmailValidation"
+                ) {
+                    val emailError =
+                        if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
+                            "Invalid email format"
+                        } else ""
+                    _authUiState.value = _authUiState.value.copy(
+                        emailInput = event.email,
+                        emailError = emailError
+                    )
+                }
+            }
+
+            LoginEvent.ClearError -> {
+                _authUiState.value = _authUiState.value.copy(
+                    errorMessage = ""
+                )
+            }
+
+            LoginEvent.Login -> {
+                logInWithEmailAndPassword()
+            }
+
+            is LoginEvent.PasswordChanged -> {
+                coroutineDebugger.launchTracked(
+                    scope = viewModelScope,
+                    tag = "PasswordValidation"
+                ) {
+                    val passwordError =
+                        if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
+                            "Invalid password format"
+                        } else ""
+                    _authUiState.value = _authUiState.value.copy(
+                        passwordInput = event.password,
+                        passwordError = passwordError
+                    )
+                }
+            }
+
+            is LoginEvent.TogglePasswordVisibility -> {
+                _authUiState.value = _authUiState.value.copy(
+                    showPassword = event.show
+                )
+            }
         }
     }
 
-    fun onPasswordInputChanged(passwordInput: String) {
-        val passwordError = if (!PASSWORD_REGEX.matches(passwordInput)){
-            "Invalid password type"
-        } else null
-        viewModelState.update {
-            it.copy(
-                passwordInput = passwordInput,
-                passwordError = passwordError ?: ""
-            )
-        }
-    }
 
-    fun toggleShowPassword(show: Boolean) {
-        viewModelState.update {
-            it.copy(showPassword = show)
-        }
-    }
 }

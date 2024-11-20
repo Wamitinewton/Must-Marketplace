@@ -16,7 +16,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-        imageUrl = images.firstOrNull()?.downloadUrl?.let { "/api/v1/images/image/download/5" }
+        imageUrl = images.firstOrNull()?.downloadUrl?.let { "" }
     )
 }
 
@@ -24,6 +24,7 @@ fun CategoryDto.toDomainCategory(): ProductCategory {
     return ProductCategory(
         id = id,
         name = name,
+        categoryImage = image?.firstOrNull()?.let { "" }
     )
 }
 
