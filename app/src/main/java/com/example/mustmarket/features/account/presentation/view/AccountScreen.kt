@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.account.presentation
+package com.example.mustmarket.features.account.presentation.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
