@@ -12,36 +12,85 @@ import com.example.mustmarket.features.auth.workmanager.HeadersManager.REFRESH_H
 import com.example.mustmarket.features.auth.workmanager.HeadersManager.TAG
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.net.HttpURLConnection
 
 class AuthInterceptor(context: Context) : Interceptor {
+
     private val sessionManager = SessionManager(context)
+
     override fun intercept(chain: Interceptor.Chain): Response {
+
         val requestBuilder = chain.request().newBuilder()
 
         sessionManager.fetchAccessToken()?.let {
+
             requestBuilder.addHeader(AUTHORIZATION_HEADER, "$BEARER_PREFIX $it")
+
         }
 
         sessionManager.fetchRefreshToken()?.let {
+
             requestBuilder.addHeader(REFRESH_HEADER, it)
+
         }
 
         val response = chain.proceed(requestBuilder.build())
-        getTokensFromResHeaders(response)
+
+        handleResponse(response)
+
         return response
     }
 
+    private fun handleResponse(response: Response) {
+
+        when (response.code) {
+
+            HttpURLConnection.HTTP_UNAUTHORIZED -> {
+
+                // clear tokens if un-authorized
+
+                sessionManager.clearTokens()
+
+            }
+
+            HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_CREATED -> {
+
+                getTokensFromResHeaders(response)
+
+            }
+
+            else -> {
+
+                Log.d(TAG, "unhandled response: ${response.code}")
+
+            }
+        }
+    }
+
     private fun getTokensFromResHeaders(response: Response) {
+
         var accessToken = response.headers[KEY_ACCESS_TOKEN]
+
         val refreshToken = response.headers[KEY_REFRESH_TOKEN]
+
         val newAccessToken = response.headers[NEW_ACCESS_TOKEN_HEADER]
+
         if (newAccessToken != null) accessToken = newAccessToken
+
         if (accessToken != null && refreshToken != null) {
+
             sessionManager.saveAccessToken(accessToken)
+
             sessionManager.saveRefreshToken(refreshToken)
+
+            sessionManager.updateTokenExpiry()
+
             Log.d(TAG, "access: $accessToken")
+
         } else {
+
             Log.d(TAG, "Not token ${response.headers}")
+
         }
     }
 }

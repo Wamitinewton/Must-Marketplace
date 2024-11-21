@@ -10,6 +10,7 @@ import com.example.mustmarket.features.auth.domain.model.LoginResult
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.mapper.toAuthedUser
+import com.example.mustmarket.features.auth.mapper.toLoginResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
@@ -30,18 +31,9 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(data = user))
                 emit(Resource.Loading(false))
             } else {
-                emit(Resource.Error(response.message))
+                emit(Resource.Error(response.data.toString()))
             }
 
-        } catch (e: RetrofitHttpException) {
-            val errorBody = e.response()?.errorBody()?.string()
-            val errorMessage = try {
-                JSONObject(errorBody ?: "").getString("message")
-                    ?: "An unknown error occurred"
-            } catch (e: Exception) {
-                "An unknown error occurred"
-            }
-            emit(Resource.Error(message = errorMessage))
         } catch (e: IOException) {
             emit(
                 Resource.Error(
@@ -57,28 +49,9 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
+                emit(Resource.Loading(false))
                 emit(Resource.Success(data = response))
-                sessionManger.saveTokens(response.accessToken, response.refreshToken)
-            } catch (e: RetrofitHttpException) {
-                val errorBody = e.response()?.errorBody()?.string()
-                val errorMessage = when (e.code()) {
-                    401 -> try {
-                        JSONObject(errorBody ?: "").getString("message")
-                            ?: "Invalid email or password"
-                    } catch (e: Exception) {
-                        "Invalid email or password"
-                    }
-
-                    403 -> "Account is locked. Please contact support"
-                    404 -> "Account not found"
-                    else -> try {
-                        JSONObject(errorBody ?: "").getString("message")
-                            ?: "An unexpected error occurred"
-                    } catch (e: Exception) {
-                        "An unexpected error occurred"
-                    }
-                }
-                emit(Resource.Error(message = errorMessage))
+                sessionManger.saveTokens(response.data.accessToken, response.data.refreshToken)
 
             } catch (e: IOException) {
                 emit(

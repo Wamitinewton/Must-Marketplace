@@ -23,6 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.features.account.domain.models.SettingItem
+import com.example.mustmarket.features.account.presentation.Header
+import com.example.mustmarket.features.account.presentation.SectionTitle
+import com.example.mustmarket.features.account.presentation.SettingsCard
 
 @Composable
 fun AccountScreen(

@@ -1,5 +1,7 @@
 package com.example.mustmarket.core.util
 
+import java.io.IOException
+
 sealed class RepositoryError(
     override val message: String,
     override val cause: Throwable? = null
@@ -15,4 +17,20 @@ sealed class RepositoryError(
 
     class Api(message: String, cause: Throwable? = null) :
         RepositoryError(message, cause)
+}
+
+sealed class CustomError(
+    override val message: String,
+): IOException(message) {
+    class NoConnectivityException(message: String) : CustomError(message)
+    class NetworkTimeoutException(message: String) : CustomError(message)
+    class BadRequestException(message: String) : CustomError(message)
+    class UnauthorizedException(message: String) : CustomError(message)
+    class ForbiddenException(message: String) : CustomError(message)
+    class NotFoundException(message: String) : CustomError(message)
+    class MethodNotAllowedException(message: String) : CustomError(message)
+    class RequestTimeoutException(message: String) : CustomError(message)
+    class ServerErrorException(message: String) : CustomError(message)
+    class UnknownHttpException(message: String) : CustomError(message)
+    class NetworkException(message: String) : CustomError(message)
 }

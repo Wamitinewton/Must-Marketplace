@@ -107,7 +107,7 @@ class SignUpViewModel @Inject constructor(
     private fun updateSignupState(
         isLoading: Boolean = _authUiState.value.isLoading,
         errorMessage: String = _authUiState.value.errorMessage,
-        result: AuthedUser = _authUiState.value.result!!,
+        result: AuthedUser = _authUiState.value.result,
     ) {
         _authUiState.value = _authUiState.value.copy(
             isLoading = isLoading,
