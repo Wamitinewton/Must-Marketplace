@@ -10,7 +10,7 @@ data class SignUpViewModelState(
     val emailInput: String = "",
     val nameInput: String = "",
     val passwordConfirmInput: String = "",
-    val result: AuthedUser? = null,
+    val result: AuthedUser = AuthedUser(0, "", ""),
     val showPassword: Boolean = false,
     val emailError: String = "",
     val nameError: String = "",

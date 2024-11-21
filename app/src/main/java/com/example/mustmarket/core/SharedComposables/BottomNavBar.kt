@@ -39,12 +39,12 @@ fun BottomNavBar(
                     Icon(
                         imageVector = when (screen) {
                             Screen.HomeScreen -> Icons.Default.Home
-                            Screen.Explore -> Icons.Default.Search
+                            Screen.Explore -> Icons.Default.ShoppingCart
 
                             Screen.Bookmarks -> Icons.Default.Bookmark
 
-                            Screen.Favourites -> Icons.Default.Favorite
-                            Screen.Profile -> Icons.Default.Person
+                            Screen.Favourites -> Icons.Default.AddCircleOutline
+                            Screen.Profile -> Icons.Default.Settings
                             else -> Icons.Default.Home
                         },
                         contentDescription = screen.route

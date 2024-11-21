@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LogInResultDto(
-    @SerializedName("accesstoken")
-    val accessToken: String?,
-    @SerializedName("refreshtoken")
-    val refreshToken: String?
+   @SerializedName("message")
+    val message: String,
+
+    @SerializedName("data")
+    val data: LoginDataDto
 )
+
