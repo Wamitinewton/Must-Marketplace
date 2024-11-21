@@ -4,7 +4,7 @@ import com.example.mustmarket.features.auth.data.dto.LogInResultDto
 import com.example.mustmarket.features.auth.data.dto.LoginDataDto
 import com.example.mustmarket.features.auth.data.dto.UserDto
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.auth.domain.model.LoginDto
+import com.example.mustmarket.features.auth.domain.model.LoginData
 import com.example.mustmarket.features.auth.domain.model.LoginResult
 
 internal fun LogInResultDto.toLoginResult(): LoginResult {
@@ -14,9 +14,9 @@ internal fun LogInResultDto.toLoginResult(): LoginResult {
     )
 }
 
-internal fun LoginDataDto.toLoginData(): LoginDto {
-    return LoginDto(
-        accessToken = accessToken,
+internal fun LoginDataDto.toLoginData(): LoginData {
+    return LoginData(
+        token = token,
         refreshToken = refreshToken,
         user = user.toAuthedUser()
     )
@@ -27,7 +27,7 @@ internal fun UserDto.toAuthedUser(): AuthedUser {
     return AuthedUser(
         email = email ?: "",
         id = id ?: 0,
-        userName = name ?: "",
+        name = name ?: "",
     )
 }
 
