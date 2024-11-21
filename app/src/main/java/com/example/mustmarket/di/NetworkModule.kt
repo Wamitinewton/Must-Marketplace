@@ -2,6 +2,7 @@ package com.example.mustmarket.di
 
 import android.content.Context
 import com.example.mustmarket.BuildConfig
+import com.example.mustmarket.core.interceptor.ErrorInterceptor
 import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
@@ -26,12 +27,21 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(@ApplicationContext context: Context): OkHttpClient =
+    fun provideHttpClient(
+        @ApplicationContext context: Context,
+        errorInterceptor: ErrorInterceptor
+    ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(errorInterceptor)
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
             .build()
+
+    @Provides
+    @Singleton
+    fun provideErrorInterceptor(@ApplicationContext context: Context): ErrorInterceptor =
+        ErrorInterceptor(context)
 
     @Provides
     @Singleton

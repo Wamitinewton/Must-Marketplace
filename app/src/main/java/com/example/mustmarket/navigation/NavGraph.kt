@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
+import com.example.mustmarket.features.auth.presentation.otp.OtpVerificationScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
@@ -36,8 +37,8 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route,
-        ) {
+        startDestination = Screen.Profile.route,
+    ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
             return@composable slideIntoContainer(
@@ -49,7 +50,7 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { LoginScreen(navController = navController,) }
+            }) { LoginScreen(navController = navController) }
         composable(route = Screen.Splash.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -61,7 +62,12 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { HomeScreen(navController = navController,allProductsViewModel= productViewModel) }
+            }) {
+            HomeScreen(
+                navController = navController,
+                allProductsViewModel = productViewModel
+            )
+        }
         composable(route = Screen.Detail.route,
             arguments = listOf(
                 navArgument("productId") { type = NavType.IntType }
@@ -89,9 +95,11 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { BookmarksScreen(
+            }) {
+            BookmarksScreen(
                 onProductClick = {}
-            ) }
+            )
+        }
         composable(route = Screen.Profile.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -108,6 +116,8 @@ fun SetUpNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) { FavouritesScreen() }
+
+        composable(route = Screen.Otp.route) { OtpVerificationScreen(navController = navController) }
     }
 }
 

@@ -84,67 +84,102 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen(
+
     navController: NavController,
+
     signUpViewModel: SignUpViewModel = hiltViewModel(),
-) {
+
+    ) {
     val uiState by signUpViewModel.authUiState.collectAsStateWithLifecycle()
+
     val emailIsValid = uiState.emailInput.isNotEmpty() && EMAIL_REGEX.matches(uiState.emailInput)
+
     val passwordValid =
+
         uiState.passwordInput.isNotEmpty() && PASSWORD_REGEX.matches(uiState.passwordInput)
+
     val confirmPasswordValid =
+
         uiState.passwordConfirmInput.isNotEmpty() && uiState.passwordInput == uiState.passwordConfirmInput
+
     val userNameValid = uiState.nameInput.isNotEmpty()
 
     val btnEnabled = emailIsValid && passwordValid && confirmPasswordValid && userNameValid
+
     val context = LocalContext.current
+
     val systemUiController = rememberSystemUiController()
 
     val networkState by rememberConnectivityState()
+
     var showNetworkDialog by remember { mutableStateOf(false) }
 
     var showSuccessDialog by remember { mutableStateOf(false) }
 
     systemUiController.setSystemBarsColor(
+
         color = Color.Transparent,
+
         darkIcons = true
+
     )
 
     LaunchedEffect(networkState) {
+
         showNetworkDialog = networkState == NetworkConnectionState.Unavailable
+
     }
 
     if (showNetworkDialog) {
+
         NetworkAlertDialog(
+
             onDismiss = { showNetworkDialog = false },
+
             onExit = { (context as? Activity)?.finish() }
+
         )
     }
 
 
 
     LaunchedEffect(Unit) {
+
         signUpViewModel.navigateToLogin.collect {
+
             showSuccessDialog = true
-            delay(7000)
+
+            delay(4000)
+
             showSuccessDialog = false
-            navController.navigate(Screen.Login.route) {
-                popUpTo(Screen.SignUp.route) { inclusive = true }
-            }
+
+            navController.popBackStack()
+
+            navController.navigate(Screen.Login.route)
+
         }
     }
 
     if (showSuccessDialog) {
+
         SignUpSuccess(
+
             onDismiss = { showSuccessDialog = false }
+
         )
     }
 
 
     fun handleSignupClick() {
+
         if (networkState == NetworkConnectionState.Available) {
+
             signUpViewModel.onEvent(SignupEvent.Signup)
+
         } else {
+
             showNetworkDialog = true
+
         }
     }
 
