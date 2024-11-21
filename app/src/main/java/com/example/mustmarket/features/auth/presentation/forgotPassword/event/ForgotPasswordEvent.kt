@@ -8,4 +8,5 @@ sealed class ForgotPasswordEvent {
     data object RequestOtp : ForgotPasswordEvent()
     data object ResetPassword : ForgotPasswordEvent()
     data object ClearErrors : ForgotPasswordEvent()
+    data object VerifyOtp : ForgotPasswordEvent()
 }
