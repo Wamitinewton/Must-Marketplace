@@ -15,7 +15,7 @@ import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
-import com.example.mustmarket.features.auth.presentation.otp.OtpVerificationScreen
+import com.example.mustmarket.features.auth.presentation.forgotPassword.view.OtpVerificationScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen

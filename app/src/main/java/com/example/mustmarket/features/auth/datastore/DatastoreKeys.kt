@@ -8,6 +8,5 @@ object DatastoreKeys {
     const val DEFAULT_TOKEN_EXPIRY_HOURS = 240L
 
     const val USER_CACHE_PREFS = "user_preferences"
-    const val USERNAME = "name"
-    const val USER_EMAIL = "email"
+    const val USERDATA = "user_data"
 }
