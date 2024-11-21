@@ -49,6 +49,7 @@ import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
+import com.example.mustmarket.features.auth.datastore.UserData
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
@@ -83,6 +84,8 @@ fun Content(
     navController: NavController,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val userData by viewModel.userData.collectAsState()
+
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
@@ -134,7 +137,11 @@ fun Content(
 
             if (!uiState.isSearchActive && uiState.searchQuery.isEmpty()) {
                 stickyHeader {
-                    HeaderBar()
+                    userData?.let {
+                        HeaderBar(
+                            userData = it
+                        )
+                    }
                 }
                 item { Promotions() }
                 item { CategoryGridView() }
@@ -220,7 +227,9 @@ fun Content(
 }
 
 @Composable
-fun HeaderBar() {
+fun HeaderBar(
+    userData: UserData
+) {
     Card(
         Modifier
             .height(64.dp)
@@ -253,7 +262,7 @@ fun HeaderBar() {
                         fontSize = 12.sp
                     )
                     Text(
-                        text = "Newton Wamiti",
+                        text = userData.name ?: "Guest",
                         fontWeight = FontWeight.SemiBold,
                         color = colorPrimary,
                         fontSize = 12.sp

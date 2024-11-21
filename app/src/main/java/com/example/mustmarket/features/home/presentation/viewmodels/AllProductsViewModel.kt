@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.features.auth.datastore.UserData
+import com.example.mustmarket.features.auth.datastore.UserStoreManager
 import com.example.mustmarket.features.home.domain.model.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
@@ -27,7 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
+    private val userStoreManager: UserStoreManager
 ) : ViewModel() {
+    private val _userData = MutableStateFlow<UserData?>(null)
+    val userData: StateFlow<UserData?> = _userData.asStateFlow()
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
@@ -40,6 +45,7 @@ class AllProductsViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
+       _userData.value = userStoreManager.fetchUserData()
         initializeProducts()
         setUpSearchListener()
     }
