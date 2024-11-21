@@ -14,10 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
+import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
-import com.example.mustmarket.features.auth.presentation.forgotPassword.view.OtpVerificationScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
-import com.example.mustmarket.features.splash.view.SplashScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.explore.ExploreScreen
 import com.example.mustmarket.features.favourite.FavouritesScreen
@@ -25,6 +24,7 @@ import com.example.mustmarket.features.home.presentation.view.productDetails.Pro
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
+import com.example.mustmarket.features.splash.view.SplashScreen
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
@@ -117,7 +117,11 @@ fun SetUpNavGraph(
                 )
             }) { FavouritesScreen() }
 
-        composable(route = Screen.Otp.route) { OtpVerificationScreen(navController = navController) }
+        composable(route = Screen.Otp.route) {
+            ForgotPasswordRoute(navController = navController, onNavigateToLogin = {
+                navController.navigate(Screen.Login.route)
+            })
+        }
     }
 }
 

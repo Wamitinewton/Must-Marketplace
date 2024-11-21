@@ -2,6 +2,7 @@ package com.example.mustmarket.features.auth.presentation.forgotPassword.viewmod
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.coroutine.CoroutineDebugger
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
@@ -21,9 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authUseCase: AuthUseCase,
-    private val coroutineDebugger: CoroutineDebugger
+    private val authUseCase: UseCases,
 ) : ViewModel() {
+    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
     private val _state = MutableStateFlow(ForgotPasswordState())
     val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
@@ -77,6 +78,23 @@ class ForgotPasswordViewModel @Inject constructor(
             ForgotPasswordEvent.ResetPassword -> {
                 resetPassword()
             }
+
+            ForgotPasswordEvent.VerifyOtp -> {
+                verifyOtp()
+            }
+        }
+    }
+
+    private fun verifyOtp() {
+        if (_state.value.otp.length != 6) {
+            _state.update { it.copy(otpError = "Please enter a valid 6-digit OTP") }
+            return
+        }
+        _state.update {
+            it.copy(
+                currentScreen = ForgotPasswordScreen.NEW_PASSWORD,
+                otpError = null
+            )
         }
     }
 
@@ -87,7 +105,7 @@ class ForgotPasswordViewModel @Inject constructor(
             tag = "request-Otp",
             scope = viewModelScope
         ) {
-            authUseCase.requestOtpUseCase(_state.value.email)
+            authUseCase.authUseCase.requestOtpUseCase(_state.value.email)
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> {
@@ -124,7 +142,7 @@ class ForgotPasswordViewModel @Inject constructor(
                 otp = _state.value.otp,
                 newPassword = _state.value.newPassword
             )
-            authUseCase.resetPasswordUseCase(otpRequest)
+            authUseCase.authUseCase.resetPasswordUseCase(otpRequest)
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> {
