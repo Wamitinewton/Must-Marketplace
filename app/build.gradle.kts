@@ -28,7 +28,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        val properties = Properties()
+        val properties =  Properties()
         try {
             val keystoreFile = rootProject.file("keys.properties")
             if (keystoreFile.exists()) {
@@ -42,7 +42,16 @@ android {
 
         val serverBaseUrl = properties.getProperty("SERVER_BASE_URL")
             ?: throw GradleException("SERVER_BASE_URL not found in keys.properties")
+
+        val awsSecretKey = properties.getProperty("secretKey")
+            ?: throw GradleException("secretKey not found in keys.properties")
+
+        val awsAccessKey = properties.getProperty("accessKey")
+            ?: throw GradleException("accessKey not found in keys.properties")
+
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
+        buildConfigField("String","AWS_SECRET_KEY","\"$awsSecretKey\"")
+        buildConfigField("String","AWS_ACCESS_KEY","\"$awsAccessKey\"")
 
         applicationId = "com.example.mustmarket"
         minSdk = 28
