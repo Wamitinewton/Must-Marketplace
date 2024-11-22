@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AuthedUser(
     val id: Int,
-    val userName: String,
+    val name: String,
     val email: String
 )

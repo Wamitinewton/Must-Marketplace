@@ -1,6 +1,7 @@
 package com.example.mustmarket.core.SharedComposables
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,81 +45,37 @@ fun CustomImageLoader(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
 ) {
-    var isLoading by remember { mutableStateOf(false) }
-    var isError by remember { mutableStateOf(false) }
-
-
-    val imageLoader = ImageLoader.Builder(context)
-        .memoryCache {
-            MemoryCache.Builder(context)
-                .maxSizePercent(0.25)
-                .build()
-        }
-        .diskCache {
-            DiskCache.Builder()
-                .directory(context.cacheDir)
-                .maxSizeBytes(50L * 1024 * 1024)
-                .build()
-        }
-        .logger(DebugLogger())
-        .okHttpClient {
-            OkHttpClient.Builder()
-                .addInterceptor { chain ->
-                    val request: Request = chain.request().newBuilder()
-                        .build()
-                    chain.proceed(request)
-                }
-                .build()
-        }
-        .build()
-    fun generateSignedUrl(objectKey: String): String {
-        val awsCreds = AwsBasicCredentials.create(BuildConfig.AWS_ACCESS_KEY, BuildConfig.AWS_SECRET_KEY)
+    fun generateSignedUrl(urlString: String): String {
+        val awsCreds =
+            AwsBasicCredentials.create(BuildConfig.AWS_ACCESS_KEY, BuildConfig.AWS_SECRET_KEY)
         val credentialsProvider = StaticCredentialsProvider.create(awsCreds)
 
         val signer = S3Presigner.builder()
             .region(Region.US_EAST_1)
             .credentialsProvider(credentialsProvider)
             .build()
-
+        val objectKey: String = urlString.split("/").last()
         val getObjectRequest = GetObjectRequest.builder()
             .bucket(BuildConfig.AWS_BUCKET_NAME)
             .key(objectKey)
             .build()
-        val signRequest = GetObjectPresignRequest.builder().getObjectRequest(getObjectRequest)
-            .signatureDuration(Duration.ofMinutes(10)).build()
+        val signRequest = GetObjectPresignRequest
+            .builder()
+            .getObjectRequest(getObjectRequest)
+            .signatureDuration(Duration.ofDays(2))
+            .build()
         val signedGetObjectRequest = signer.presignGetObject(signRequest)
         return signedGetObjectRequest.url().toString()
     }
 
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(context)
-            .data(generateSignedUrl(s3Url))
-            .crossfade(true)
-            .build(),
-        imageLoader = imageLoader,
-    )
-    Box (modifier = modifier){
-        SubcomposeAsyncImage(
-            model = painter,
+    Box(modifier = modifier) {
+        AsyncImage(
+            model = generateSignedUrl(s3Url),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = contentScale,
-            loading = {
-                ShimmerAnimation(modifier=modifier)
-            },
-            error = {
-                Box(
-                    modifier = modifier,
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.no_image),
-                        contentDescription = "no-image",
-                        contentScale = contentScale
-                    )
-                }
-            }
         )
+
     }
 
 }

@@ -16,7 +16,7 @@ internal fun LogInResultDto.toLoginResult(): LoginResult {
 
 internal fun LoginDataDto.toLoginData(): LoginDto {
     return LoginDto(
-        accessToken = accessToken,
+        token = token,
         refreshToken = refreshToken,
         user = user.toAuthedUser()
     )
@@ -25,9 +25,9 @@ internal fun LoginDataDto.toLoginData(): LoginDto {
 
 internal fun UserDto.toAuthedUser(): AuthedUser {
     return AuthedUser(
-        email = email ?: "",
-        id = id ?: 0,
-        userName = name ?: "",
+        email = email,
+        id = id,
+        name = name,
     )
 }
 

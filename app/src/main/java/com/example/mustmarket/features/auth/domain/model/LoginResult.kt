@@ -13,7 +13,7 @@ data class LoginResult(
 
 @Serializable
 data class LoginDto(
-    val accessToken: String,
+    val token: String,
     val refreshToken: String,
     val user: AuthedUser
 )

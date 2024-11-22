@@ -12,5 +12,5 @@ data class CategoryDto(
     val name: String,
 
     @SerialName("image")
-    val image: String? = null
+    val image: String
 )

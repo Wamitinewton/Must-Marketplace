@@ -49,9 +49,9 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
-                emit(Resource.Loading(false))
+                sessionManger.saveTokens(response.data.token, response.data.refreshToken)
                 emit(Resource.Success(data = response))
-                sessionManger.saveTokens(response.data.accessToken, response.data.refreshToken)
+                emit(Resource.Loading(false))
 
             } catch (e: IOException) {
                 emit(
