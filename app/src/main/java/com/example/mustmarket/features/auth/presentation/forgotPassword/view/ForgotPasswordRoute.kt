@@ -25,7 +25,8 @@ fun ForgotPasswordRoute(
                 isLoading = state.isLoading,
                 emailError = state.emailError,
                 onEmailChanged = { viewModel.onEvent(ForgotPasswordEvent.EmailChanged(it)) },
-                onSubmit = { viewModel.onEvent(ForgotPasswordEvent.RequestOtp) }
+                onSubmit = { viewModel.onEvent(ForgotPasswordEvent.RequestOtp) },
+                onBackPressed = onNavigateToLogin
             )
         }
 

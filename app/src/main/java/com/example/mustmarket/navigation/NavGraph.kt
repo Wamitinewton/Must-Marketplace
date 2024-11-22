@@ -119,6 +119,7 @@ fun SetUpNavGraph(
 
         composable(route = Screen.Otp.route) {
             ForgotPasswordRoute(navController = navController, onNavigateToLogin = {
+                navController.popBackStack()
                 navController.navigate(Screen.Login.route)
             })
         }
