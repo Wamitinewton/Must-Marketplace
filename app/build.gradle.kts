@@ -49,8 +49,12 @@ android {
         val awsAccessKey = properties.getProperty("accessKey")
             ?: throw GradleException("accessKey not found in keys.properties")
 
+        val awsbucketName = properties.getProperty("bucketName")
+            ?: throw GradleException("bucketName not found in keys.properties")
+
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
         buildConfigField("String","AWS_SECRET_KEY","\"$awsSecretKey\"")
+        buildConfigField("String","AWS_BUCKET_NAME","\"$awsbucketName\"")
         buildConfigField("String","AWS_ACCESS_KEY","\"$awsAccessKey\"")
 
         applicationId = "com.example.mustmarket"
@@ -149,6 +153,10 @@ dependencies {
     // Utils
     implementation("com.google.errorprone:error_prone_annotations:2.11.0")
 
+    // AWS sdk
+    implementation("software.amazon.awssdk:s3:2.20.8")
+    implementation("software.amazon.awssdk:auth:2.20.8")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -157,4 +165,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
 }
