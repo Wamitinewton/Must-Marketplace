@@ -23,7 +23,7 @@ fun LoginForm(
     passwordInput: String,
     showPassword: Boolean,
     emailError: String,
-    passwordError: String,
+    passwordError: String? = null,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onTogglePassword: (Boolean) -> Unit,
@@ -48,7 +48,6 @@ fun LoginForm(
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
             name = "Password",
-            errorMessage = passwordError
         )
         Text(
             modifier = Modifier

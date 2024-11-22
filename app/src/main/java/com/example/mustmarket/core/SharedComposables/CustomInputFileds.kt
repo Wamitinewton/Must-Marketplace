@@ -1,7 +1,10 @@
 package com.example.mustmarket.core.SharedComposables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
@@ -39,45 +43,88 @@ fun PasswordInput(
     showPassword: Boolean,
     toggleShowPassword: (Boolean) -> Unit,
     name: String,
-    errorMessage: String? = null
+    errorMessage: List<String> = emptyList(),
+    passwordStrength: PasswordStrength? = null
 ) {
 
 
-    OutlinedTextField(
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            errorCursorColor = MaterialTheme.colors.primary,
-            errorBorderColor = Color.Gray,
-            focusedBorderColor = MaterialTheme.colors.primary
-        ),
-        modifier = Modifier
-            .background(Color.Transparent),
-        value = inputText,
-        onValueChange = { onInputChanged(it) },
-        textStyle = MaterialTheme.typography.h4.copy(
-            color = ThemeUtils.AppColors.Text.themed()
-        ),
-        label = { TextFieldLabel(name = name) },
-        singleLine = true,
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                errorCursorColor = MaterialTheme.colors.primary,
+                errorBorderColor = Color.Gray,
+                focusedBorderColor = MaterialTheme.colors.primary
+            ),
+            modifier = Modifier
+                .background(Color.Transparent),
+            value = inputText,
+            onValueChange = { onInputChanged(it) },
+            textStyle = MaterialTheme.typography.h4.copy(
+                color = ThemeUtils.AppColors.Text.themed()
+            ),
+            label = { TextFieldLabel(name = name) },
+            singleLine = true,
 
-        keyboardOptions = myKeyboardOptions,
-        trailingIcon = {
-            IconButton(onClick = { toggleShowPassword(!showPassword) }) {
-                Icon(
-                    imageVector = if (showPassword) Icons.Filled.VisibilityOff else Icons.Default.Visibility,
-                    contentDescription = if (showPassword) "Hide Password" else "Show password"
-                )
-            }
-        },
-        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-        isError = errorMessage != null
-    )
-    errorMessage?.let {
-        Text(
-            text = it,
-            color = Color.Gray,
-            style = MaterialTheme.typography.caption,
-            modifier = Modifier.padding(start = 16.dp)
+            keyboardOptions = myKeyboardOptions,
+            trailingIcon = {
+                IconButton(onClick = { toggleShowPassword(!showPassword) }) {
+                    Icon(
+                        imageVector = if (showPassword) Icons.Filled.VisibilityOff else Icons.Default.Visibility,
+                        contentDescription = if (showPassword) "Hide Password" else "Show password"
+                    )
+                }
+            },
+            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            isError = errorMessage.isNotEmpty()
         )
+        AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
+            Column(modifier = Modifier.padding(start = 16.dp, top = 4.dp)) {
+                errorMessage.forEach { error ->
+                    Text(
+                        text = "• $error",
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+            }
+        }
+        passwordStrength?.let { strength ->
+            Spacer(modifier = Modifier.height(8.dp))
+            when (strength) {
+                PasswordStrength.WEAK -> {
+                    PasswordStrengthIndicator(
+                        strength = "Weak",
+                        color = Color.Red,
+                    )
+                }
+
+                PasswordStrength.MEDIUM -> {
+                    PasswordStrengthIndicator(
+                        strength = "Medium",
+                        color = Color.Yellow,
+                    )
+                }
+
+                PasswordStrength.STRONG -> {
+                    PasswordStrengthIndicator(
+                        strength = "Strong",
+                        color = Color.Green,
+                    )
+                }
+
+                PasswordStrength.VERY_STRONG -> {
+                    PasswordStrengthIndicator(
+                        strength = "Very Strong",
+                        color = Color.Green,
+                    )
+                }
+
+                else -> {}
+            }
+        }
     }
 }
 

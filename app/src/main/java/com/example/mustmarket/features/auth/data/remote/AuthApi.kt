@@ -22,5 +22,6 @@ interface AuthApi {
 
     @POST("api/v1/auth/reset-password")
     suspend fun resetPassword(@Body otpRequest: OtpRequest): PasswordResetResponse
+
 }
 

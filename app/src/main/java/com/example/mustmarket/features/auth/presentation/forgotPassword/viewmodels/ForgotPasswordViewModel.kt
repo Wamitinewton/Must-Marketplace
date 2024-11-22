@@ -8,7 +8,8 @@ import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
-import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
+import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.OTP_LENGTH
+import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.SCORE_THRESHOLDS
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.ForgotPasswordScreen
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 import com.example.mustmarket.features.auth.presentation.forgotPassword.event.ForgotPasswordEvent
@@ -28,6 +29,56 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ForgotPasswordState())
     val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
+
+    private fun clearErrors() {
+        _state.update {
+            it.copy(
+                emailError = null,
+                otpError = null,
+                passwordError = null,
+                confirmPasswordError = null,
+                errorMessage = null,
+                passwordStrength = getPasswordStrengthMessage(it.newPassword)
+            )
+        }
+    }
+
+    private fun updateConfirmPassword(confirmPassword: String) {
+        _state.update {
+            it.copy(
+                confirmPassword = confirmPassword,
+                confirmPasswordError = null
+            )
+        }
+    }
+
+    private fun updateEmail(email: String) {
+        _state.update {
+            it.copy(
+                email = email,
+                emailError = null
+            )
+        }
+    }
+
+    private fun updateOtp(otp: String) {
+        _state.update {
+            it.copy(
+                otp = otp,
+                otpError = null
+            )
+        }
+    }
+
+    private fun updatePassword(password: String) {
+        _state.update {
+            it.copy(
+                newPassword = password,
+                passwordError = null,
+                passwordStrength = getPasswordStrengthMessage(password)
+            )
+        }
+    }
 
     fun onEvent(event: ForgotPasswordEvent) {
         when (event) {
@@ -86,8 +137,8 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun verifyOtp() {
-        if (_state.value.otp.length != 6) {
-            _state.update { it.copy(otpError = "Please enter a valid 6-digit OTP") }
+        if (_state.value.otp.length != OTP_LENGTH) {
+            _state.update { it.copy(otpError = "Please enter a valid $OTP_LENGTH-digit OTP") }
             return
         }
         _state.update {
@@ -252,12 +303,8 @@ class ForgotPasswordViewModel @Inject constructor(
         if (password.length >= 8) score++
         if (password.length >= 12) score++
 
-        return when (score) {
-            0, 1 -> PasswordStrength.WEAK
-            2, 3 -> PasswordStrength.MEDIUM
-            4, 5 -> PasswordStrength.STRONG
-            6 -> PasswordStrength.VERY_STRONG
-            else -> PasswordStrength.NONE
-        }
+        return SCORE_THRESHOLDS.entries.firstOrNull {
+            score in it.key
+        }?.value ?: PasswordStrength.NONE
     }
 }

@@ -10,6 +10,8 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.core.coroutine.CoroutineDebugger
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
+import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.SCORE_THRESHOLDS
+import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 import com.example.mustmarket.features.auth.presentation.signup.event.SignupEvent
 import com.example.mustmarket.features.auth.presentation.signup.state.SignUpViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,21 +69,35 @@ class SignUpViewModel @Inject constructor(
             scope = viewModelScope,
             tag = "Signup_process"
         ) {
-            if (email.isEmpty() || password.isEmpty() || name.isEmpty() || passwordConfirm.isEmpty()) {
-                updateSignupState(
-                    isLoading = false,
-                    errorMessage = "All inputs are required"
-                )
-                return@launchTracked
+            when {
+                email.isEmpty() || password.isEmpty() || name.isEmpty() || passwordConfirm.isEmpty() -> {
+                    updateSignupState(
+                        isLoading = false,
+                        errorMessage = "All inputs are required"
+                    )
+                    return@launchTracked
+                }
+
+                !validatePassword(password) -> {
+                    val errors = buildPasswordErrorList(password)
+                    _authUiState.value = _authUiState.value.copy(
+                        isLoading = false,
+                        passwordError = errors
+                    )
+                    return@launchTracked
+                }
+
+                password != passwordConfirm -> {
+                    _authUiState.value = _authUiState.value.copy(
+                        isLoading = false,
+                        passwordConfirmError = listOf("Passwords do not match")
+                    )
+                    return@launchTracked
+                }
             }
 
-            if (password != passwordConfirm) {
-                updateSignupState(
-                    isLoading = false,
-                    errorMessage = "Passwords do not match"
-                )
-                return@launchTracked
-            }
+
+
             coroutineDebugger.launchTracked(
                 scope = viewModelScope,
                 tag = "Signup_NetworkRequest"
@@ -144,10 +160,10 @@ class SignUpViewModel @Inject constructor(
                     scope = viewModelScope,
                     tag = "PasswordConfirmValidation"
                 ) {
-                    val passwordConfirmError =
-                        if (event.confirmPassword != _authUiState.value.passwordInput) {
-                            "Passwords do not match"
-                        } else ""
+                    val passwordConfirmError = mutableListOf<String>()
+                    if (event.confirmPassword.isNotEmpty() && event.confirmPassword != _authUiState.value.passwordInput) {
+                        passwordConfirmError.add("Passwords do not match")
+                    }
                     _authUiState.value = _authUiState.value.copy(
                         passwordConfirmInput = event.confirmPassword,
                         passwordConfirmError = passwordConfirmError
@@ -161,13 +177,11 @@ class SignUpViewModel @Inject constructor(
                     scope = viewModelScope,
                     tag = "PasswordValidation"
                 ) {
-                    val passwordError =
-                        if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
-                            "Invalid password format"
-                        } else ""
+                    val password = event.password
                     _authUiState.value = _authUiState.value.copy(
-                        passwordInput = event.password,
-                        passwordError = passwordError
+                        passwordInput = password,
+                        passwordError = if (password.isNotEmpty()) buildPasswordErrorList(password) else emptyList(),
+                        passwordStrength = getPasswordStrength(password)
                     )
                 }
             }
@@ -199,5 +213,42 @@ class SignUpViewModel @Inject constructor(
             }
         }
 
+    }
+
+    private fun validatePassword(password: String): Boolean {
+        return password.matches(".*[0-9].*".toRegex()) &&
+                password.matches(".*[a-z].*".toRegex()) &&
+                password.matches(".*[A-Z].*".toRegex()) &&
+                password.matches(".*[@#$%^_&+=].*".toRegex()) &&
+                !password.contains(" ") &&
+                password.length >= 8
+    }
+
+    private fun buildPasswordErrorList(password: String): List<String> {
+        return buildList {
+            if (!password.matches(".*[0-9].*".toRegex())) add("Password must contain at least one digit")
+            if (!password.matches(".*[a-z].*".toRegex())) add("Password must contain at least one lowercase letter")
+            if (!password.matches(".*[A-Z].*".toRegex())) add("Password must contain at least one uppercase letter")
+            if (!password.matches(".*[@#$%^_&+=].*".toRegex())) add("Password must contain at least one special character (@#\$%^_&+=)")
+            if (password.contains(" ")) add("Password must not contain whitespace")
+            if (password.length < 8) add("Password must be at least 8 characters long")
+        }
+    }
+
+
+    private fun getPasswordStrength(password: String): PasswordStrength {
+        if (password.isEmpty()) return PasswordStrength.NONE
+
+        var score = 0
+        if (password.matches(".*[0-9].*".toRegex())) score++
+        if (password.matches(".*[a-z].*".toRegex())) score++
+        if (password.matches(".*[A-Z].*".toRegex())) score++
+        if (password.matches(".*[@#$%^_&+=].*".toRegex())) score++
+        if (password.length >= 8) score++
+        if (password.length >= 12) score++
+
+        return SCORE_THRESHOLDS.entries.firstOrNull {
+            score in it.key
+        }?.value ?: PasswordStrength.NONE
     }
 }

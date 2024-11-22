@@ -22,7 +22,8 @@ fun PasswordStrengthIndicator(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .padding(start = 40.dp, end = 30.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
