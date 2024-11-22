@@ -61,6 +61,7 @@ import androidx.constraintlayout.compose.MotionScene
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.core.SharedComposables.BottomNavBar
+import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
@@ -99,7 +100,6 @@ fun ProductDetailsScreen(
                         scope = scope,
                     )
                 }
-
                 is BookmarkEvent.Error -> {
                     event.message?.let { errorMessage ->
                         SingleToastManager.showToast(
@@ -155,6 +155,7 @@ fun ProductDetailsContent(
     val bookmarkStatuses = bookmarksViewModel.bookmarkStatusUpdates.collectAsState()
     val isBookmarked = bookmarkStatuses.value[product.id] ?: false
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var progress by remember { mutableFloatStateOf(0f) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
@@ -334,11 +335,10 @@ fun ProductDetailsContent(
                     .padding(top = 20.dp)
 
             ) {
-               ImageLoaderUtil(
-                   imageUrl = product.imageUrl,
-                   contentDescription = null,
-                   shape = RectangleShape
-               )
+                CustomImageLoader(
+                    context,
+                    s3Url = (product.imageUrl?.get(0) ?: intArrayOf()).toString(),
+                )
             }
 
             Box(

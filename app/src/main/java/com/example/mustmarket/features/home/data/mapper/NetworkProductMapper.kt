@@ -24,7 +24,7 @@ fun CategoryDto.toDomainCategory(): ProductCategory {
     return ProductCategory(
         id = id,
         name = name,
-        categoryImage = image?.firstOrNull()?.let { "" }
+        categoryImage = image
     )
 }
 
