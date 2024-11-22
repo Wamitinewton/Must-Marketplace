@@ -133,6 +133,10 @@ fun LoginScreen(
             passwordError = uiState.passwordError,
             onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
             onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
+            onNavigateToForgotPassword = {
+                navController.popBackStack()
+                navController.navigate(Screen.Otp.route)
+            },
             onTogglePassword = {
                 loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
             }
@@ -158,7 +162,7 @@ fun LoginScreen(
         SignUpPrompt(
             onSignUpClick = {
                 navController.popBackStack()
-                navController.navigate(Screen.SignUp.route){
+                navController.navigate(Screen.SignUp.route) {
                     popUpTo(Screen.Login.route)
 
                     launchSingleTop = true

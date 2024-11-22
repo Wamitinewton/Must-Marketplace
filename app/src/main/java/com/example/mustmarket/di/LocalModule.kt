@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.example.mustmarket.features.auth.datastore.UserStoreManager
 import com.example.mustmarket.features.home.data.local.db.AppDatabase
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
@@ -47,5 +48,14 @@ object LocalModule {
         @ApplicationContext context: Context
     ): SecureProductStorage {
         return SecureProductStorage(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserStore(
+        @ApplicationContext context: Context
+    ): UserStoreManager {
+        return UserStoreManager(context)
+
     }
 }

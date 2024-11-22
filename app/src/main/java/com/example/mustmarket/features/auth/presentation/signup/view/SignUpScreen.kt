@@ -228,6 +228,7 @@ fun SignUpScreen(
             onTogglePassword = {
                 signUpViewModel.onEvent(SignupEvent.TogglePasswordVisibility(!uiState.showPassword))
             },
+            passwordStrength = uiState.passwordStrength,
             onToggleConfirmPassword = {
                 signUpViewModel.onEvent(SignupEvent.ToggleConfirmPasswordVisibility(!uiState.showPassword))
 

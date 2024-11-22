@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.auth.domain.model
 
-import com.example.mustmarket.features.auth.data.dto.LoginDataDto
 import kotlinx.serialization.Serializable
 
 
@@ -8,11 +7,11 @@ import kotlinx.serialization.Serializable
 data class LoginResult(
     val message: String,
 
-    val data: LoginDto
+    val data: LoginData
 )
 
 @Serializable
-data class LoginDto(
+data class LoginData(
     val token: String,
     val refreshToken: String,
     val user: AuthedUser
