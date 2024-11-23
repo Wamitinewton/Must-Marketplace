@@ -153,8 +153,7 @@ fun CategoryItem(
 //                    contentDescription = null
 //                )
                 CustomImageLoader(
-                   context = context,
-                    s3Url = category.categoryImage,
+                    imageUrl = category.categoryImage,
                 )
             }
             Spacer(modifier = Modifier.height(3.dp))
