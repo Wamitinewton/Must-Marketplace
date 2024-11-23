@@ -8,7 +8,6 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.util.DebugLogger
 import dagger.hilt.android.HiltAndroidApp
-import okhttp3.Call
 
 @HiltAndroidApp
 class BaseApplication: Application(), ImageLoaderFactory{

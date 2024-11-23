@@ -125,11 +125,9 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.3.0")
 
-    // S3 Config
-    implementation("com.amazonaws:aws-android-sdk-s3:2.71.0")
-    implementation("com.amazonaws:aws-android-sdk-core:2.71.0")
-    implementation("com.amazonaws:aws-android-sdk-mobile-client:2.73.0")
-    implementation("com.amazonaws:aws-android-sdk-transfer-utility:2.73.0")
+    implementation("com.amazonaws:aws-android-sdk-s3:2.77.1")
+    implementation("com.amazonaws:aws-android-sdk-core:2.77.1")
+    implementation("com.amazonaws:aws-android-sdk-mobile-client:2.77.1")
 
     // Networking
     implementation(libs.retrofit)
