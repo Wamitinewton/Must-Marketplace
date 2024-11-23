@@ -16,12 +16,13 @@ fun ProductCategory.toCategoryListingEntity(): CategoryListingEntity {
     return CategoryListingEntity(
         id = id,
         name = name,
+        image = categoryImage,
     )
 }
 
 fun CategoryListingEntity.toProductCategory(): ProductCategory {
     return ProductCategory(
-        id = id ?: -1,
+        id = id,
         name = name,
         categoryImage = image
     )

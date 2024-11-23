@@ -14,7 +14,6 @@ class ErrorInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request = chain.request()
-
         if (context.currentConnectivityState == NetworkConnectionState.Unavailable) {
 
             throw CustomError.NoConnectivityException("No internet connection available")

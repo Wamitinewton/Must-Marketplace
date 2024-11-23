@@ -6,13 +6,11 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
-import com.amazonaws.mobileconnectors.s3.transferutility.UploadOptions
 import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.AmazonS3Exception
 import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.amazonaws.services.s3.model.PutObjectRequest
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.uploadProducts.data.s3ServiceImpl.s3Data.S3Objects.BUCKET_NAME
 import com.example.mustmarket.features.uploadProducts.data.s3ServiceImpl.s3Data.S3Objects.MAX_CONCURRENT_UPLOADS
@@ -25,21 +23,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.IOException
-import java.util.UUID
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import java.io.File
+import java.io.IOException
 import java.util.Collections
+import java.util.UUID
+import javax.inject.Inject
 
 class S3ServiceImpl @Inject constructor(
     private val context: Context

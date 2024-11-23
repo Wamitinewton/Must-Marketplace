@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -30,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.core.SharedComposables.LoadingState
@@ -42,10 +44,9 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 @Composable
 fun CategoryGridView(
     viewModel: ProductCategoryViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -95,6 +96,7 @@ fun CategoryGrid(categories: List<ProductCategory>) {
     val itemHeight = (screenWidth / columns)
     val spacing = 10.dp
     val totalHeight = (rows * itemHeight) + ((rows - 1) * spacing)
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -108,7 +110,10 @@ fun CategoryGrid(categories: List<ProductCategory>) {
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
         ) {
             items(categories.size) { index ->
-                CategoryItem(category = categories[index], height = itemMinSize)
+                CategoryItem(
+                    category = categories[index], height = itemMinSize,
+                    context = context
+                )
             }
         }
     }
@@ -119,7 +124,8 @@ fun CategoryGrid(categories: List<ProductCategory>) {
 fun CategoryItem(
     modifier: Modifier = Modifier,
     category: ProductCategory,
-    height: Dp
+    height: Dp,
+    context: Context
 ) {
     Card(
         onClick = {},
@@ -142,9 +148,13 @@ fun CategoryItem(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                ImageLoaderUtil(
-                    imageUrl = category.categoryImage,
-                    contentDescription = null
+//                ImageLoaderUtil(
+//                    imageUrl = category.categoryImage,
+//                    contentDescription = null
+//                )
+                CustomImageLoader(
+                   context = context,
+                    s3Url = category.categoryImage,
                 )
             }
             Spacer(modifier = Modifier.height(3.dp))
