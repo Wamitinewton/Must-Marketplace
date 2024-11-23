@@ -1,6 +1,6 @@
 package com.example.mustmarket.features.home.presentation.state
 
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 
 sealed class    ProductDetailsState {
     data object Loading : ProductDetailsState()

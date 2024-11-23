@@ -3,7 +3,7 @@ package com.example.mustmarket.features.home.data.remote
 import com.example.mustmarket.features.home.data.remote.dto.AllProductsDto
 import com.example.mustmarket.features.home.data.remote.dto.CategoryResponseDto
 import com.example.mustmarket.features.home.data.remote.dto.ProductDetailsDto
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

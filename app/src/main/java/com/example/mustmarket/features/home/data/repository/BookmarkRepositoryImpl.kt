@@ -4,7 +4,7 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.data.local.db.BookmarkDao
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
 import com.example.mustmarket.features.home.data.mapper.toBookmarkedProduct
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

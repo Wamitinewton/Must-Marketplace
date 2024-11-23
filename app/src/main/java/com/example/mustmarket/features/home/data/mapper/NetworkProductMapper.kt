@@ -3,8 +3,8 @@ package com.example.mustmarket.features.home.data.mapper
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 
 
 fun NetworkProductDto.toDomainProduct(): NetworkProduct {

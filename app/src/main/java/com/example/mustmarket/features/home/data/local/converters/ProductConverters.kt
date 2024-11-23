@@ -1,7 +1,7 @@
 package com.example.mustmarket.features.home.data.local.converters
 
 import androidx.room.TypeConverter
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
