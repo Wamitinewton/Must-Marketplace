@@ -6,6 +6,7 @@ import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.datastore.SessionManager
+import com.example.mustmarket.features.auth.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.features.home.data.local.db.BookmarkDao
@@ -35,8 +36,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authApi: AuthApi, sessionManager: SessionManager): AuthRepository {
-        return AuthRepositoryImpl(authApi = authApi, sessionManager)
+    fun provideAuthRepository(authApi: AuthApi, sessionManager: SessionManager, userStoreManager: UserStoreManager): AuthRepository {
+        return AuthRepositoryImpl(authApi = authApi, sessionManager, userStoreManager = userStoreManager)
     }
 
     @Provides

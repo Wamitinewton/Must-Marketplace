@@ -1,5 +1,6 @@
-package com.example.mustmarket.features.home.domain.model
+package com.example.mustmarket.features.home.domain.model.products
 
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,5 +12,5 @@ data class NetworkProduct(
     val brand: String,
     val description: String,
     val category: ProductCategory,
-    val imageUrl: String?
+    val images: List<String> = emptyList<String>()
 )

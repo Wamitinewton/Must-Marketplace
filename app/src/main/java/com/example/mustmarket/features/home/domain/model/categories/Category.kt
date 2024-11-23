@@ -1,6 +1,5 @@
-package com.example.mustmarket.features.home.domain.model
+package com.example.mustmarket.features.home.domain.model.categories
 
-import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import kotlinx.serialization.Serializable
 
 @Serializable

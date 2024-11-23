@@ -68,7 +68,7 @@ import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -336,7 +336,7 @@ fun ProductDetailsContent(
 
             ) {
                 CustomImageLoader(
-                    imageUrl = (product.imageUrl?.get(0) ?: intArrayOf()).toString(),
+                    imageUrl = product.images[0],
                 )
             }
 

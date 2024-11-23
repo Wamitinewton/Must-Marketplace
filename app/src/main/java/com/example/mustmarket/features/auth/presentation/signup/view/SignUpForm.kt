@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mustmarket.core.SharedComposables.MyTextField
 import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 
 @Composable
 fun SignUpForm(
@@ -23,14 +24,15 @@ fun SignUpForm(
     showConfirmPassword: Boolean,
     emailError: String,
     userNameError: String,
-    passwordError: String,
-    confirmPasswordError: String,
+    passwordError: List<String>,
+    confirmPasswordError: List<String>,
     onEmailChanged: (String) -> Unit,
     onUserNameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onConfirmPasswordChanged: (String) -> Unit,
     onTogglePassword: (Boolean) -> Unit,
     onToggleConfirmPassword: (Boolean) -> Unit,
+    passwordStrength: PasswordStrength,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -58,7 +60,8 @@ fun SignUpForm(
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
             name = "Password",
-            errorMessage = passwordError
+            errorMessage = passwordError,
+            passwordStrength = passwordStrength
         )
 
         PasswordInput(

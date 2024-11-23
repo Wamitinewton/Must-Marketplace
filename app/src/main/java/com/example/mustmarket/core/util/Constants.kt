@@ -11,6 +11,9 @@ object Constants {
     val PASSWORD_REGEX =
         "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^_&+=])(?=\\S+$).{8,}$".toRegex()
 
+    const val UPLOAD_ERROR = "Unknown error occurred when uploading image"
+    const val SUCCESS_RESPONSE = "Success"
+
     fun formatPrice(price: Double): String {
         val nf = NumberFormat.getInstance(Locale.getDefault())
         nf.minimumFractionDigits = 0

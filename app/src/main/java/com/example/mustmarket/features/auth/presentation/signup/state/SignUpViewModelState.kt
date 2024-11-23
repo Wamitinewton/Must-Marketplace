@@ -1,6 +1,7 @@
 package com.example.mustmarket.features.auth.presentation.signup.state
 
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
+import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 import com.example.mustmarket.features.auth.presentation.login.state.AuthState
 
 data class SignUpViewModelState(
@@ -14,6 +15,7 @@ data class SignUpViewModelState(
     val showPassword: Boolean = false,
     val emailError: String = "",
     val nameError: String = "",
-    val passwordConfirmError: String = "",
-    val passwordError: String = "",
+    val passwordError: List<String> = emptyList(),
+    val passwordConfirmError: List<String> = emptyList(),
+    val passwordStrength: PasswordStrength = PasswordStrength.NONE
 )

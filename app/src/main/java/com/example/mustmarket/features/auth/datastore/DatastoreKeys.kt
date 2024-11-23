@@ -6,4 +6,7 @@ object DatastoreKeys {
     const val KEY_REFRESH_TOKEN = "refresh_token"
     const val KEY_TOKEN_EXPIRY = "token_expiry"
     const val DEFAULT_TOKEN_EXPIRY_HOURS = 240L
+
+    const val USER_CACHE_PREFS = "user_preferences"
+    const val USERDATA = "user_data"
 }

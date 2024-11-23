@@ -3,12 +3,11 @@ package com.example.mustmarket.features.home.data.repository
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.data.local.db.CategoryDao
-import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.mapper.toCategoryListingEntity
 import com.example.mustmarket.features.home.data.mapper.toDomainCategory
 import com.example.mustmarket.features.home.data.mapper.toProductCategory
 import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

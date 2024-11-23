@@ -8,7 +8,7 @@ import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProduct
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntity
 import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

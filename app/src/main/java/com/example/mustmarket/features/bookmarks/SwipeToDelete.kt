@@ -161,7 +161,7 @@ fun SwipeToDelete(
                         modifier = Modifier.size(100.dp)
                     ) {
                         ImageLoaderUtil(
-                            imageUrl = product.imageUrl,
+                            imageUrl = product.images,
                             contentDescription = "bookmark-image"
                         )
                     }

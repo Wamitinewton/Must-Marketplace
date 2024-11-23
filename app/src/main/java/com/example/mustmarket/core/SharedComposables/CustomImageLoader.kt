@@ -46,7 +46,4 @@ fun CustomImageLoader(
         )
 
     }
-//                    onLoading = {
-//                ShimmerAnimation(modifier = modifier.fillMaxSize())
-//                )
 }

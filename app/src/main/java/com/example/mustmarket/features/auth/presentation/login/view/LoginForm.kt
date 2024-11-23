@@ -1,6 +1,7 @@
 package com.example.mustmarket.features.auth.presentation.login.view
 
 import android.widget.Space
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,11 +23,12 @@ fun LoginForm(
     passwordInput: String,
     showPassword: Boolean,
     emailError: String,
-    passwordError: String,
+    passwordError: String? = null,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onTogglePassword: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToForgotPassword: () -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -46,12 +48,14 @@ fun LoginForm(
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
             name = "Password",
-            errorMessage = passwordError
         )
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp, horizontal = 30.dp),
+                .padding(vertical = 10.dp, horizontal = 30.dp)
+                .clickable(
+                    onClick = onNavigateToForgotPassword
+                ),
             text = "Forgot password",
             style = MaterialTheme.typography.h6.copy(
                 color = MaterialTheme.colors.primary

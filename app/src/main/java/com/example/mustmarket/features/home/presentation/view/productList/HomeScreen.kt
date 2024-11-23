@@ -2,6 +2,7 @@ package com.example.mustmarket.features.home.presentation.view.productList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -49,6 +52,7 @@ import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
+import com.example.mustmarket.features.auth.datastore.UserData
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
@@ -83,6 +87,8 @@ fun Content(
     navController: NavController,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val userData by viewModel.userData.collectAsState()
+
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
@@ -111,8 +117,12 @@ fun Content(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp, top = 40.dp)
+                .padding(bottom = 60.dp, top = 20.dp)
         ) {
+
+            stickyHeader {
+                HeaderBar(userName = userData?.name)
+            }
             item {
                 SearchBar(
                     autoFocus = false,
@@ -133,9 +143,7 @@ fun Content(
             }
 
             if (!uiState.isSearchActive && uiState.searchQuery.isEmpty()) {
-                stickyHeader {
-                    HeaderBar()
-                }
+
                 item { Promotions() }
                 item { CategoryGridView() }
                 item {
@@ -220,74 +228,53 @@ fun Content(
 }
 
 @Composable
-fun HeaderBar() {
+fun HeaderBar(
+    userName: String?
+) {
     Card(
         Modifier
             .height(64.dp)
             .padding(horizontal = 16.dp),
         elevation = 4.dp,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Row(
-            Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            QrButton()
-            VerticalDivider()
-            Row(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .clickable {}
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Person,
-                    contentDescription = null,
-                    tint = Color(0xFF6FCF97)
-                )
-                Column(Modifier.padding(8.dp)) {
-                    Text(
-                        text = "Account",
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = "Newton Wamiti",
-                        fontWeight = FontWeight.SemiBold,
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
                         color = colorPrimary,
-                        fontSize = 12.sp
-                    )
-                }
-            }
-            VerticalDivider()
-            Row(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .clickable {}
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.FavoriteBorder,
-                    contentDescription = null,
-                    tint = favourite
+                Text(
+                    text = userName?.firstOrNull()?.uppercase() ?: "Unknown",
+                    color = Color.White,
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold
                 )
-                Column(
-                    Modifier.padding(8.dp)
-                ) {
-                    Text(
-                        text = "My wishlist",
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = "WishList",
-                        fontWeight = FontWeight.SemiBold,
-                        color = favourite,
-                        fontSize = 12.sp
-                    )
-                }
+            }
+            Column {
+                Text(
+                    text = "Welcome Back!",
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                )
+                Text(
+                    text = userName ?: "Unknown",
+                    style = MaterialTheme.typography.h6.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colors.primary
+                )
             }
         }
     }
