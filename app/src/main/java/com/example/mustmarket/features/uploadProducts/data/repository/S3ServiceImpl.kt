@@ -11,6 +11,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.AmazonS3Exception
 import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.example.mustmarket.BuildConfig
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.uploadProducts.data.s3ServiceImpl.s3Data.S3Objects.BUCKET_NAME
 import com.example.mustmarket.features.uploadProducts.data.s3ServiceImpl.s3Data.S3Objects.MAX_CONCURRENT_UPLOADS
@@ -45,8 +46,8 @@ class S3ServiceImpl @Inject constructor(
 
     private val s3Client: AmazonS3Client by lazy {
         val credentials = BasicAWSCredentials(
-            "",
-            ""
+            BuildConfig.AWS_ACCESS_KEY,
+            BuildConfig.AWS_SECRET_KEY
         )
         AmazonS3Client(credentials).apply {
             setRegion(Region.getRegion(Regions.DEFAULT_REGION))
@@ -57,7 +58,7 @@ class S3ServiceImpl @Inject constructor(
         TransferUtility.builder()
             .context(context)
             .s3Client(s3Client)
-            .defaultBucket(BUCKET_NAME)
+            .defaultBucket(BuildConfig.AWS_BUCKET_NAME)
             .build()
     }
 
@@ -124,7 +125,7 @@ class S3ServiceImpl @Inject constructor(
                 override fun onStateChanged(id: Int, state: TransferState) {
                     when (state) {
                         TransferState.COMPLETED -> {
-                            val url = "https://${BUCKET_NAME}.s3.amazonaws.com/$key"
+                            val url = "https://${BuildConfig.AWS_BUCKET_NAME}.s3.amazonaws.com/$key"
                             progressChannel.trySend(
                                 UploadProgress(
                                     fileName = fileName,
