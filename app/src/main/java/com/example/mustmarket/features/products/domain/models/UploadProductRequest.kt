@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.uploadProducts.domain.models.uploadRequest
+package com.example.mustmarket.features.products.domain.models
 
 import kotlinx.serialization.Serializable
 

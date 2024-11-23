@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.data.mapper
 
+import com.example.mustmarket.features.home.data.local.converters.ProductConverters
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
@@ -16,7 +17,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-        imageUrl = images.firstOrNull()?.downloadUrl?.let { "" }
+        images = images
     )
 }
 
@@ -34,7 +35,7 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         name = name,
         brand = brand,
         price = price,
-        image = imageUrl ?: "",
+        images = ProductConverters().toStringImageList(images),
         inventory = inventory,
         description = description,
         category = category,
@@ -51,7 +52,7 @@ fun ProductListingEntity.toNetworkProduct(): NetworkProduct {
         brand = brand,
         description = description,
         category = category,
-        imageUrl = image,
+        images = ProductConverters().fromStringImageList(images),
     )
 }
 

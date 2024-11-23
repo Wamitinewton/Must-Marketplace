@@ -27,5 +27,5 @@ data class NetworkProductDto(
     val category: CategoryDto,
 
     @SerialName("images")
-    val images: List<ProductImageDto> = emptyList()
+    val images: List<String> = emptyList()
 )

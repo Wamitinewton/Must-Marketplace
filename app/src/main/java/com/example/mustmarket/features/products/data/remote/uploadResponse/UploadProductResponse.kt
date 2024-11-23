@@ -1,5 +1,6 @@
-package com.example.mustmarket.features.uploadProducts.data.remote.uploadResponse
+package com.example.mustmarket.features.products.data.remote.uploadResponse
 
+import com.example.mustmarket.features.products.domain.models.UploadData
 import kotlinx.serialization.Serializable
 
 @Serializable

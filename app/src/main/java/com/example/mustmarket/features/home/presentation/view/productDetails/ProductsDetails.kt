@@ -336,8 +336,7 @@ fun ProductDetailsContent(
 
             ) {
                 CustomImageLoader(
-                    context,
-                    s3Url = (product.imageUrl?.get(0) ?: intArrayOf()).toString(),
+                    imageUrl = product.images[0],
                 )
             }
 
