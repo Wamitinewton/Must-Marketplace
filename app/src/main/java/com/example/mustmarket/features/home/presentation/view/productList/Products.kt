@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
@@ -97,10 +98,9 @@ fun ProductCard(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-             ImageLoaderUtil(
-                 imageUrl = "",
-                 contentDescription = null
-             )
+                CustomImageLoader(
+                    product.images[0],
+                )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
