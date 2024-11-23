@@ -1,7 +1,7 @@
 package com.example.mustmarket.features.home.domain.usecases
 
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository

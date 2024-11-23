@@ -2,7 +2,7 @@ package com.example.mustmarket.features.home.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 
 
 @Entity(tableName = "bookmarked_products")

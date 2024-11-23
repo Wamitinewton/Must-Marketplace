@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.domain.model
+package com.example.mustmarket.features.home.domain.model.categories
 
 import kotlinx.serialization.Serializable
 @Serializable

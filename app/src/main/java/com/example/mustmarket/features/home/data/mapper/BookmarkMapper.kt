@@ -1,7 +1,7 @@
 package com.example.mustmarket.features.home.data.mapper
 
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
-import com.example.mustmarket.features.home.domain.model.NetworkProduct
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 
 fun NetworkProduct.toBookmarkedProduct(): BookmarkedProduct {
     return BookmarkedProduct(

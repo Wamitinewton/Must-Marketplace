@@ -1,6 +1,6 @@
 package com.example.mustmarket.features.home.presentation.state
 
-import com.example.mustmarket.features.home.domain.model.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 
 data class ProductCategoryViewModelState(
     val isLoading: Boolean = false,
