@@ -16,7 +16,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-        imageUrl = images.firstOrNull()?.downloadUrl?.let { "" }
+        imageUrl = images
     )
 }
 
@@ -34,7 +34,7 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         name = name,
         brand = brand,
         price = price,
-        image = imageUrl ?: "",
+        image = imageUrl,
         inventory = inventory,
         description = description,
         category = category,

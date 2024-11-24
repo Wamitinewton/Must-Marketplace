@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.ErrorState
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
@@ -168,10 +170,24 @@ fun Content(
             }
 
             when {
-                uiState.isLoading -> {
+                uiState.isLoading && uiState.products.isEmpty() -> {
                     item {
                         LoadingState(type = LoadingAnimationType.PULSING_DOTS)
                     }
+                }
+
+                uiState.errorMessage.isNotEmpty() -> {
+                    item {
+                        ErrorState(message = uiState.errorMessage)
+                        Log.d("Error", uiState.errorMessage)
+                    }
+                }
+                uiState.products.isEmpty() -> {
+                   item {
+                       Text(
+                           text = "No products"
+                       )
+                   }
                 }
 
 

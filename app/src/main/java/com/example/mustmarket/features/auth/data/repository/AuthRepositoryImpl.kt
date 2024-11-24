@@ -56,14 +56,19 @@ class AuthRepositoryImpl @Inject constructor(
                 val response = authApi.loginUser(loginCredentials)
                 emit(Resource.Success(data = response.toLoginResult()))
                 sessionManger.saveTokens(response.data.token, response.data.refreshToken)
-                userStoreManager.saveUserData(
-                    UserData(
-                        id = response.data.user.id.toString(),
-                        name = response.data.user.name,
-                        email = response.data.user.email,
-                        lastLoginTimeStamp = System.currentTimeMillis()
-                    )
+                val newUserData = UserData(
+                    id = response.data.user.id.toString(),
+                    name = response.data.user.name,
+                    email = response.data.user.email,
+                    lastLoginTimeStamp = System.currentTimeMillis()
                 )
+
+                if (userStoreManager.isFirstLogin()) {
+                    userStoreManager.saveUserData(newUserData)
+                } else {
+                    userStoreManager.updateUserData(newUserData)
+                }
+
             } catch (e: IOException) {
                 emit(
                     Resource.Error(

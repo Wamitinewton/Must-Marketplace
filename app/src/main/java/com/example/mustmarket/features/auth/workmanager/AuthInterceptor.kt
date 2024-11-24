@@ -36,36 +36,11 @@ class AuthInterceptor(context: Context) : Interceptor {
 
         val response = chain.proceed(requestBuilder.build())
 
-        handleResponse(response)
+        getTokensFromResHeaders(response)
 
         return response
     }
 
-    private fun handleResponse(response: Response) {
-
-        when (response.code) {
-
-            HttpURLConnection.HTTP_UNAUTHORIZED -> {
-
-                // clear tokens if un-authorized
-
-                sessionManager.clearTokens()
-
-            }
-
-            HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_CREATED -> {
-
-                getTokensFromResHeaders(response)
-
-            }
-
-            else -> {
-
-                Log.d(TAG, "unhandled response: ${response.code}")
-
-            }
-        }
-    }
 
     private fun getTokensFromResHeaders(response: Response) {
 

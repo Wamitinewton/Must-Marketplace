@@ -7,6 +7,9 @@ import com.example.mustmarket.features.auth.datastore.DatastoreKeys.USERDATA
 import com.example.mustmarket.features.auth.datastore.DatastoreKeys.USER_CACHE_PREFS
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +18,13 @@ class UserStoreManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val gson: Gson = Gson()
 ) {
+
+
+    private val _userDataFlow = MutableStateFlow<UserData?>(null)
+    val userDataFlow: StateFlow<UserData?> = _userDataFlow.asStateFlow()
+
+
+
     private val masterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -27,11 +37,17 @@ class UserStoreManager @Inject constructor(
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
+    init {
+        _userDataFlow.value = fetchUserData()
+    }
+
     fun saveUserData(userData: UserData) {
         securedSharedPrefs.edit().apply {
             putString(USERDATA, gson.toJson(userData))
+            putBoolean("IS_FIRST_LOGIN", false)
             apply()
         }
+        _userDataFlow.value = userData
     }
 
     fun fetchUserData(): UserData? {
@@ -41,15 +57,29 @@ class UserStoreManager @Inject constructor(
         }
     }
 
+    fun isFirstLogin(): Boolean {
+        return securedSharedPrefs.getBoolean("IS_FIRST_LOGIN", true)
+    }
+
+    fun updateUserData(newUserData: UserData) {
+        val existingData = fetchUserData()
+        val updatedData = existingData?.copy(
+            name = newUserData.name,
+            email = newUserData.email,
+            lastLoginTimeStamp = System.currentTimeMillis()
+        ) ?: newUserData
+        saveUserData(updatedData)
+    }
+
     fun updateUserField(update: UserData.() -> UserData) {
         val existingUserData = fetchUserData() ?: UserData()
         val updatedUserData = existingUserData.update()
         saveUserData(updatedUserData)
     }
 
-
     fun clearUserData() {
         securedSharedPrefs.edit().clear().apply()
-    }
 
+        _userDataFlow.value = null
+    }
 }

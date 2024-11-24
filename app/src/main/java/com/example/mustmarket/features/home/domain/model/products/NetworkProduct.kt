@@ -12,5 +12,5 @@ data class NetworkProduct(
     val brand: String,
     val description: String,
     val category: ProductCategory,
-    val imageUrl: String?
+    val imageUrl: List<String> = emptyList()
 )

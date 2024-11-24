@@ -45,9 +45,25 @@ class AllProductsViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
-       _userData.value = userStoreManager.fetchUserData()
+        observeUserData()
         initializeProducts()
         setUpSearchListener()
+    }
+
+    private fun observeUserData() {
+        viewModelScope.launch {
+            _userData.value = userStoreManager.fetchUserData()
+
+            while (true) {
+                kotlinx.coroutines.delay(1000)
+                val currentData = _userData.value
+                val newData = userStoreManager.fetchUserData()
+
+                if (newData != currentData) {
+                    _userData.value = newData
+                }
+            }
+        }
     }
 
     private fun initializeProducts() {

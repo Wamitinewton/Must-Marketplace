@@ -10,7 +10,7 @@ data class ProductListingEntity(
     val name: String,
     val brand: String,
     val price: Double,
-    val image: String,
+    val image: List<String> = emptyList(),
     val inventory: Int,
     val description: String,
     val category: ProductCategory,

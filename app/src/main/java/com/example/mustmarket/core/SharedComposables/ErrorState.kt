@@ -35,7 +35,8 @@ import com.example.mustmarket.R
 fun ErrorState(
     modifier: Modifier = Modifier,
     visible: Boolean = true,
-    onRetry: () -> Unit = {}
+    onRetry: () -> Unit = {},
+    message: String = "Server error. Try again later"
 ) {
     AnimatedErrorEntrance(
         visible = visible,
@@ -55,7 +56,7 @@ fun ErrorState(
 
             ) {
             Text(
-                text = "Server error. Try again later",
+                text = message,
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier.padding(16.dp)
