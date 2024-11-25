@@ -56,14 +56,16 @@ object RepositoryModule {
         dao: ProductDao,
         preferences: SecureProductStorage,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        retryUtil: RetryUtil
+        retryUtil: RetryUtil,
+        sessionManager: SessionManager
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
             preferences = preferences,
             ioDispatcher = ioDispatcher,
-            retryUtil = retryUtil
+            retryUtil = retryUtil,
+            sessionManager = sessionManager
         )
     }
 

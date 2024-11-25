@@ -12,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -21,13 +22,13 @@ object ProductModule {
 
     @Provides
     @Singleton
-    fun provideProductApi(retrofit: Retrofit): UploadProductsApi{
+    fun provideProductApi(retrofit: Retrofit): UploadProductsApi {
         return retrofit.create(UploadProductsApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun providesProductUseCases(repository: ProductRepository): ProductUseCases{
+    fun providesProductUseCases(repository: ProductRepository): ProductUseCases {
         return ProductUseCases(
             uploadImage = UploadSingleImageUseCase(repository),
             uploadImageList = UploadImageListUseCase(repository),
@@ -37,7 +38,10 @@ object ProductModule {
 
     @Provides
     @Singleton
-    fun providesProductRepository(api: UploadProductsApi): ProductRepository{
-        return ProductRepositoryImpl(api)
+    fun providesProductRepository(
+        api: UploadProductsApi,
+        dispatcher: CoroutineDispatcher
+    ): ProductRepository {
+        return ProductRepositoryImpl(api, dispatcher = dispatcher)
     }
 }

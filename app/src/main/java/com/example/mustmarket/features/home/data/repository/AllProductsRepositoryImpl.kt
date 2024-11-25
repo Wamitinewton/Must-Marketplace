@@ -1,9 +1,11 @@
 package com.example.mustmarket.features.home.data.repository
 
+import android.util.Log
 import coil.network.HttpException
 import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.di.IODispatcher
+import com.example.mustmarket.features.auth.datastore.SessionManager
 import com.example.mustmarket.features.home.data.local.db.ProductDao
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
@@ -34,7 +36,8 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val dao: ProductDao,
     private val preferences: SecureProductStorage,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val retryUtil: RetryUtil
+    private val retryUtil: RetryUtil,
+    private val sessionManager: SessionManager
 ) : AllProductsRepository {
 
 
@@ -83,6 +86,8 @@ class AllProductsRepositoryImpl @Inject constructor(
     override suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>> =
         withContext(ioDispatcher) {
             try {
+                val tokenResult = sessionManager.fetchAccessToken()
+                Log.d("TEST", "Using access token: $tokenResult data")
 
                 val response = retryUtil.executeWithRetry {
                     productsApi.getAllProducts()
@@ -107,12 +112,22 @@ class AllProductsRepositoryImpl @Inject constructor(
             emit(Resource.Loading(true))
             try {
                 val cachedProducts = dao.getAllProducts().firstOrNull()
+                if (!cachedProducts.isNullOrEmpty()) {
+                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
+                }
 
                 val shouldRefresh = forceRefresh || shouldRefresh()
                 if (shouldRefresh) {
                     when (val fetchResult = fetchAndCacheProducts()) {
                         is Resource.Success -> {
-                            emit(Resource.Success(fetchResult.data))
+                            val freshProducts = dao.getAllProducts().firstOrNull()
+                            if (!freshProducts.isNullOrEmpty()) {
+                                Log.d("Products", "$freshProducts")
+                                emit(Resource.Success(freshProducts.toNetworkProducts()))
+                            } else {
+                                Log.d("Error", "NO PRODUCTS LOOOOODEEEEED")
+                                emit(Resource.Error("Failed to load products"))
+                            }
                         }
 
                         is Resource.Error -> {
@@ -131,20 +146,7 @@ class AllProductsRepositoryImpl @Inject constructor(
                     }
                     emit(Resource.Loading(false))
 
-                } else if (!cachedProducts.isNullOrEmpty()) {
-                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
                 }
-                emitAll(
-                    dao.getAllProducts()
-                        .map { entities ->
-                            if (entities.isEmpty()) {
-                                Resource.Error("No products found")
-                            } else {
-                                Resource.Success(entities.toNetworkProducts())
-                            }
-                        }
-                        .flowOn(ioDispatcher)
-                )
 
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error occurred"))
@@ -160,12 +162,12 @@ class AllProductsRepositoryImpl @Inject constructor(
                 }
                 emit(Resource.Loading(false))
 
-                    if (response.message == "Success") {
-                       emit(Resource.Success(response.data.toDomainProduct()))
+                if (response.message == "Success") {
+                    emit(Resource.Success(response.data.toDomainProduct()))
 
-                    } else {
-                        emit(Resource.Error(response.message))
-                    }
+                } else {
+                    emit(Resource.Error(response.message))
+                }
 
 
             } catch (e: Exception) {

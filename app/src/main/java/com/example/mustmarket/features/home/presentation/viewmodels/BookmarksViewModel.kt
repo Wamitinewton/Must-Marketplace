@@ -9,6 +9,7 @@ import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,7 @@ class BookmarksViewModel @Inject constructor(
     init {
         getBookmarkedProducts()
     }
+    @OptIn(FlowPreview::class)
     private fun setUpSearchListener() {
         _searchQuery
             .debounce(300)
