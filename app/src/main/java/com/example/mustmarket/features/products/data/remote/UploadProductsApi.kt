@@ -4,9 +4,11 @@ import com.example.mustmarket.features.products.data.remote.uploadResponse.Uploa
 import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadProductResponse
 import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadSingleImageResponse
 import com.example.mustmarket.features.products.domain.models.UploadProductRequest
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import java.io.File
 
 interface UploadProductsApi {
@@ -17,7 +19,7 @@ interface UploadProductsApi {
 
     @Multipart
     @POST("api/v1/images/uploadListImages")
-    suspend fun uploadListOfImages(files:List<File>): UploadImageListOfImageResponse
+    suspend fun uploadListOfImages(@Part files:List<MultipartBody.Part>): UploadImageListOfImageResponse
 
     @POST("api/v1/images/uploadSingleImage")
     suspend fun uploadSingleImage(file:File): UploadSingleImageResponse

@@ -17,11 +17,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-<<<<<<< HEAD
-        imageUrl = images
-=======
         images = images
->>>>>>> fc9add0a846ee8f951afeb7b6115901d7b12286c
     )
 }
 
@@ -39,11 +35,8 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         name = name,
         brand = brand,
         price = price,
-<<<<<<< HEAD
-        image = imageUrl,
-=======
+
         images = ProductConverters().toStringImageList(images),
->>>>>>> fc9add0a846ee8f951afeb7b6115901d7b12286c
         inventory = inventory,
         description = description,
         category = category,

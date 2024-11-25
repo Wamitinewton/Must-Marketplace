@@ -6,6 +6,7 @@ import com.example.mustmarket.core.interceptor.ErrorInterceptor
 import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -67,6 +68,12 @@ object NetworkModule {
     @Singleton
     fun provideCategoryApi(retrofit: Retrofit): ProductsApi =
         retrofit.create(ProductsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProductApi(retrofit: Retrofit): UploadProductsApi {
+        return retrofit.create(UploadProductsApi::class.java)
+    }
 
 
 }

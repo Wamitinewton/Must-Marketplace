@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.mustmarket.core.util.Constants
 import com.example.mustmarket.core.util.Constants.SUCCESS_RESPONSE
 import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadImageListOfImageResponse
 import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadProductResponse
@@ -28,6 +29,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -36,7 +40,7 @@ import javax.inject.Inject
 
 class ProductRepositoryImpl @Inject constructor(
     private val api: UploadProductsApi,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IODispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ProductRepository {
     override suspend fun uploadListOfImages(images: List<File>): Flow<Resource<UploadImageListOfImageResponse>> =
         flow {
@@ -52,8 +56,11 @@ class ProductRepositoryImpl @Inject constructor(
                         }.awaitAll()
                     }
                 }
+                val multipartParts = processedImages.map { file ->
+                    file.toMultipartBodyPart("files")
+                }
                 val response = retryIO(RETRY_ATTEMPTS) {
-                    api.uploadListOfImages(processedImages)
+                    api.uploadListOfImages(multipartParts)
                 }
                 if (response.message == SUCCESS_RESPONSE) {
                     emit(Resource.Success(data = response))
@@ -237,6 +244,11 @@ class ProductRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.d("TAG", "cleanUpFiles: ${e.message}")
         }
+    }
+
+    private fun File.toMultipartBodyPart(name: String): MultipartBody.Part {
+        val requestFile = this.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData(name, this.name, requestFile)
     }
 
 }
