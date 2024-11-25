@@ -29,14 +29,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val userStoreManager: UserStoreManager
 ) : AuthRepository {
     override suspend fun signUp(signUp: SignUpUser): Flow<Resource<AuthedUser>> = flow {
-        emit(Resource.Loading(true))
+
         try {
+            emit(Resource.Loading(true))
             val response = authApi.signUpUser(signUp)
             if (response.message == "Success") {
                 val user = response.data.toAuthedUser()
                 emit(Resource.Success(data = user))
                 emit(Resource.Loading(false))
             } else {
+                emit(Resource.Loading(false))
                 emit(Resource.Error(response.data.toString()))
             }
         } catch (e: IOException) {
@@ -46,7 +48,7 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }
-        emit(Resource.Loading(false))
+
     }
 
     override suspend fun loginUser(loginCredentials: LoginRequest): Flow<Resource<LoginResult>> =

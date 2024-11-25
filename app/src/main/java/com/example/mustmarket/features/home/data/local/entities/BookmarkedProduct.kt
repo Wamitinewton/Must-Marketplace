@@ -12,7 +12,7 @@ data class BookmarkedProduct(
     val name: String,
     val description: String,
     val price: Double,
-    val imageUrl: String,
+    val images: String,
     val category: ProductCategory,
     val inventory: Int,
     val brand: String,

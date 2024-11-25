@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.data.mapper
 
+import com.example.mustmarket.features.home.data.local.converters.ProductConverters
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 
@@ -9,7 +10,7 @@ fun NetworkProduct.toBookmarkedProduct(): BookmarkedProduct {
         name = name,
         description = description,
         price = price,
-        imageUrl = imageUrl ?: "",
+        images = ProductConverters().toStringImageList(images),
         inventory = inventory,
         category = category,
         brand = brand
@@ -22,7 +23,7 @@ fun BookmarkedProduct.toNetworkProduct(): NetworkProduct {
         name = name,
         description = description,
         price = price,
-        imageUrl = imageUrl ?: "",
+        images = ProductConverters().fromStringImageList(images),
         inventory = inventory,
         category = category,
         brand = brand

@@ -116,6 +116,9 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.3.0")
 
+    implementation("com.amazonaws:aws-android-sdk-s3:2.77.1")
+    implementation("com.amazonaws:aws-android-sdk-core:2.77.1")
+    implementation("com.amazonaws:aws-android-sdk-mobile-client:2.77.1")
 
     // Networking
     implementation(libs.retrofit)
@@ -150,7 +153,6 @@ dependencies {
 
     // Utils
     implementation("com.google.errorprone:error_prone_annotations:2.11.0")
-
 
 
     // Testing

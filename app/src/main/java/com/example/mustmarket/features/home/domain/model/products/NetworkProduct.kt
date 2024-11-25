@@ -12,5 +12,9 @@ data class NetworkProduct(
     val brand: String,
     val description: String,
     val category: ProductCategory,
+<<<<<<< HEAD
     val imageUrl: List<String> = emptyList()
+=======
+    val images: List<String> = emptyList<String>()
+>>>>>>> fc9add0a846ee8f951afeb7b6115901d7b12286c
 )

@@ -10,7 +10,11 @@ data class ProductListingEntity(
     val name: String,
     val brand: String,
     val price: Double,
+<<<<<<< HEAD
     val image: List<String> = emptyList(),
+=======
+    val images: String,
+>>>>>>> fc9add0a846ee8f951afeb7b6115901d7b12286c
     val inventory: Int,
     val description: String,
     val category: ProductCategory,

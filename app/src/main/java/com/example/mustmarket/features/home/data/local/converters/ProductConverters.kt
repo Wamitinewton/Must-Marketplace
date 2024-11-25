@@ -16,4 +16,15 @@ class ProductConverters {
         val type = object: TypeToken<ProductCategory>() {}.type
         return Gson().fromJson(categoryString, type)
     }
+
+    @TypeConverter
+    fun toStringImageList(value: List<String>): String {
+        return Gson().toJson(value)
+    }
+
+    @TypeConverter
+    fun fromStringImageList(value: String): List<String> {
+        val listType = object : TypeToken<List<String>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
 }
