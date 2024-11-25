@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ErrorState
+import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.core.SharedComposables.LoadingState
@@ -148,10 +149,7 @@ fun CategoryItem(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-//                ImageLoaderUtil(
-//                    imageUrl = category.categoryImage,
-//                    contentDescription = null
-//                )
+
                 CustomImageLoader(
                     imageUrl = category.categoryImage,
                 )

@@ -90,7 +90,7 @@ fun UploadProducts(
                 wasOffline = true
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = "No internet connection",
-                    duration = SnackbarDuration.Indefinite
+                    duration = SnackbarDuration.Short
                 )
             }
 
@@ -113,7 +113,7 @@ fun UploadProducts(
             Log.d("Errrrrrooooor", error)
             scaffoldState.snackbarHostState.showSnackbar(
                 message = error,
-                duration = SnackbarDuration.Long
+                duration = SnackbarDuration.Short
             )
             productViewModel.handleEvent(UploadEvent.ClearError)
         }
@@ -140,10 +140,10 @@ fun UploadProducts(
         snackbarHost = { hostState ->
             SnackbarHost(
                 hostState = hostState,
-                modifier = Modifier.padding(top = if (showNetworkError) 48.dp else 0.dp)
+                modifier = Modifier.padding(top = if (showNetworkError) 48.dp else 50.dp)
             ) { snackbarData ->
                 Snackbar(
-                    modifier = Modifier.padding(bottom = 30.dp),
+                    modifier = Modifier.padding(bottom = 50.dp),
                     action = {
                         snackbarData.actionLabel?.let { actionLabel ->
                             TextButton(onClick = { snackbarData.performAction() }) {

@@ -63,7 +63,6 @@ import androidx.navigation.NavController
 import com.example.mustmarket.core.SharedComposables.BottomNavBar
 import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
