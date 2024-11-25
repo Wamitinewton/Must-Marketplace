@@ -23,6 +23,10 @@ import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
+import com.example.mustmarket.features.products.data.remote.UploadProductsApi
+import com.example.mustmarket.features.products.data.repository.ProductRepositoryImpl
+import com.example.mustmarket.features.products.domain.repository.ProductRepository
+import com.example.mustmarket.features.products.domain.usecases.AddProductUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,8 +40,16 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authApi: AuthApi, sessionManager: SessionManager, userStoreManager: UserStoreManager): AuthRepository {
-        return AuthRepositoryImpl(authApi = authApi, sessionManager, userStoreManager = userStoreManager)
+    fun provideAuthRepository(
+        authApi: AuthApi,
+        sessionManager: SessionManager,
+        userStoreManager: UserStoreManager
+    ): AuthRepository {
+        return AuthRepositoryImpl(
+            authApi = authApi,
+            sessionManager,
+            userStoreManager = userStoreManager
+        )
     }
 
     @Provides
@@ -89,6 +101,15 @@ object RepositoryModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun providesProductRepository(
+        api: UploadProductsApi,
+       @IODispatcher dispatcher: CoroutineDispatcher
+    ): ProductRepository {
+        return ProductRepositoryImpl(api, dispatcher = dispatcher)
+    }
+
 
     @Provides
     @Singleton
@@ -97,7 +118,8 @@ object RepositoryModule {
         categoryRepository: CategoryRepository,
         allProductsRepository: AllProductsRepository,
         bookmarkRepository: BookmarkRepository,
-        searchProductsRepository: SearchProductsRepository
+        searchProductsRepository: SearchProductsRepository,
+        addProductRepository: ProductRepository
     ): UseCases =
         UseCases(
             authUseCase = AuthUseCase(repository = authRepository),
@@ -105,7 +127,10 @@ object RepositoryModule {
                 categoryRepository = categoryRepository,
                 productRepository = allProductsRepository,
                 bookmarksRepository = bookmarkRepository,
-                searchProductsRepository = searchProductsRepository
+                searchProductsRepository = searchProductsRepository,
+            ),
+            addProduct = AddProductUseCase(
+                repository = addProductRepository
             )
         )
 }

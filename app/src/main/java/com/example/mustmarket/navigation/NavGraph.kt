@@ -19,7 +19,7 @@ import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.explore.ExploreScreen
-import com.example.mustmarket.features.products.presentation.UploadProducts
+import com.example.mustmarket.features.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
