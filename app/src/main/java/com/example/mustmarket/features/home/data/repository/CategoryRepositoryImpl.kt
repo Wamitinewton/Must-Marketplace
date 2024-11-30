@@ -8,10 +8,15 @@ import com.example.mustmarket.features.home.data.mapper.toDomainCategory
 import com.example.mustmarket.features.home.data.mapper.toProductCategory
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.example.mustmarket.features.home.domain.model.categories.UploadCategoryResponse
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
@@ -118,5 +123,31 @@ class CategoryRepositoryImpl @Inject constructor(
             emit(Resource.Error("Unknown error: ${e.message}"))
         }
 
+    }
+
+    override suspend fun addCategory(
+        image: File,
+        name: String
+    ): Flow<Resource<UploadCategoryResponse>> = flow {
+        emit(Resource.Loading(true))
+        try {
+            val imageFile = image.toMultipartBodyPart("file")
+            val response = categoryApi.addCategory(name = name, image = imageFile)
+            if (response.message == "Success") {
+                emit(Resource.Success(response))
+                emit(Resource.Loading(false))
+            }
+        } catch (e: HttpException) {
+            emit(Resource.Error("Network error: ${e.message}"))
+        } catch (e: IOException) {
+            emit(Resource.Error("IO error: ${e.message}"))
+        } catch (e: Exception) {
+            emit(Resource.Error("Unknown error: ${e.message}"))
+        }
+    }
+
+    private fun File.toMultipartBodyPart(name: String): MultipartBody.Part {
+        val requestFile = this.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData(name, this.name, requestFile)
     }
 }

@@ -11,6 +11,7 @@
 .DS_Store
 /build
 /captures
+/app/src/main/res/xml/network_config.xml
 .externalNativeBuild
 .cxx
 .idea

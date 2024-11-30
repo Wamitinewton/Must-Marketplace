@@ -6,6 +6,7 @@ import com.example.mustmarket.features.home.domain.repository.AllProductsReposit
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
+import java.io.File
 
 class HomeUseCases(
     private val bookmarksRepository: BookmarkRepository,
@@ -42,6 +43,7 @@ class HomeUseCases(
 
     suspend fun searchBookmarks(query: String) = searchProductsRepository.searchBookmarks(query)
 
+    suspend fun addCategory(image: File, name: String) = categoryRepository.addCategory(image, name)
 
 }
 

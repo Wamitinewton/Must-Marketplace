@@ -55,6 +55,7 @@ import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
 import com.example.mustmarket.features.auth.datastore.UserData
+import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
@@ -107,7 +108,7 @@ fun Content(
                         viewModel.onProductEvent(HomeScreenEvent.Refresh)
                     }
                     val categoryRefresh = async {
-                        categoryViewModel.onCategoryEvent(HomeScreenEvent.Refresh)
+                        categoryViewModel.onCategoryEvent(CategoryEvent.Refresh)
                     }
                     productRefresh.await()
                     categoryRefresh.await()
