@@ -1,17 +1,23 @@
 package com.example.mustmarket.features.home.presentation.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.state.AddCategoryState
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,14 +31,103 @@ class ProductCategoryViewModel @Inject constructor(
         getAllCategories()
     }
 
-    fun onCategoryEvent(event: HomeScreenEvent) {
+    fun onCategoryEvent(event: CategoryEvent) {
         when (event) {
-            is HomeScreenEvent.Refresh -> {
+            is CategoryEvent.Refresh -> {
                 refreshCategories()
             }
 
-            is HomeScreenEvent.ClearSearch -> TODO()
-            is HomeScreenEvent.Search -> TODO()
+            is CategoryEvent.CategoryUploadEvent -> {
+                if (validateCategory(event.name, event.uri)) {
+                    addCategory(event.context, event.name, event.uri)
+                }
+            }
+        }
+    }
+
+    private fun addCategory(context: Context, name: String, imageUrl: Uri) {
+        viewModelScope.launch {
+            _viewModelState.update {
+                it.copy(
+                    addCategoryState = AddCategoryState(
+                        isLoading = true,
+                        successMessage = null,
+                        errorMessage = null
+                    )
+                )
+            }
+            try {
+                val imageFile = uriTofFile(context, imageUrl)
+                productUseCases.homeUseCases.addCategory(imageFile, name)
+                    .collect { response ->
+                        when (response) {
+                            is Resource.Loading -> updateCategoryLoadingState(true)
+                            is Resource.Error -> {
+                                _viewModelState.update {
+                                    it.copy(
+                                        addCategoryState = AddCategoryState(
+                                            isLoading = false,
+                                            successMessage = null,
+                                            errorMessage = response.message
+                                                ?: "Failed to add categories"
+                                        )
+                                    )
+                                }
+                            }
+
+                            is Resource.Success -> {
+                                _viewModelState.update {
+                                    it.copy(
+                                        addCategoryState = AddCategoryState(
+                                            isLoading = false,
+                                            successMessage = response.data?.message
+                                                ?: "Category added successfully",
+                                            errorMessage = null
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+            } catch (e: IOException) {
+                handleAddCategoriesError("failed to process category: ${e.localizedMessage}")
+            } catch (e: Exception) {
+                handleAddCategoriesError("Unexpected error")
+            }
+        }
+    }
+
+    private fun validateCategory(name: String, image: Uri?): Boolean {
+        if (name.isBlank()) {
+            handleAddCategoriesError("Category name cannot be empty")
+            return false
+        }
+        if (image == null) {
+            handleAddCategoriesError("Category Image cannot be null")
+            return false
+        }
+        return true
+    }
+
+    private fun updateCategoryLoadingState(isLoading: Boolean) {
+        _viewModelState.update {
+            it.copy(
+                addCategoryState = it.addCategoryState.copy(
+                    isLoading = isLoading
+                )
+            )
+        }
+    }
+
+    private fun handleAddCategoriesError(error: String) {
+        _viewModelState.update {
+            it.copy(
+                addCategoryState = AddCategoryState(
+                    isLoading = false,
+                    successMessage = null,
+                    errorMessage = error
+                )
+            )
         }
     }
 
@@ -87,5 +182,18 @@ class ProductCategoryViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun uriTofFile(context: Context, uri: Uri): File {
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            val file = File(
+                context.cacheDir,
+                "upload_${System.currentTimeMillis()}.jpg"
+            )
+            file.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            return file
+        } ?: throw Exception("Failed to open input stream from URI: $uri")
     }
 }

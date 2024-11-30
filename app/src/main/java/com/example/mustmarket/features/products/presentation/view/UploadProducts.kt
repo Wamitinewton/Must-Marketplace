@@ -14,14 +14,20 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
@@ -33,6 +39,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.rememberScaffoldState
@@ -46,10 +53,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
+import com.example.mustmarket.features.home.presentation.event.CategoryEvent
+import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.features.products.domain.models.UploadProductRequest
 import com.example.mustmarket.features.products.presentation.event.UploadEvent
 import com.example.mustmarket.features.products.presentation.viewModel.UploadProductViewModel
@@ -59,6 +69,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun UploadProducts(
     productViewModel: UploadProductViewModel = hiltViewModel(),
+    categoryViewModel: ProductCategoryViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -75,6 +86,15 @@ fun UploadProducts(
     val uiState by productViewModel.uiState.collectAsState()
     val scaffoldState = rememberScaffoldState()
 
+    var isAddingCategory by remember { mutableStateOf(false) }
+    var newCategoryName by remember { mutableStateOf("") }
+    var newCategoryImageUri by remember { mutableStateOf<Uri?>(null) }
+    val categoryUiState by categoryViewModel.uiState.collectAsState()
+
+    val categoryLauncherPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri -> newCategoryImageUri = uri }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
@@ -83,6 +103,8 @@ fun UploadProducts(
             productViewModel.handleEvent(UploadEvent.MultipleImagesUpload(it, context))
         }
     }
+
+
     LaunchedEffect(networkState.value) {
         when (networkState.value) {
             NetworkConnectionState.Unavailable -> {
@@ -132,8 +154,101 @@ fun UploadProducts(
         }
     }
 
-
-
+    if (isAddingCategory) {
+        Dialog(
+            onDismissRequest = { isAddingCategory = false }
+        ) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .wrapContentHeight()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Add New Category",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    OutlinedTextField(
+                        value = newCategoryName,
+                        onValueChange = { newCategoryName = it },
+                        label = {
+                            Text(
+                                text = "Category Name"
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    Button(
+                        onClick = { categoryLauncherPicker.launch("image/*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "Choose category image"
+                        )
+                    }
+                    newCategoryImageUri?.let { uri ->
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "Selected Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                categoryViewModel.onCategoryEvent(
+                                    CategoryEvent.CategoryUploadEvent(
+                                        newCategoryImageUri!!,
+                                        newCategoryName,
+                                        context
+                                    )
+                                )
+                                isAddingCategory = false
+                                newCategoryName = ""
+                                newCategoryImageUri = null
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "Add"
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                isAddingCategory = false
+                                newCategoryName = ""
+                                newCategoryImageUri = null
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "Cancel"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -233,7 +348,9 @@ fun UploadProducts(
                         .height(200.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colors.surface)
-                        .clickable { launcher.launch("image/*") },
+                        .clickable {
+                            launcher.launch("image/*")
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     if (selectedImages.isEmpty()) {
@@ -255,12 +372,20 @@ fun UploadProducts(
                             )
                         }
                     } else {
-                        AsyncImage(
-                            model = selectedImages.first(),
-                            contentDescription = "Selected Image",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                        LazyRow(
+                            contentPadding = PaddingValues(10.dp)
+                        ) {
+                            items(selectedImages) { imageUri ->
+                                AsyncImage(
+                                    model = imageUri,
+                                    contentDescription = "Selected Image",
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -323,13 +448,52 @@ fun UploadProducts(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(6.dp)
                         )
-                        OutlinedTextField(
-                            value = productCategory,
-                            onValueChange = { productCategory = it },
-                            label = { Text("Product Category") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
+
+
+                        var expanded by remember { mutableStateOf(false) }
+                        Box {
+                            OutlinedTextField(
+                                value = productCategory,
+                                onValueChange = { },
+                                label = { Text("Category") },
+                                readOnly = true,
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Open Dropdown",
+                                        modifier = Modifier.clickable { expanded = !expanded }
+                                    )
+                                }
+                            )
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                categoryUiState.categories.forEach { category ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            productCategory = category.name
+                                            expanded = false
+                                        }
+                                    ) {
+                                        Text(
+                                            text = category.name
+                                        )
+                                    }
+                                }
+                                Divider()
+                                DropdownMenuItem(
+                                    onClick = { isAddingCategory = true }
+                                ) {
+                                    Text(
+                                        text = "Add New Category"
+                                    )
+                                }
+                            }
+
+                        }
+
+
                     }
                 }
 
