@@ -5,7 +5,19 @@ import com.example.mustmarket.features.products.domain.models.UploadData
 data class UploadProductUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val singleImageUrl: String = "",
+    val uploadData: UploadData? = null,
+    val uploadMultipleImagesState: UploadMultipleImageState = UploadMultipleImageState(),
+    val uploadSingleImageState: UploadSingleImageUrlState = UploadSingleImageUrlState()
+)
+
+data class UploadMultipleImageState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
     val imageUrls: List<String> = emptyList(),
-    val uploadData: UploadData? = null
+)
+
+data class UploadSingleImageUrlState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val singleImageUrl: String = "",
 )

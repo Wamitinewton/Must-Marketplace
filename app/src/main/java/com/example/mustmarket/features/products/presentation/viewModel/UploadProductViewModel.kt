@@ -9,6 +9,7 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.products.domain.models.UploadProductRequest
 import com.example.mustmarket.features.products.presentation.event.UploadEvent
 import com.example.mustmarket.features.products.presentation.state.UploadProductUiState
+import com.example.mustmarket.features.products.presentation.state.UploadSingleImageUrlState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,7 +74,14 @@ class UploadProductViewModel @Inject constructor(
                                 updateLoadingState(false)
                             }
 
-                            is Resource.Loading -> updateLoadingState(true)
+                            is Resource.Loading -> {
+                                _uiState.update { it.copy(
+                                    uploadSingleImageState = UploadSingleImageUrlState(
+                                        isLoading = true,
+                                        singleImageUrl = ""
+                                    )
+                                ) }
+                            }
                             is Resource.Success -> {
                                 _uiState.update { currentState ->
                                     currentState.copy(

@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,7 +12,18 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +37,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
@@ -43,7 +52,14 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +69,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
@@ -101,6 +116,24 @@ fun UploadProducts(
         uris.let {
             selectedImages = it
             productViewModel.handleEvent(UploadEvent.MultipleImagesUpload(it, context))
+        }
+    }
+
+    LaunchedEffect(categoryUiState.addCategoryState.successMessage) {
+        categoryUiState.addCategoryState.successMessage?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                it,
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
+
+    LaunchedEffect(categoryUiState.addCategoryState.errorMessage) {
+        categoryUiState.addCategoryState.errorMessage?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                it,
+                duration = SnackbarDuration.Long
+            )
         }
     }
 
@@ -154,100 +187,33 @@ fun UploadProducts(
         }
     }
 
+
     if (isAddingCategory) {
-        Dialog(
-            onDismissRequest = { isAddingCategory = false }
-        ) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .wrapContentHeight()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = "Add New Category",
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+        AddCategoryDialog(
+            onDismissRequest = { isAddingCategory = false },
+            isAddingCategory = isAddingCategory,
+            newCategoryName = newCategoryName,
+            onCategoryNameChange = { newCategoryName = it },
+            newCategoryImageUri = newCategoryImageUri,
+            categoryUiState = categoryUiState,
+            onUploadClick = {
+                categoryViewModel.onCategoryEvent(
+                    CategoryEvent.CategoryUploadEvent(
+                        newCategoryImageUri!!,
+                        newCategoryName,
+                        context
                     )
-                    OutlinedTextField(
-                        value = newCategoryName,
-                        onValueChange = { newCategoryName = it },
-                        label = {
-                            Text(
-                                text = "Category Name"
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    Button(
-                        onClick = { categoryLauncherPicker.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "Choose category image"
-                        )
-                    }
-                    newCategoryImageUri?.let { uri ->
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "Selected Image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                categoryViewModel.onCategoryEvent(
-                                    CategoryEvent.CategoryUploadEvent(
-                                        newCategoryImageUri!!,
-                                        newCategoryName,
-                                        context
-                                    )
-                                )
-                                isAddingCategory = false
-                                newCategoryName = ""
-                                newCategoryImageUri = null
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = "Add"
-                            )
-                        }
-                        OutlinedButton(
-                            onClick = {
-                                isAddingCategory = false
-                                newCategoryName = ""
-                                newCategoryImageUri = null
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = "Cancel"
-                            )
-                        }
-                    }
-                }
+                )
+                newCategoryName = ""
+                newCategoryImageUri = null
+            },
+            onChooseImageClick = { categoryLauncherPicker.launch("image/*") },
+            onCancelClick = {
+                isAddingCategory = false
+                newCategoryName = ""
+                newCategoryImageUri = null
             }
-        }
+        )
     }
 
     Scaffold(
@@ -549,7 +515,3 @@ fun UploadProducts(
         }
     }
 }
-
-
-
-
