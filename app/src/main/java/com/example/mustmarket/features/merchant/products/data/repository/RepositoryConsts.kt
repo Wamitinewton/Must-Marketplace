@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.products.data.repository
+package com.example.mustmarket.features.merchant.products.data.repository
 
 object RepositoryConsts {
     const val BATCH_SIZE = 5

@@ -3,6 +3,7 @@ package com.example.mustmarket.features.home.data.local.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.example.mustmarket.features.merchant.products.domain.models.UserData
 
 
 @Entity(tableName = "bookmarked_products")
@@ -16,5 +17,6 @@ data class BookmarkedProduct(
     val category: ProductCategory,
     val inventory: Int,
     val brand: String,
-    val bookmarkedAt: Long = System.currentTimeMillis()
+    val bookmarkedAt: Long = System.currentTimeMillis(),
+    val userData: UserData
 )

@@ -129,6 +129,39 @@ fun PasswordInput(
 }
 
 @Composable
+fun ProductInputFields(
+    onInputChanged: (String) -> Unit,
+    inputText: String,
+    labelName: String,
+    keyboardType: KeyboardType,
+    isDescription: Boolean = false,
+) {
+    OutlinedTextField(
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            errorCursorColor = MaterialTheme.colors.primary,
+            errorBorderColor = Color.Gray,
+            focusedBorderColor = MaterialTheme.colors.primary
+        ),
+        value = inputText,
+        onValueChange = { onInputChanged(it) },
+        textStyle = MaterialTheme.typography.h4.copy(
+            color = ThemeUtils.AppColors.Text.themed()
+        ),
+        modifier = Modifier
+            .background(Color.Transparent)
+            .fillMaxWidth()
+            .height(
+                if (isDescription) 130.dp else 60.dp
+            ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = ImeAction.Next
+        ),
+        label = { TextFieldLabel(name = labelName) },
+    )
+}
+
+@Composable
 fun MyTextField(
     onInputChanged: (String) -> Unit,
     inputText: String,

@@ -23,10 +23,10 @@ import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
-import com.example.mustmarket.features.products.data.remote.UploadProductsApi
-import com.example.mustmarket.features.products.data.repository.ProductRepositoryImpl
-import com.example.mustmarket.features.products.domain.repository.ProductRepository
-import com.example.mustmarket.features.products.domain.usecases.AddProductUseCase
+import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
+import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
+import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
+import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -105,7 +105,7 @@ object RepositoryModule {
     @Singleton
     fun providesProductRepository(
         api: UploadProductsApi,
-       @IODispatcher dispatcher: CoroutineDispatcher
+        @IODispatcher dispatcher: CoroutineDispatcher
     ): ProductRepository {
         return ProductRepositoryImpl(api, dispatcher = dispatcher)
     }

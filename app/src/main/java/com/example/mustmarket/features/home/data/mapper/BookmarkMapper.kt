@@ -13,7 +13,8 @@ fun NetworkProduct.toBookmarkedProduct(): BookmarkedProduct {
         images = ProductConverters().toStringImageList(images),
         inventory = inventory,
         category = category,
-        brand = brand
+        brand = brand,
+        userData = userData
     )
 }
 
@@ -26,6 +27,7 @@ fun BookmarkedProduct.toNetworkProduct(): NetworkProduct {
         images = ProductConverters().fromStringImageList(images),
         inventory = inventory,
         category = category,
-        brand = brand
+        brand = brand,
+        userData = userData
     )
 }

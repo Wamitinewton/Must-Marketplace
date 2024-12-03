@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.products.presentation.view
+package com.example.mustmarket.features.merchant.products.presentation.view
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement

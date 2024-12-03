@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.products.presentation.view
+package com.example.mustmarket.features.merchant.products.presentation.view
 
 import android.net.Uri
 import android.util.Log
@@ -9,35 +9,30 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarDuration
@@ -47,10 +42,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,38 +56,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
+import com.example.mustmarket.features.auth.datastore.UserStoreManager
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
+import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
-import com.example.mustmarket.features.products.domain.models.UploadProductRequest
-import com.example.mustmarket.features.products.presentation.event.UploadEvent
-import com.example.mustmarket.features.products.presentation.viewModel.UploadProductViewModel
+import com.example.mustmarket.features.merchant.products.domain.models.UploadProductRequest
+import com.example.mustmarket.features.merchant.products.presentation.event.UploadEvent
+import com.example.mustmarket.features.merchant.products.presentation.viewModel.UploadProductViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun UploadProducts(
     productViewModel: UploadProductViewModel = hiltViewModel(),
-    categoryViewModel: ProductCategoryViewModel = hiltViewModel()
+    categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
+    userStoreManager: UserStoreManager,
+    allProductsViewModel: AllProductsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var productName by remember { mutableStateOf("") }
-    var productDescription by remember { mutableStateOf("") }
-    var productPrice by remember { mutableStateOf("") }
-    var productCategory by remember { mutableStateOf("") }
-    var productBrand by remember { mutableStateOf("") }
-    var inventory by remember { mutableStateOf("") }
     val networkState = rememberConnectivityState()
     var showNetworkError by remember { mutableStateOf(false) }
     var wasOffline by remember { mutableStateOf(false) }
@@ -106,6 +97,8 @@ fun UploadProducts(
     var newCategoryImageUri by remember { mutableStateOf<Uri?>(null) }
     val categoryUiState by categoryViewModel.uiState.collectAsState()
 
+    val userId by userStoreManager.userDataFlow.collectAsState()
+
     val categoryLauncherPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri -> newCategoryImageUri = uri }
@@ -115,28 +108,53 @@ fun UploadProducts(
     ) { uris ->
         uris.let {
             selectedImages = it
-            productViewModel.handleEvent(UploadEvent.MultipleImagesUpload(it, context))
         }
     }
+    val enabled = !uiState.isLoading && !uiState.uploadMultipleImagesState.isLoading
 
-    LaunchedEffect(categoryUiState.addCategoryState.successMessage) {
+    LaunchedEffect(
+        categoryUiState.addCategoryState.successMessage,
+        categoryUiState.addCategoryState.errorMessage,
+        uiState
+    ) {
         categoryUiState.addCategoryState.successMessage?.let {
             scaffoldState.snackbarHostState.showSnackbar(
                 it,
                 duration = SnackbarDuration.Long
             )
         }
-    }
-
-    LaunchedEffect(categoryUiState.addCategoryState.errorMessage) {
         categoryUiState.addCategoryState.errorMessage?.let {
             scaffoldState.snackbarHostState.showSnackbar(
                 it,
                 duration = SnackbarDuration.Long
             )
         }
-    }
 
+        uiState.error?.let { error ->
+            Log.d("Errrrrrooooor", error)
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = error,
+                duration = SnackbarDuration.Short
+            )
+            productViewModel.handleEvent(UploadEvent.ClearError)
+        }
+
+        uiState.success?.let { success ->
+
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = success,
+                duration = SnackbarDuration.Short
+            )
+        }
+
+        uiState.uploadMultipleImagesState.success?.let { success ->
+
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = success,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     LaunchedEffect(networkState.value) {
         when (networkState.value) {
@@ -162,31 +180,6 @@ fun UploadProducts(
             }
         }
     }
-
-    LaunchedEffect(uiState) {
-        uiState.error?.let { error ->
-            Log.d("Errrrrrooooor", error)
-            scaffoldState.snackbarHostState.showSnackbar(
-                message = error,
-                duration = SnackbarDuration.Short
-            )
-            productViewModel.handleEvent(UploadEvent.ClearError)
-        }
-        uiState.uploadData?.let {
-            scaffoldState.snackbarHostState.showSnackbar(
-                message = "Product added successfully",
-                duration = SnackbarDuration.Short
-            )
-            productName = ""
-            productDescription = ""
-            productPrice = ""
-            productCategory = ""
-            productBrand = ""
-            inventory = ""
-            selectedImages = emptyList()
-        }
-    }
-
 
     if (isAddingCategory) {
         AddCategoryDialog(
@@ -285,12 +278,59 @@ fun UploadProducts(
                 }
                 TopAppBar(
                     title = {
-                        Text(
-                            "Add New Product",
-                            style = MaterialTheme.typography.subtitle1.copy(
-                                fontWeight = FontWeight.Bold
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Text(
+                                "Add New Product",
+                                style = MaterialTheme.typography.subtitle1.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
-                        )
+
+                            Box(
+                                contentAlignment = Alignment.TopEnd,
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                IconButton(
+                                    onClick = {},
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Shop,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.primary,
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .offset(x = (-4).dp, y = 4.dp)
+                                        .size(18.dp)
+                                        .background(
+                                            color = MaterialTheme.colors.primary,
+                                            shape = CircleShape
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colors.surface,
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "3",
+                                        style = MaterialTheme.typography.caption.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.onSecondary
+                                        ),
+                                        modifier = Modifier.padding(2.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 )
             }
@@ -300,188 +340,100 @@ fun UploadProducts(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 60.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + expandVertically()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colors.surface)
-                        .clickable {
-                            launcher.launch("image/*")
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (selectedImages.isEmpty()) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add Images",
-                                modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colors.primary
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Add Product Images",
-                                style = MaterialTheme.typography.body1,
-                                color = MaterialTheme.colors.primary
-                            )
-                        }
-                    } else {
-                        LazyRow(
-                            contentPadding = PaddingValues(10.dp)
-                        ) {
-                            items(selectedImages) { imageUri ->
-                                AsyncImage(
-                                    model = imageUri,
-                                    contentDescription = "Selected Image",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .clip(RoundedCornerShape(8.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + slideInVertically()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    OutlinedTextField(
-                        value = productName,
-                        onValueChange = { productName = it },
-                        label = { Text("Product Name") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(6.dp)
+            ProductsInputForm(
+                onChooseProductImages = {
+                    launcher.launch("image/*")
+                },
+                selectedImages = selectedImages,
+                onProductNameChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductNameChanged(
+                            name = it
+                        )
                     )
-                    OutlinedTextField(
-                        value = productDescription,
-                        onValueChange = { productDescription = it },
-                        label = { Text("Product Description") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp),
-                        shape = RoundedCornerShape(6.dp)
+                },
+                onDescriptionChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductDescriptionChanged(
+                            description = it
+                        )
+                    )
+                },
+                onPriceChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductPriceChanged(
+                            price = it
+                        )
+                    )
+                },
+                onInventoryChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductInventoryChanged(
+                            inventory = it
+                        )
+                    )
+                },
+                onBrandChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductBrandChanged(
+                            brand = it
+                        )
+                    )
+                },
+                onCategoryChanged = {
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductCategoryChanged(
+                            category = it
+                        )
+                    )
+                },
+                padding = padding,
+                productName = uiState.productInput.productName,
+                productDescription = uiState.productInput.productDescription,
+                productPrice = uiState.productInput.productPrice ?: 0,
+                productInventory = uiState.productInput.productInventory ?: 0,
+                productBrand = uiState.productInput.productBrand,
+                productCategory = uiState.productInput.productCategory,
+                productCategoryUiState = categoryUiState,
+                onCategoryClicked = { selectedCategory ->
+                    productViewModel.handleEvent(
+                        UploadEvent.ProductCategoryChanged(
+                            category = selectedCategory
+                        )
                     )
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = productPrice,
-                            onValueChange = { productPrice = it },
-                            label = { Text("Product Price") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        OutlinedTextField(
-                            value = inventory,
-                            onValueChange = { inventory = it },
-                            label = { Text("Product Inventory") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = productBrand,
-                            onValueChange = { productBrand = it },
-                            label = { Text("Product Brand") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-
-
-                        var expanded by remember { mutableStateOf(false) }
-                        Box {
-                            OutlinedTextField(
-                                value = productCategory,
-                                onValueChange = { },
-                                label = { Text("Category") },
-                                readOnly = true,
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Open Dropdown",
-                                        modifier = Modifier.clickable { expanded = !expanded }
-                                    )
-                                }
-                            )
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                categoryUiState.categories.forEach { category ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            productCategory = category.name
-                                            expanded = false
-                                        }
-                                    ) {
-                                        Text(
-                                            text = category.name
-                                        )
-                                    }
-                                }
-                                Divider()
-                                DropdownMenuItem(
-                                    onClick = { isAddingCategory = true }
-                                ) {
-                                    Text(
-                                        text = "Add New Category"
-                                    )
-                                }
-                            }
-
-                        }
-
-
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-
-            }
+                },
+                onDropCategory = {
+                    isAddingCategory = true
+                },
+                isImageUploading = uiState.uploadMultipleImagesState.isLoading
+            )
             Button(
+                enabled = enabled,
                 onClick = {
                     scope.launch {
                         productViewModel.handleEvent(
-                            UploadEvent.ProductUpload(
+                            UploadEvent.MultipleImagesUpload(
+                                selectedImages,
+                                context,
                                 UploadProductRequest(
-                                    brand = productBrand,
-                                    category = productCategory,
-                                    description = productDescription,
-                                    images = uiState.imageUrls,
-                                    inventory = inventory,
-                                    name = productName,
-                                    price = productPrice
+                                    brand = uiState.productInput.productBrand,
+                                    category = uiState.productInput.productCategory,
+                                    description = uiState.productInput.productDescription,
+                                    images = uiState.uploadMultipleImagesState.multipleImagesUrl,
+                                    inventory = uiState.productInput.productInventory,
+                                    name = uiState.productInput.productName,
+                                    price = uiState.productInput.productPrice,
+                                    userId = userId?.id!!
                                 )
                             )
+                        )
+                        allProductsViewModel.onProductEvent(
+                            HomeScreenEvent.Refresh
                         )
                     }
                 },
@@ -490,13 +442,12 @@ fun UploadProducts(
                     .height(56.dp)
                     .shadow(
                         elevation = 6.dp,
-                        shape = RoundedCornerShape(28.dp)
+                        shape = RoundedCornerShape(15.dp)
                     ),
-                shape = RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(15.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.primary
                 ),
-                enabled = networkState.value == NetworkConnectionState.Available
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -511,7 +462,9 @@ fun UploadProducts(
                     )
                 }
             }
-
         }
+
     }
+
+
 }
