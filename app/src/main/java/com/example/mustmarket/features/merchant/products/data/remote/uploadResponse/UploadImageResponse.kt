@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.products.data.remote.uploadResponse
+package com.example.mustmarket.features.merchant.products.data.remote.uploadResponse
 
 import kotlinx.serialization.Serializable
 

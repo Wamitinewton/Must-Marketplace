@@ -6,6 +6,7 @@ import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.data.dto.OtpResponse
 import com.example.mustmarket.features.auth.data.dto.PasswordResetResponse
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -18,7 +19,7 @@ interface AuthApi {
     suspend fun loginUser(@Body loginCredentials: LoginRequest): LogInResultDto
 
     @POST("api/v1/auth/request-password-reset")
-    suspend fun requestOtp(@Body email: String): OtpResponse
+    suspend fun requestOtp(@Body request: RequestPasswordReset): OtpResponse
 
     @POST("api/v1/auth/reset-password")
     suspend fun resetPassword(@Body otpRequest: OtpRequest): PasswordResetResponse

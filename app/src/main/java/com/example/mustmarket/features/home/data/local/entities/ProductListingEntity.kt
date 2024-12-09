@@ -3,6 +3,7 @@ package com.example.mustmarket.features.home.data.local.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.example.mustmarket.features.merchant.products.domain.models.UserData
 
 
 @Entity(tableName = "products")
@@ -16,5 +17,6 @@ data class ProductListingEntity(
     val description: String,
     val category: ProductCategory,
     val lastUpdated: Long = System.currentTimeMillis(),
-    @PrimaryKey val id: Int? = null
+    @PrimaryKey val id: Int? = null,
+   val userData: UserData
 )

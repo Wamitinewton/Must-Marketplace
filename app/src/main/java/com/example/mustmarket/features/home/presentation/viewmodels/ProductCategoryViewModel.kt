@@ -8,7 +8,6 @@ import com.example.mustmarket.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
-import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.AddCategoryState
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 import dagger.hilt.android.lifecycle.HiltViewModel

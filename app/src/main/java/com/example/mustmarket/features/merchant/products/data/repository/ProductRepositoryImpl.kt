@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.products.data.repository
+package com.example.mustmarket.features.merchant.products.data.repository
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -7,18 +7,18 @@ import com.example.mustmarket.core.util.Constants
 import com.example.mustmarket.core.util.Constants.SUCCESS_RESPONSE
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.di.IODispatcher
-import com.example.mustmarket.features.products.data.remote.UploadProductsApi
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadImageListOfImageResponse
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadProductResponse
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadSingleImageResponse
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.BATCH_SIZE
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.COMPRESSION_QUALITY
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.MAX_FILE_SIZE
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.MAX_IMAGE_DIMENSION
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.RETRY_ATTEMPTS
-import com.example.mustmarket.features.products.data.repository.RepositoryConsts.RETRY_DELAY_MS
-import com.example.mustmarket.features.products.domain.models.UploadProductRequest
-import com.example.mustmarket.features.products.domain.repository.ProductRepository
+import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadImageListOfImageResponse
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadProductResponse
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadSingleImageResponse
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.BATCH_SIZE
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.COMPRESSION_QUALITY
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.MAX_FILE_SIZE
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.MAX_IMAGE_DIMENSION
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.RETRY_ATTEMPTS
+import com.example.mustmarket.features.merchant.products.data.repository.RepositoryConsts.RETRY_DELAY_MS
+import com.example.mustmarket.features.merchant.products.domain.models.UploadProductRequest
+import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

@@ -6,7 +6,7 @@ import com.example.mustmarket.core.interceptor.ErrorInterceptor
 import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.products.data.remote.UploadProductsApi
+import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

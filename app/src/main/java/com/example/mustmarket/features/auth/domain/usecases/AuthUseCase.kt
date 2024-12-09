@@ -4,6 +4,7 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,7 @@ class AuthUseCase(private val repository: AuthRepository) {
 
     suspend fun logoutUseCase() = repository.logout()
 
-    suspend fun requestOtpUseCase(email: String) = repository.requestOtp(email)
+    suspend fun requestOtpUseCase(email: RequestPasswordReset) = repository.requestOtp(email)
 
     suspend fun resetPasswordUseCase(otpRequest: OtpRequest) = repository.resetPassword(otpRequest)
 

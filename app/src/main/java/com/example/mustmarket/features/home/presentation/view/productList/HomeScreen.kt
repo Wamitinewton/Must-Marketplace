@@ -123,7 +123,7 @@ fun Content(
                 .padding(bottom = 60.dp, top = 20.dp)
         ) {
 
-            stickyHeader {
+            item {
                 HeaderBar(userName = userData?.name)
             }
             item {

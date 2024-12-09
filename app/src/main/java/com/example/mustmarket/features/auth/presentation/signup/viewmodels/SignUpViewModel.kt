@@ -96,8 +96,6 @@ class SignUpViewModel @Inject constructor(
                 }
             }
 
-
-
             coroutineDebugger.launchTracked(
                 scope = viewModelScope,
                 tag = "Signup_NetworkRequest"
@@ -105,13 +103,26 @@ class SignUpViewModel @Inject constructor(
                 authUseCase.authUseCase.registerUseCase(SignUpUser(name, email, password))
                     .collectLatest { result ->
                         when (result) {
-                            is Resource.Loading -> updateSignupState(isLoading = true)
-                            is Resource.Error -> updateSignupState(
-                                errorMessage = result.message ?: "Unknown Error"
-                            )
+                            is Resource.Loading -> {
+                                _authUiState.value = _authUiState.value.copy(
+                                    isLoading = true,
+                                    errorMessage = null
+                                )
+                            }
+
+                            is Resource.Error -> {
+                                _authUiState.value = _authUiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = result.message ?: "Unknown error occurred"
+                                )
+                            }
 
                             is Resource.Success -> {
-                                result.data?.let { updateSignupState(result = it) }
+                                _authUiState.value = _authUiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = null,
+                                    result = result.data!!
+                                )
                                 _navigateToLogin.send(Unit)
                             }
                         }
@@ -122,7 +133,7 @@ class SignUpViewModel @Inject constructor(
 
     private fun updateSignupState(
         isLoading: Boolean = _authUiState.value.isLoading,
-        errorMessage: String = _authUiState.value.errorMessage,
+        errorMessage: String = _authUiState.value.errorMessage ?: "Unknown error occurred",
         result: AuthedUser = _authUiState.value.result,
     ) {
         _authUiState.value = _authUiState.value.copy(

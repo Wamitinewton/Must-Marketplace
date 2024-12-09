@@ -37,7 +37,7 @@ interface ProductsApi {
     ): AllProductsDto
 
     @Multipart
-    @POST("api/v1/categories/add?{name}")
+    @POST("api/v1/categories/add")
     suspend fun addCategory(
         @Query("name") name: String,
         @Part image: MultipartBody.Part

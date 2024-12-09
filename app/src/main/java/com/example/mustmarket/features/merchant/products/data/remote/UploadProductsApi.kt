@@ -1,9 +1,9 @@
-package com.example.mustmarket.features.products.data.remote
+package com.example.mustmarket.features.merchant.products.data.remote
 
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadImageListOfImageResponse
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadProductResponse
-import com.example.mustmarket.features.products.data.remote.uploadResponse.UploadSingleImageResponse
-import com.example.mustmarket.features.products.domain.models.UploadProductRequest
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadImageListOfImageResponse
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadProductResponse
+import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadSingleImageResponse
+import com.example.mustmarket.features.merchant.products.domain.models.UploadProductRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.Multipart

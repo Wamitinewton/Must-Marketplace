@@ -149,7 +149,7 @@ class LoginViewModel @Inject constructor(
 
                                 isLoading = true,
 
-                                errorMessage = ""
+                                errorMessage = null
                             )
                         }
 
@@ -174,7 +174,7 @@ class LoginViewModel @Inject constructor(
 
                                 isLoading = false,
 
-                                errorMessage = ""
+                                errorMessage = null
 
                             )
 
