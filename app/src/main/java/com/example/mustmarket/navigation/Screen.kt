@@ -23,6 +23,7 @@ sealed class Screen(
     data object Favourites: Screen("favourites_screen")
     data object Onboarding: Screen("onboarding_screen")
     data object Otp: Screen("otp_screen")
+    data object ProductSearch: Screen("product_search_screen")
 
     object BottomNavItems {
         val items = listOf(

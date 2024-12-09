@@ -17,12 +17,15 @@ import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.features.account.domain.models.SettingItem
 import com.example.mustmarket.features.account.presentation.Header
 import com.example.mustmarket.features.account.presentation.SectionTitle
 import com.example.mustmarket.features.account.presentation.SettingsCard
+import com.example.mustmarket.features.auth.datastore.SessionManager
+import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
@@ -31,6 +34,7 @@ fun AccountScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val secureStorage = SessionManager(context = LocalContext.current)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -107,7 +111,11 @@ fun AccountScreen(
                 SettingItem(
                     label = "Log out",
                     icon = Icons.AutoMirrored.Filled.Logout,
-                    onClick = {}
+                    onClick = {
+                        secureStorage.clearTokens()
+                        navController.navigate(Screen.Login.route)
+                        navController.popBackStack()
+                    }
                 )
             )
         )

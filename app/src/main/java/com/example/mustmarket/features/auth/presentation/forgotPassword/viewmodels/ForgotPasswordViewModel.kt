@@ -8,6 +8,7 @@ import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.OTP_LENGTH
 import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.SCORE_THRESHOLDS
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.ForgotPasswordScreen
@@ -30,55 +31,6 @@ class ForgotPasswordViewModel @Inject constructor(
     private val _state = MutableStateFlow(ForgotPasswordState())
     val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
 
-    private fun clearErrors() {
-        _state.update {
-            it.copy(
-                emailError = null,
-                otpError = null,
-                passwordError = null,
-                confirmPasswordError = null,
-                errorMessage = null,
-                passwordStrength = getPasswordStrengthMessage(it.newPassword)
-            )
-        }
-    }
-
-    private fun updateConfirmPassword(confirmPassword: String) {
-        _state.update {
-            it.copy(
-                confirmPassword = confirmPassword,
-                confirmPasswordError = null
-            )
-        }
-    }
-
-    private fun updateEmail(email: String) {
-        _state.update {
-            it.copy(
-                email = email,
-                emailError = null
-            )
-        }
-    }
-
-    private fun updateOtp(otp: String) {
-        _state.update {
-            it.copy(
-                otp = otp,
-                otpError = null
-            )
-        }
-    }
-
-    private fun updatePassword(password: String) {
-        _state.update {
-            it.copy(
-                newPassword = password,
-                passwordError = null,
-                passwordStrength = getPasswordStrengthMessage(password)
-            )
-        }
-    }
 
     fun onEvent(event: ForgotPasswordEvent) {
         when (event) {
@@ -156,16 +108,28 @@ class ForgotPasswordViewModel @Inject constructor(
             tag = "request-Otp",
             scope = viewModelScope
         ) {
-            authUseCase.authUseCase.requestOtpUseCase(_state.value.email)
+            authUseCase.authUseCase.requestOtpUseCase(
+                RequestPasswordReset(
+                    email = _state.value.email
+                )
+            )
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> {
-                            _state.update { it.copy(isLoading = result.isLoading) }
+                            _state.update { it.copy(
+                                isLoading = true,
+                                isOtpSent = false,
+                                errorMessage = null
+                            ) }
                         }
 
                         is Resource.Error -> {
                             _state.update {
-                                it.copy(errorMessage = result.message)
+                                it.copy(
+                                    errorMessage = result.message,
+                                    isLoading = false,
+                                    isOtpSent = false
+                                )
                             }
                         }
 
@@ -173,7 +137,9 @@ class ForgotPasswordViewModel @Inject constructor(
                             _state.update {
                                 it.copy(
                                     isOtpSent = true,
-                                    currentScreen = ForgotPasswordScreen.OTP_INPUT
+                                    currentScreen = ForgotPasswordScreen.OTP_INPUT,
+                                    isLoading = false,
+                                    errorMessage = null
                                 )
                             }
                         }

@@ -27,5 +27,20 @@ data class NetworkProductDto(
     val category: CategoryDto,
 
     @SerialName("images")
-    val images: List<String> = emptyList()
+    val images: List<String> = emptyList(),
+
+    @SerialName("user")
+    val user: UserDataDto
+)
+
+@Serializable
+data class UserDataDto(
+    @SerialName("email")
+    val email: String,
+    @SerialName("id")
+    val id: Int,
+    @SerialName("name")
+    val name: String,
+    @SerialName("number")
+    val number: Int?
 )

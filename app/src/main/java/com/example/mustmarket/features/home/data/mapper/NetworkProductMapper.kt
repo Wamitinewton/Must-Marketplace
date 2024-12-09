@@ -4,8 +4,10 @@ import com.example.mustmarket.features.home.data.local.converters.ProductConvert
 import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
+import com.example.mustmarket.features.home.data.remote.dto.UserDataDto
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.example.mustmarket.features.merchant.products.domain.models.UserData
 
 
 fun NetworkProductDto.toDomainProduct(): NetworkProduct {
@@ -17,7 +19,8 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         brand = brand,
         description = description ?: "No description available",
         category = category.toDomainCategory(),
-        images = images
+        images = images,
+        userData = user.toUser()
     )
 }
 
@@ -41,6 +44,7 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         description = description,
         category = category,
         lastUpdated = System.currentTimeMillis(),
+        userData = userData
     )
 }
 
@@ -54,6 +58,16 @@ fun ProductListingEntity.toNetworkProduct(): NetworkProduct {
         description = description,
         category = category,
         images = ProductConverters().fromStringImageList(images),
+        userData = userData
+    )
+}
+
+fun UserDataDto.toUser(): UserData {
+    return UserData(
+        email = email,
+        id = id,
+        name = name,
+        number = number
     )
 }
 

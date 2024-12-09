@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -47,8 +48,7 @@ fun SearchBar(
     query: String,
     onSearch: () -> Unit = {},
     isSearchActive: Boolean,
-
-    ) {
+) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
@@ -74,6 +74,7 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester = focusRequester),
+
             singleLine = true,
             placeholder = {
                 Text(

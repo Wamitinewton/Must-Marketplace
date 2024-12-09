@@ -6,7 +6,7 @@ import com.example.mustmarket.features.auth.presentation.login.state.AuthState
 
 data class SignUpViewModelState(
     val isLoading: Boolean = false,
-    val errorMessage: String = "",
+    val errorMessage: String? = null,
     val passwordInput: String = "",
     val emailInput: String = "",
     val nameInput: String = "",

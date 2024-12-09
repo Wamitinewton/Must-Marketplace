@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -55,6 +59,7 @@ fun LoginScreen(
     val btnEnabled = emailIsValid && passwordIsValid
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
+    val scaffoldState = rememberScaffoldState()
 
 
     val networkState by rememberConnectivityState()
@@ -72,9 +77,12 @@ fun LoginScreen(
     }
 
 
-    LaunchedEffect(key1 = uiState.errorMessage) {
-        if (uiState.errorMessage.isNotEmpty()) {
-            loginViewModel.onEvent(LoginEvent.ClearError)
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                it,
+                duration = SnackbarDuration.Long
+            )
         }
     }
 
@@ -104,72 +112,78 @@ fun LoginScreen(
     }
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        ThemeUtils.AppColors.Surface.themed(),
-                        ThemeUtils.AppColors.Surface.themed(),
-                        ThemeUtils.AppColors.Surface.themed(),
-                    )
-                )
-            )
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        AuthHeader(
-            authText = "Enter your credentials to continue",
-            authTitle = "Log In"
-        )
+ Scaffold(
+     scaffoldState = scaffoldState,
 
-        LoginForm(
-            emailInput = uiState.emailInput,
-            passwordInput = uiState.passwordInput,
-            showPassword = uiState.showPassword,
-            emailError = uiState.emailError,
-            passwordError = uiState.passwordError,
-            onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
-            onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-            onNavigateToForgotPassword = {
-                navController.popBackStack()
-                navController.navigate(Screen.Otp.route)
-            },
-            onTogglePassword = {
-                loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
-            }
-        )
+ ) { padding ->
+     Column(
+         modifier = Modifier
+             .padding(padding)
+             .fillMaxSize()
+             .background(
+                 brush = Brush.verticalGradient(
+                     colors = listOf(
+                         ThemeUtils.AppColors.Surface.themed(),
+                         ThemeUtils.AppColors.Surface.themed(),
+                         ThemeUtils.AppColors.Surface.themed(),
+                     )
+                 )
+             )
+             .verticalScroll(rememberScrollState()),
+         horizontalAlignment = Alignment.CenterHorizontally,
+         verticalArrangement = Arrangement.Center
+     ) {
+         AuthHeader(
+             authText = "Enter your credentials to continue",
+             authTitle = "Log In"
+         )
 
-        ButtonLoading(
-            name = "Login",
-            isLoading = uiState.isLoading,
-            enabled = btnEnabled,
-            onClicked = ::handleLoginClick
-        )
+         LoginForm(
+             emailInput = uiState.emailInput,
+             passwordInput = uiState.passwordInput,
+             showPassword = uiState.showPassword,
+             emailError = uiState.emailError,
+             passwordError = uiState.passwordError,
+             onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
+             onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
+             onNavigateToForgotPassword = {
+                 navController.popBackStack()
+                 navController.navigate(Screen.Otp.route)
+             },
+             onTogglePassword = {
+                 loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
+             }
+         )
 
-        Spacer(modifier = Modifier.height(22.dp))
+         ButtonLoading(
+             name = "Login",
+             isLoading = uiState.isLoading,
+             enabled = btnEnabled,
+             onClicked = ::handleLoginClick
+         )
 
-        SocialAuthButton(
-            onClick = {},
-            iconId = R.drawable.google,
-            text = "Continue with Google"
-        )
+         Spacer(modifier = Modifier.height(22.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+         SocialAuthButton(
+             onClick = {},
+             iconId = R.drawable.google,
+             text = "Continue with Google"
+         )
 
-        SignUpPrompt(
-            onSignUpClick = {
-                navController.popBackStack()
-                navController.navigate(Screen.SignUp.route) {
-                    popUpTo(Screen.Login.route)
+         Spacer(modifier = Modifier.height(12.dp))
 
-                    launchSingleTop = true
-                }
-            },
-            authCheck = "Don't have an account?",
-            authMethod = "Sign Up"
-        )
-    }
+         SignUpPrompt(
+             onSignUpClick = {
+                 navController.popBackStack()
+                 navController.navigate(Screen.SignUp.route) {
+                     popUpTo(Screen.Login.route)
+
+                     launchSingleTop = true
+                 }
+             },
+             authCheck = "Don't have an account?",
+             authMethod = "Sign Up"
+         )
+     }
+ }
 }

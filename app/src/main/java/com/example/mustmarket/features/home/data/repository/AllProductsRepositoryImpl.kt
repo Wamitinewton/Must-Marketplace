@@ -59,6 +59,7 @@ class AllProductsRepositoryImpl @Inject constructor(
                 .asSequence()
                 .filter { it.brand.isNotBlank() }
                 .sortedByDescending { it.id }
+                .distinctBy { it.id }
                 .toList()
 
             dao.clearAllProducts()
@@ -115,7 +116,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                 if (!cachedProducts.isNullOrEmpty()) {
                     emit(Resource.Success(cachedProducts.toNetworkProducts()))
                 }
-
                 val shouldRefresh = forceRefresh || shouldRefresh()
                 if (shouldRefresh) {
                     when (val fetchResult = fetchAndCacheProducts()) {

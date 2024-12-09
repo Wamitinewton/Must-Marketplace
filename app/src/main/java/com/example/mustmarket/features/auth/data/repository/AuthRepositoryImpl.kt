@@ -12,6 +12,7 @@ import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.LoginResult
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.mapper.toAuthedUser
@@ -38,13 +39,12 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(data = user))
                 emit(Resource.Loading(false))
             } else {
-                emit(Resource.Loading(false))
-                emit(Resource.Error(response.data.toString()))
+                emit(Resource.Error(response.message))
             }
         } catch (e: IOException) {
             emit(
                 Resource.Error(
-                    message = e.message.toString()
+                    message = "Couldn't reach server, check your internet connection"
                 )
             )
         }
@@ -57,6 +57,7 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
                 emit(Resource.Success(data = response.toLoginResult()))
+                emit(Resource.Loading(false))
                 sessionManger.saveTokens(response.data.token, response.data.refreshToken)
                 val newUserData = UserData(
                     id = response.data.user.id.toString(),
@@ -78,7 +79,7 @@ class AuthRepositoryImpl @Inject constructor(
                     )
                 )
             }
-            emit(Resource.Loading(false))
+
         }
 
     override suspend fun logout(): Flow<Resource<Boolean>> {
@@ -92,15 +93,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun requestOtp(email: String): Flow<Resource<OtpResponse>> = flow {
+    override suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>> = flow {
         emit(Resource.Loading(true))
         try {
             val response = authApi.requestOtp(email)
             emit(Resource.Success(data = response))
+            emit(Resource.Loading(false))
         } catch (e: IOException) {
             emit(
                 Resource.Error(
-                    message = "Couldn't reach server, check your internet connection"
+                    message = e.message ?: "An unexpected error occurred"
                 )
             )
         } catch (e: RetrofitHttpException) {
@@ -118,7 +120,6 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }
-        emit(Resource.Loading(false))
     }
 
     override suspend fun resetPassword(otpRequest: OtpRequest): Flow<Resource<PasswordResetResponse>> =
@@ -127,6 +128,7 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 val response = authApi.resetPassword(otpRequest)
                 emit(Resource.Success(data = response))
+                emit(Resource.Loading(false))
             } catch (e: IOException) {
                 emit(
                     Resource.Error(
@@ -148,7 +150,6 @@ class AuthRepositoryImpl @Inject constructor(
                     )
                 )
             }
-            emit(Resource.Loading(false))
         }
 
 }

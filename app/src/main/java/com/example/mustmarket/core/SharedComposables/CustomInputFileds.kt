@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -162,11 +163,12 @@ fun ProductInputFields(
 }
 
 @Composable
-fun MyTextField(
+fun DefaultTextInput(
     onInputChanged: (String) -> Unit,
     inputText: String,
     name: String,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    onSubmitted: (() -> Unit)? = null
 ) {
     OutlinedTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -183,6 +185,11 @@ fun MyTextField(
             .background(Color.Transparent),
         singleLine = true,
         keyboardOptions = myKeyboardOptions,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onSubmitted?.invoke()
+            }
+        ),
         label = { TextFieldLabel(name = name) },
         isError = errorMessage != null
     )

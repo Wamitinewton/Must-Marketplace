@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,6 +80,7 @@ fun SignUpScreen(
     var showNetworkDialog by remember { mutableStateOf(false) }
 
     var showSuccessDialog by remember { mutableStateOf(false) }
+    val scaffoldState = rememberScaffoldState()
 
     systemUiController.setSystemBarsColor(
 
@@ -100,6 +105,15 @@ fun SignUpScreen(
             onExit = { (context as? Activity)?.finish() }
 
         )
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                it,
+                duration = SnackbarDuration.Long
+            )
+        }
     }
 
 
@@ -144,92 +158,97 @@ fun SignUpScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        ThemeUtils.AppColors.Surface.themed(),
-                        ThemeUtils.AppColors.Surface.themed(),
-                        ThemeUtils.AppColors.Surface.themed(),
-                    )
-                )
-            )
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        AuthHeader(
-            authText = "Create an account with us",
-            authTitle = "Sign Up"
-        )
+   Scaffold(
+       scaffoldState = scaffoldState
+   ) { padding ->
+       Column(
+           modifier = Modifier
+               .padding(padding)
+               .fillMaxSize()
+               .background(
+                   brush = Brush.verticalGradient(
+                       colors = listOf(
+                           ThemeUtils.AppColors.Surface.themed(),
+                           ThemeUtils.AppColors.Surface.themed(),
+                           ThemeUtils.AppColors.Surface.themed(),
+                       )
+                   )
+               )
+               .verticalScroll(rememberScrollState()),
+           horizontalAlignment = Alignment.CenterHorizontally,
+           verticalArrangement = Arrangement.Center
+       ) {
+           AuthHeader(
+               authText = "Create an account with us",
+               authTitle = "Sign Up"
+           )
 
-        SignUpForm(
-            emailInput = uiState.emailInput,
-            userNameInput = uiState.nameInput,
-            passwordInput = uiState.passwordInput,
-            confirmPasswordInput = uiState.passwordConfirmInput,
-            showPassword = uiState.showPassword,
-            showConfirmPassword = uiState.showPassword,
-            emailError = uiState.emailError,
-            userNameError = uiState.nameError,
-            passwordError = uiState.passwordError,
-            confirmPasswordError = uiState.passwordConfirmError,
-            onEmailChanged = { signUpViewModel.onEvent(SignupEvent.EmailChanged(it)) },
-            onUserNameChanged = { signUpViewModel.onEvent(SignupEvent.UsernameChanged(it)) },
-            onPasswordChanged = { signUpViewModel.onEvent(SignupEvent.PasswordChanged(it)) },
-            onConfirmPasswordChanged = {
-                signUpViewModel.onEvent(
-                    SignupEvent.ConfirmPasswordChanged(
-                        it
-                    )
-                )
-            },
-            onTogglePassword = {
-                signUpViewModel.onEvent(SignupEvent.TogglePasswordVisibility(!uiState.showPassword))
-            },
-            passwordStrength = uiState.passwordStrength,
-            onToggleConfirmPassword = {
-                signUpViewModel.onEvent(SignupEvent.ToggleConfirmPasswordVisibility(!uiState.showPassword))
+           SignUpForm(
+               emailInput = uiState.emailInput,
+               userNameInput = uiState.nameInput,
+               passwordInput = uiState.passwordInput,
+               confirmPasswordInput = uiState.passwordConfirmInput,
+               showPassword = uiState.showPassword,
+               showConfirmPassword = uiState.showPassword,
+               emailError = uiState.emailError,
+               userNameError = uiState.nameError,
+               passwordError = uiState.passwordError,
+               confirmPasswordError = uiState.passwordConfirmError,
+               onEmailChanged = { signUpViewModel.onEvent(SignupEvent.EmailChanged(it)) },
+               onUserNameChanged = { signUpViewModel.onEvent(SignupEvent.UsernameChanged(it)) },
+               onPasswordChanged = { signUpViewModel.onEvent(SignupEvent.PasswordChanged(it)) },
+               onConfirmPasswordChanged = {
+                   signUpViewModel.onEvent(
+                       SignupEvent.ConfirmPasswordChanged(
+                           it
+                       )
+                   )
+               },
+               onTogglePassword = {
+                   signUpViewModel.onEvent(SignupEvent.TogglePasswordVisibility(!uiState.showPassword))
+               },
+               passwordStrength = uiState.passwordStrength,
+               onToggleConfirmPassword = {
+                   signUpViewModel.onEvent(SignupEvent.ToggleConfirmPasswordVisibility(!uiState.showPassword))
 
-            },
-        )
+               },
+           )
 
-        Spacer(modifier = Modifier.height(20.dp))
+           Spacer(modifier = Modifier.height(20.dp))
 
-        TermsAndServices()
+           TermsAndServices()
 
-        Spacer(modifier = Modifier.height(22.dp))
+           Spacer(modifier = Modifier.height(22.dp))
 
-        ButtonLoading(
-            name = "Sign Up",
-            isLoading = uiState.isLoading,
-            enabled = btnEnabled,
-            onClicked = ::handleSignupClick
-        )
+           ButtonLoading(
+               name = "Sign Up",
+               isLoading = uiState.isLoading,
+               enabled = btnEnabled,
+               onClicked = ::handleSignupClick
+           )
 
-        Spacer(modifier = Modifier.height(22.dp))
+           Spacer(modifier = Modifier.height(22.dp))
 
-        SocialAuthButton(
-            onClick = {},
-            iconId = R.drawable.google,
-            text = "Continue with Google"
-        )
+           SocialAuthButton(
+               onClick = {},
+               iconId = R.drawable.google,
+               text = "Continue with Google"
+           )
 
-        Spacer(modifier = Modifier.height(22.dp))
+           Spacer(modifier = Modifier.height(22.dp))
 
-        SignUpPrompt(
-            onSignUpClick = {
-                navController.popBackStack()
-                navController.navigate(Screen.Login.route)
-            },
-            authCheck = "Already have an account?",
-            authMethod = "Log in"
+           SignUpPrompt(
+               onSignUpClick = {
+                   navController.popBackStack()
+                   navController.navigate(Screen.Login.route)
+               },
+               authCheck = "Already have an account?",
+               authMethod = "Log in"
 
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-    }
+           )
+           Spacer(modifier = Modifier.height(24.dp))
+       }
+   }
 }
 
 

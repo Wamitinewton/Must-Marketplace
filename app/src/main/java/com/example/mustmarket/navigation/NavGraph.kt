@@ -130,6 +130,7 @@ fun SetUpNavGraph(
                 navController.navigate(Screen.Login.route)
             })
         }
+
     }
 }
 

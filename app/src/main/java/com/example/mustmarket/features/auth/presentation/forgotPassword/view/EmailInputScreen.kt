@@ -15,11 +15,14 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -29,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mustmarket.core.SharedComposables.DefaultTextInput
 import com.example.mustmarket.core.SharedComposables.LoadingState
 
 @Composable
@@ -38,14 +42,26 @@ fun EmailInputScreen(
     emailError: String?,
     onEmailChanged: (String) -> Unit,
     onSubmit: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    otpError: String?
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(otpError) {
+        otpError?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
 
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text("") },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
                         Icon(
@@ -81,32 +97,14 @@ fun EmailInputScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = onEmailChanged,
-                label = { Text("Email") },
-                isError = emailError != null,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        keyboardController?.hide()
-                        onSubmit()
-                    }
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+            DefaultTextInput(
+                onInputChanged = onEmailChanged,
+                inputText = email,
+                name = "Email",
+                errorMessage = emailError,
+                onSubmitted = onSubmit
             )
-            AnimatedVisibility(visible = emailError != null) {
-                Text(
-                    text = emailError ?: "",
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
+
 
             Button(
                 onClick = onSubmit,
