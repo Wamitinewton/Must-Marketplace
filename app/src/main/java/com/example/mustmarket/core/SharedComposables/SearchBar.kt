@@ -1,6 +1,7 @@
 package com.example.mustmarket.core.SharedComposables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,19 +15,23 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuDefaults.textFieldColors
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,11 +48,12 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 @Composable
 fun SearchBar(
     autoFocus: Boolean,
-    onQueryChange: (HomeScreenEvent.Search) -> Unit,
+    onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
     query: String,
     onSearch: () -> Unit = {},
     isSearchActive: Boolean,
+    onSearchNavigationClick: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -59,33 +65,43 @@ fun SearchBar(
 
     Box(
         modifier = Modifier
-            .padding(start = 12.dp, end = 12.dp, bottom = 8.dp)
-            .clip(CircleShape)
             .fillMaxWidth()
-            .height(54.dp)
+            .height(50.dp)
+            .clip(RectangleShape)
+            .background(Color.White)
     ) {
-
 
         TextField(
             value = query,
             onValueChange = { newValue ->
-                onQueryChange(HomeScreenEvent.Search(newValue.trim()))
+                onQueryChange(newValue.trim())
             },
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(50.dp)
                 .focusRequester(focusRequester = focusRequester),
 
             singleLine = true,
+            leadingIcon = {
+                IconButton(
+                    onClick = onSearchNavigationClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "navigate to home",
+                        tint = ThemeUtils.AppColors.Surface.themed()
+                    )
+                }
+            },
             placeholder = {
                 Text(
-                    text = "Search products...",
-                    color = Color.Gray,
-                    fontWeight = FontWeight.Normal
+                    text = "Search...",
+                    style = MaterialTheme.typography.caption,
                 )
             },
             colors = textFieldColors(
                 textColor = ThemeUtils.AppColors.Surface.themed(),
-                backgroundColor = ThemeUtils.AppColors.Text.themed(),
+                backgroundColor = Color.Transparent,
                 disabledTextColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -104,7 +120,9 @@ fun SearchBar(
                 ),
             trailingIcon = {
 
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     AnimatedVisibility(visible = query.isNotEmpty()) {
                         IconButton(
                             onClick = {

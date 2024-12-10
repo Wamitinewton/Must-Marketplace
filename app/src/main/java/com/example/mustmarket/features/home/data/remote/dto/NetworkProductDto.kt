@@ -30,7 +30,7 @@ data class NetworkProductDto(
     val images: List<String> = emptyList(),
 
     @SerialName("user")
-    val user: UserDataDto
+    val user: UserDataDto? = null
 )
 
 @Serializable
@@ -42,5 +42,5 @@ data class UserDataDto(
     @SerialName("name")
     val name: String,
     @SerialName("number")
-    val number: Int?
+    val number: Int? = null
 )
