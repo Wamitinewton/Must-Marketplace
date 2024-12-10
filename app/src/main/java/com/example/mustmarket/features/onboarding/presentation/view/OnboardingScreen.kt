@@ -113,19 +113,12 @@ fun PagerTopAppBar(page: Int, modifier: Modifier = Modifier) {
         title = { },
         backgroundColor = Color.Transparent,
         elevation = 0.dp,
-        navigationIcon = {
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = "Left Icon",
-                )
-            }
-        },
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Menu icon",
+                    tint = MaterialTheme.colors.primary
                 )
             }
         },
