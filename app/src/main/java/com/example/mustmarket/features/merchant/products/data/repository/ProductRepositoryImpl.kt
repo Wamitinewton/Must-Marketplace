@@ -64,14 +64,14 @@ class ProductRepositoryImpl @Inject constructor(
                 }
                 if (response.message == SUCCESS_RESPONSE) {
                     emit(Resource.Success(data = response))
+                    emit(Resource.Loading(false))
                 } else {
-                    emit(Resource.Error(message = response.data.toString()))
+                    emit(Resource.Error(message = response.message))
 
                 }
             } catch (e: Exception) {
                 emit(Resource.Error(message = e.message ?: Constants.UPLOAD_ERROR))
             } finally {
-                emit(Resource.Loading(false))
                 cleanUpFiles()
             }
         }.flowOn(dispatcher)
@@ -86,15 +86,14 @@ class ProductRepositoryImpl @Inject constructor(
                 }
                 if (response.message == SUCCESS_RESPONSE) {
                     emit(Resource.Success(data = response))
-                } else {
                     emit(Resource.Loading(false))
+                } else {
                     emit(Resource.Error(message = response.data))
 
                 }
             } catch (e: Exception) {
                 emit(Resource.Error(message = e.message ?: Constants.UPLOAD_ERROR))
             } finally {
-                emit(Resource.Loading(false))
                 cleanUpFiles()
             }
         }.flowOn(dispatcher)
@@ -110,12 +109,10 @@ class ProductRepositoryImpl @Inject constructor(
                     emit(Resource.Success(data = response))
                     emit(Resource.Loading(false))
                 } else {
-                    emit(Resource.Loading(false))
-                    emit(Resource.Error(message = response.data.toString()))
+                    emit(Resource.Error(message = response.message))
 
                 }
             } catch (e: Exception) {
-                emit(Resource.Loading(false))
                 emit(Resource.Error(message = e.message ?: Constants.UPLOAD_ERROR))
             }
         }.flowOn(dispatcher)

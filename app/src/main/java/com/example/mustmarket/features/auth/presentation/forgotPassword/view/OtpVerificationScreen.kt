@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mustmarket.core.AdaptableLayout.ResponsiveSizeUtil
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.otpUtils.OtpBox
 import kotlinx.coroutines.delay
@@ -60,22 +61,22 @@ fun OtpVerificationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(ResponsiveSizeUtil.responsivePadding(basePadding = 16.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Enter verification code",
-            fontSize = 24.sp,
+            fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 24.sp),
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = ResponsiveSizeUtil.responsivePadding(basePadding = 18.dp))
         )
 
         Text(
             text = "We've sent a verification code to\n$email",
-            fontSize = 16.sp,
+            fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 19.sp),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(bottom = ResponsiveSizeUtil.responsivePadding(basePadding = 27.dp))
         )
 
         Row(
@@ -83,17 +84,24 @@ fun OtpVerificationScreen(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             otp.padEnd(6, ' ').forEachIndexed { index, char ->
+                val isCurrentBoxFilled = if (index == 0) true else otp.getOrNull(index - 1)?.isDigit() == true
+
                 OtpBox(
                     value = (char.takeIf { it != ' ' } ?: "").toString(),
                     isFocused = index == otp.length,
+                    isEnabled = isCurrentBoxFilled,
                     focusRequester = focusRequester[index],
                     onValueChanged = { newValue ->
-                        if (newValue.isEmpty() && index > 0) {
-                            onOtpChanged(otp.dropLast(1))
-                            coroutineScope.launch {
-                                focusRequester[index - 1].requestFocus()
-                            }
-                        } else if (newValue.isNotEmpty() && newValue.matches(Regex("\\d"))) {
+                        if (newValue.isEmpty()) {
+                          if (index > 0) {
+                              onOtpChanged(otp.take(index - 1) + otp.drop(index))
+                              coroutineScope.launch {
+                                  focusRequester[index - 1].requestFocus()
+                              }
+                          } else {
+                              onOtpChanged(otp.drop(1))
+                          }
+                        } else if (newValue.matches(Regex("\\d"))) {
                             val newOtp = otp.take(index) + newValue + otp.drop(index + 1)
                             onOtpChanged(newOtp)
                             if (index < 5) {
@@ -111,7 +119,7 @@ fun OtpVerificationScreen(
             Text(
                 text = otpError ?: "",
                 color = MaterialTheme.colors.error,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = ResponsiveSizeUtil.responsivePadding(basePadding = 16.dp))
             )
         }
         Button(
@@ -119,24 +127,33 @@ fun OtpVerificationScreen(
             enabled = !isLoading && otp.length == 6,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-                .height(50.dp)
+                .padding(
+                    horizontal = ResponsiveSizeUtil.responsivePadding(basePadding = 16.dp),
+                    vertical = ResponsiveSizeUtil.responsivePadding(basePadding = 24.dp)
+                )
+                .height(ResponsiveSizeUtil.responsiveDimension(baseDimension = 50.dp))
         ) {
             if (isLoading) {
                 LoadingState()
             } else {
-                Text("verify")
+                Text("verify",
+                    fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 16.sp)
+                    )
             }
         }
         Row(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = ResponsiveSizeUtil.responsivePadding(basePadding = 16.dp)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Didn't receive the code?")
+            Text(
+                "Didn't receive the code?",
+                fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 17.sp)
+            )
             if (remainingSeconds > 0) {
                 Text(
                     text = "Wait ${remainingSeconds}s",
-                    color = MaterialTheme.colors.primary
+                    color = MaterialTheme.colors.primary,
+                    fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 17.sp)
                 )
             } else {
                 Text(
@@ -146,7 +163,8 @@ fun OtpVerificationScreen(
                         onResendOtp()
                         remainingSeconds = 60
                         isTimerRunning = true
-                    }
+                    },
+                    fontSize = ResponsiveSizeUtil.responsiveTextSize(baseSize = 17.sp,)
                 )
             }
         }

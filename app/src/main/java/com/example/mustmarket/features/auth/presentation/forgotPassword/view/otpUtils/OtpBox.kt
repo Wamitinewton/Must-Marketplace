@@ -18,16 +18,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun OtpBox(
     value: String,
     isFocused: Boolean,
     focusRequester: FocusRequester,
-    onValueChanged: (String) -> Unit
+    onValueChanged: (String) -> Unit,
+    isEnabled: Boolean = true,
 ) {
 
     TextField(
+        enabled = isEnabled,
         value = value,
         onValueChange = onValueChanged,
         modifier = Modifier
@@ -36,7 +40,7 @@ fun OtpBox(
             .border(
                 width = 1.dp,
                 color = if (isFocused) MaterialTheme.colors.primary
-                else MaterialTheme.colors.background,
+                else ThemeUtils.AppColors.SecondaryText.themed(),
                 shape = RoundedCornerShape(8.dp)
             ),
         textStyle = LocalTextStyle.current.copy(

@@ -10,6 +10,7 @@ import kotlin.coroutines.CoroutineContext
 class CoroutineDebugger {
     private val activeCoroutines = ConcurrentHashMap<String, JobInfo>()
     private val coroutineCounter = AtomicInteger(0)
+    private val timeStamp = System.currentTimeMillis()
 
 
     companion object {
@@ -103,8 +104,8 @@ class CoroutineDebugger {
 
     private fun logCoroutineStart(coroutineId: String) {
         val jobInfo = activeCoroutines[coroutineId]
-        println("🚀 Coroutine Started: $coroutineId (${jobInfo?.tag})")
-        println("📍 Created at:\n${jobInfo?.stackTrace}")
+        println("🚀 Coroutine Started $timeStamp: $coroutineId (${jobInfo?.tag})")
+        println("📍 Created at $timeStamp:\n${jobInfo?.stackTrace}")
     }
 
     private fun logCoroutineEnd(coroutineId: String, jobInfo: JobInfo) {
