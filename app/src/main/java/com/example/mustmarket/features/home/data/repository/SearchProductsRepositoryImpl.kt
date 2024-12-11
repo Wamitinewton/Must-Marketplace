@@ -37,14 +37,14 @@ class SearchProductsRepositoryImpl @Inject constructor(
 
             try {
                 val response = productsApi.searchProducts(query)
-                emit(Resource.Loading(false))
+
 
                 if (response.message == "Success") {
                     val products = response.data
                         .filter { it.brand.isNotBlank() }
                         .map { it.toDomainProduct() }
                         .sortedByDescending { it.id }
-
+                    emit(Resource.Loading(false))
                     if (products.isEmpty()) {
                         emit(Resource.Error("No products found for '$query'"))
                     } else {

@@ -20,7 +20,7 @@ fun NetworkProductDto.toDomainProduct(): NetworkProduct {
         description = description ?: "No description available",
         category = category.toDomainCategory(),
         images = images,
-        userData = user.toUser()
+        userData = user!!.toUser()
     )
 }
 

@@ -97,7 +97,7 @@ fun UploadProducts(
     var newCategoryImageUri by remember { mutableStateOf<Uri?>(null) }
     val categoryUiState by categoryViewModel.uiState.collectAsState()
 
-    val userId by userStoreManager.userDataFlow.collectAsState()
+    val userId = userStoreManager.fetchUserData()
 
     val categoryLauncherPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

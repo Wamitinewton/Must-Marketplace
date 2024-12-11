@@ -51,14 +51,14 @@ fun CategoryGridView(
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween,
-
         ) {
         CategoryHeader()
         Spacer(modifier = Modifier.height(8.dp))
-
         when {
             uiState.isLoading -> LoadingState(type = LoadingAnimationType.PULSING_DOTS)
-            uiState.errorMessage.isNotEmpty() -> ErrorState()
+            uiState.errorMessage.isNotEmpty() -> ErrorState(
+                message = uiState.errorMessage
+            )
             else -> CategoryGrid(categories = uiState.categories)
         }
     }

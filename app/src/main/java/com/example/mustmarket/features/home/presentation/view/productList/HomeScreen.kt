@@ -27,10 +27,11 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,7 +55,6 @@ import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
 import com.example.mustmarket.core.SharedComposables.LoadingState
 import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
 import com.example.mustmarket.core.SharedComposables.SearchBar
-import com.example.mustmarket.features.auth.datastore.UserData
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -63,7 +63,6 @@ import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.colorPrimary
-import com.example.mustmarket.ui.theme.favourite
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.async
@@ -99,53 +98,72 @@ fun Content(
         isRefreshing = isRefreshing
     )
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        onRefresh = {
-            coroutineScope.launch {
-                supervisorScope {
-                    val productRefresh = async {
-                        viewModel.onProductEvent(HomeScreenEvent.Refresh)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = ThemeUtils.AppColors.Surface.themed(),
+                title = {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .height(40.dp)
+                            .clickable(
+                                onClick = {
+                                    navController.navigate(Screen.ProductSearch.route)
+                                }
+                            ),
+                        backgroundColor = ThemeUtils.AppColors.Text.themed()
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = 35.dp)
+                        ) {
+                            Text(
+                                text = "Search products....",
+                                style = MaterialTheme.typography.caption
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_search),
+                                tint = Color.Black,
+                                contentDescription = null
+                            )
+                        }
                     }
-                    val categoryRefresh = async {
-                        categoryViewModel.onCategoryEvent(CategoryEvent.Refresh)
+                }
+            )
+        }
+    ) { padding ->
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = {
+                coroutineScope.launch {
+                    supervisorScope {
+                        val productRefresh = async {
+                            viewModel.onProductEvent(HomeScreenEvent.Refresh)
+                        }
+                        val categoryRefresh = async {
+                            categoryViewModel.onCategoryEvent(CategoryEvent.Refresh)
+                        }
+                        productRefresh.await()
+                        categoryRefresh.await()
                     }
-                    productRefresh.await()
-                    categoryRefresh.await()
                 }
             }
-        }
-    ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 60.dp, top = 20.dp)
         ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(bottom = 60.dp, top = 20.dp)
+            ) {
 
-            item {
-                HeaderBar(userName = userData?.name)
-            }
-            item {
-                SearchBar(
-                    autoFocus = false,
-                    onSearch = {
-                        if (uiState.searchQuery.isNotEmpty()) {
-                            viewModel.onProductEvent(HomeScreenEvent.Search(uiState.searchQuery))
-                        }
-                    },
-                    query = uiState.searchQuery,
-                    onQueryChange = { searchEvent ->
-                        viewModel.onProductEvent(searchEvent)
-                    },
-                    onClearQuery = {
-                        viewModel.onProductEvent(HomeScreenEvent.ClearSearch)
-                    },
-                    isSearchActive = uiState.isSearchActive
-                )
-            }
-
-            if (!uiState.isSearchActive && uiState.searchQuery.isEmpty()) {
+                item {
+                    HeaderBar(userName = userData?.name)
+                }
 
                 item { Promotions() }
                 item { CategoryGridView() }
@@ -156,86 +174,71 @@ fun Content(
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Box(
-                            contentAlignment = Alignment.CenterStart,
-                            modifier = Modifier.padding(start = 16.dp)
-                        ) {
+                           Row(
+                               horizontalArrangement = Arrangement.SpaceBetween,
+                               verticalAlignment = Alignment.CenterVertically,
+                               modifier = Modifier
+                                   .padding(horizontal = 15.dp)
+                           ) {
+                               Text(
+                                   text = "All Products",
+                                   color = ThemeUtils.AppColors.Text.themed(),
+                                   fontSize = 18.sp
+                               )
+
+                               Text(
+                                   modifier = Modifier
+                                       .clickable(
+                                           onClick = {}
+                                       ),
+                                   text = "See all",
+                                   color = ThemeUtils.AppColors.Text.themed(),
+                                   fontSize = 16.sp
+                               )
+                           }
+                        }
+                    }
+
+
+
+                when {
+                    uiState.isLoading && uiState.products.isEmpty() -> {
+                        item {
+                            LoadingState(type = LoadingAnimationType.PULSING_DOTS)
+                        }
+                    }
+
+                    uiState.errorMessage?.isNotEmpty() == true -> {
+                        item {
+                            uiState.errorMessage?.let { ErrorState(message = it) }
+                            uiState.errorMessage?.let { Log.d("Error", it) }
+                        }
+                    }
+
+                    uiState.products.isEmpty() -> {
+                        item {
                             Text(
-                                text = "All Products",
-                                color = ThemeUtils.AppColors.Text.themed(),
-                                fontSize = 18.sp
+                                text = "No products"
                             )
                         }
                     }
-                }
-            }
-
-            when {
-                uiState.isLoading && uiState.products.isEmpty() -> {
-                    item {
-                        LoadingState(type = LoadingAnimationType.PULSING_DOTS)
-                    }
-                }
-
-                uiState.errorMessage.isNotEmpty() -> {
-                    item {
-                        ErrorState(message = uiState.errorMessage)
-                        Log.d("Error", uiState.errorMessage)
-                    }
-                }
-                uiState.products.isEmpty() -> {
-                   item {
-                       Text(
-                           text = "No products"
-                       )
-                   }
-                }
 
 
-                !uiState.isLoading && uiState.searchQuery.isNotEmpty() -> {
-                    when {
-                        uiState.products.isEmpty() -> {
-                            item {
-                                NoSearchResultsState(searchQuery = uiState.searchQuery)
-                            }
-                        }
-
-                        else -> {
-                            items(uiState.products.size) { index ->
-                                val product = uiState.products[index]
-                                ProductCard(
-                                    product = product,
-                                    onClick = {
-                                        navController.navigate(Screen.Detail.createRoute(productId = product.id))
-                                    }
-                                )
-                                if (index < uiState.products.size - 1) {
-                                    Divider(
-                                        color = Color.Gray,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
+                    else -> {
+                        items(uiState.products.size) { index ->
+                            val product = uiState.products[index]
+                            ProductCard(
+                                product = product,
+                                onClick = {
+                                    navController.navigate(Screen.Detail.createRoute(productId = product.id))
                                 }
-                            }
-                        }
-                    }
-
-                }
-
-
-                else -> {
-                    items(uiState.products.size) { index ->
-                        val product = uiState.products[index]
-                        ProductCard(
-                            product = product,
-                            onClick = {
-                                navController.navigate(Screen.Detail.createRoute(productId = product.id))
-                            }
-                        )
-                        if (index < uiState.products.size - 1) {
-                            Divider(
-                                color = Color.Gray,
-                                modifier = Modifier.fillMaxWidth()
                             )
+                            if (index < uiState.products.size - 1) {
+                                Divider(
+                                    color = Color.Gray,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
                     }
                 }

@@ -14,7 +14,7 @@ data class UploadData(
     val inventory: Int,
     val name: String,
     val price: Int,
-    val user: UserData
+    val user: UserData?
 )
 
 
@@ -23,5 +23,5 @@ data class UserData(
     val email: String,
     val id: Int,
     val name: String,
-    val number: Int?
+    val number: Int? = null
 )

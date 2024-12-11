@@ -78,10 +78,10 @@ fun ProductCard(
         }
     }
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(0.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding( vertical = 4.dp)
             .clickable(onClick = { onClick(product.id) }),
         elevation = 4.dp
     ) {

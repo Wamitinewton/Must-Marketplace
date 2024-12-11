@@ -41,13 +41,10 @@ class AllProductsViewModel @Inject constructor(
         MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
     val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
-    private val _searchQuery = MutableStateFlow("")
-    private var searchJob: Job? = null
 
     init {
         observeUserData()
         initializeProducts()
-        setUpSearchListener()
     }
 
     private fun observeUserData() {
@@ -78,48 +75,9 @@ class AllProductsViewModel @Inject constructor(
     fun onProductEvent(event: HomeScreenEvent) {
         when (event) {
             is HomeScreenEvent.Refresh -> loadProducts(forceRefresh = true)
-            is HomeScreenEvent.Search -> onSearchQueryChange(event.query)
-            is HomeScreenEvent.ClearSearch -> clearSearch()
         }
     }
 
-    @OptIn(FlowPreview::class)
-    private fun setUpSearchListener() {
-        _searchQuery
-            .debounce(300)
-            .distinctUntilChanged()
-            .filter { query -> query.trim().length >= 2 || query.isEmpty() }
-            .onEach { query ->
-                when {
-                    query.isEmpty() -> loadProducts(forceRefresh = false)
-                    else -> performSearch(query)
-                }
-            }
-            .launchIn(viewModelScope)
-    }
-
-    private fun performSearch(query: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            _viewModelState.update { it.copy(isLoading = true, isSearchActive = true) }
-            productsUseCases.homeUseCases.searchProducts(query)
-                .collect { result -> handleProductsResult(result) }
-        }
-    }
-
-    private fun clearSearch() {
-        searchJob?.cancel()
-        _searchQuery.value = ""
-        _viewModelState.update {
-            it.copy(searchQuery = "", isSearchActive = false)
-        }
-        loadProducts(forceRefresh = false)
-    }
-
-    private fun onSearchQueryChange(query: String) {
-        _searchQuery.value = query
-        _viewModelState.update { it.copy(searchQuery = query, isSearchActive = query.isNotEmpty()) }
-    }
 
     fun loadProductDetails(productId: Int) {
         viewModelScope.launch {
@@ -159,7 +117,7 @@ class AllProductsViewModel @Inject constructor(
                 is Resource.Success -> state.copy(
                     isLoading = false,
                     products = result.data ?: emptyList(),
-                    errorMessage = ""
+                    errorMessage = null
                 )
 
                 is Resource.Error -> state.copy(

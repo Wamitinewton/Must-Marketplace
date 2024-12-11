@@ -80,6 +80,7 @@ fun BookmarksScreen(
             query = "",
             onSearch = {},
             isSearchActive = false,
+            onSearchNavigationClick = {}
         )
 
         AnimatedVisibility(visible = showNumberIndicator) {
