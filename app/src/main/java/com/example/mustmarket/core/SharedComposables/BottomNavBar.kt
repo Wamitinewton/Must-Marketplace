@@ -34,7 +34,7 @@ fun BottomNavBar(
 
         screens.forEach { screen ->
             BottomNavigationItem(
-                alwaysShowLabel = true ,
+                alwaysShowLabel = true,
                 icon = {
                     Icon(
                         imageVector = when (screen) {
@@ -65,13 +65,15 @@ fun BottomNavBar(
                 },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                    if (currentRoute != screen.route) {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            navController.popBackStack()
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        navController.popBackStack()
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 }
             )

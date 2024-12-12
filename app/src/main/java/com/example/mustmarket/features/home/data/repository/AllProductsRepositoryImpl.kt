@@ -19,11 +19,9 @@ import com.example.mustmarket.features.home.secureStorage.StorageKeys.CACHE_DURA
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -51,52 +49,51 @@ class AllProductsRepositoryImpl @Inject constructor(
         cacheEmpty || cacheExpired
     }
 
-    override suspend fun processAndCacheProducts(
-        rawProducts: List<NetworkProduct>
-    ): Resource<List<NetworkProduct>> = withContext(ioDispatcher) {
-        try {
-            val processedProducts = rawProducts
-                .asSequence()
-                .filter { it.brand.isNotBlank() }
-                .sortedByDescending { it.id }
-                .distinctBy { it.id }
-                .toList()
+    override suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>> =
+        flow {
+            emit(Resource.Loading(true))
+            try {
+                val cachedProducts = dao.getAllProducts().firstOrNull()
 
-            dao.clearAllProducts()
-
-            processedProducts
-                .chunked(BATCH_SIZE)
-                .forEach { batch ->
-                    dao.insertProducts(batch.toProductListingEntities())
-                }
-
-            preferences.updateLastUpdateTimestamp()
-
-            dao.getAllProducts().firstOrNull()?.let { cachedProducts ->
-                if (cachedProducts.isNotEmpty()) {
-                    Resource.Success(cachedProducts.toNetworkProducts())
+                if (!forceRefresh && !cachedProducts.isNullOrEmpty()) {
+                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
                 } else {
-                    Resource.Error("No products found")
+                    val fetchResult = fetchAndProcessProducts()
+                    emit(fetchResult)
                 }
-            } ?: Resource.Error("Failed to verify cached products")
-        } catch (e: Exception) {
-            handleError(e)
-        }
-    }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error occurred"))
+            } finally {
+                emit(Resource.Loading(false))
+            }
+        }.flowOn(ioDispatcher)
 
-    override suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>> =
+    private suspend fun fetchAndProcessProducts(): Resource<List<NetworkProduct>> =
         withContext(ioDispatcher) {
             try {
                 val tokenResult = sessionManager.fetchAccessToken()
-                Log.d("TEST", "Using access token: $tokenResult data")
-
-                val response = retryUtil.executeWithRetry {
-                    productsApi.getAllProducts()
-                }
+                val response = retryUtil.executeWithRetry { productsApi.getAllProducts() }
 
                 if (response.message == "Success") {
+                    val processedProducts = response.data.map { it.toDomainProduct() }
+                        .filter { it.brand.isNotBlank() }
+                        .sortedByDescending { it.id }
+                        .distinctBy { it.id }
+
                     cacheMutex.withLock {
-                        processAndCacheProducts(response.data.map { it.toDomainProduct() })
+                        dao.clearAllProducts()
+                        processedProducts.chunked(BATCH_SIZE).forEach { batch ->
+                            dao.insertProducts(batch.toProductListingEntities())
+                        }
+                    }
+
+                    preferences.updateLastUpdateTimestamp()
+
+                    val freshProducts = dao.getAllProducts().firstOrNull()
+                    if (!freshProducts.isNullOrEmpty()) {
+                        Resource.Success(freshProducts.toNetworkProducts())
+                    } else {
+                        Resource.Error("No products found")
                     }
                 } else {
                     Resource.Error(response.message)
@@ -105,53 +102,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                 handleError(e)
             }
         }
-
-
-    override suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>> =
-
-        flow {
-            emit(Resource.Loading(true))
-            try {
-                val cachedProducts = dao.getAllProducts().firstOrNull()
-                if (!cachedProducts.isNullOrEmpty()) {
-                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
-                }
-                val shouldRefresh = forceRefresh || shouldRefresh()
-                if (shouldRefresh) {
-                    when (val fetchResult = fetchAndCacheProducts()) {
-                        is Resource.Success -> {
-                            val freshProducts = dao.getAllProducts().firstOrNull()
-                            if (!freshProducts.isNullOrEmpty()) {
-                                Log.d("Products", "$freshProducts")
-                                emit(Resource.Success(freshProducts.toNetworkProducts()))
-                            } else {
-                                Log.d("Error", "NO PRODUCTS LOOOOODEEEEED")
-                                emit(Resource.Error("Failed to load products"))
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            if (cachedProducts.isNullOrEmpty()) {
-                                emit(
-                                    Resource.Error(
-                                        fetchResult.message ?: "Unknown error occurred"
-                                    )
-                                )
-
-
-                            }
-                        }
-
-                        else -> {}
-                    }
-                    emit(Resource.Loading(false))
-
-                }
-
-            } catch (e: Exception) {
-                emit(Resource.Error(e.message ?: "Unknown error occurred"))
-            }
-        }.flowOn(ioDispatcher)
 
     override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> =
         flow {
@@ -179,7 +129,7 @@ class AllProductsRepositoryImpl @Inject constructor(
         emit(Resource.Loading(true))
         try {
             cacheMutex.withLock {
-                emit(fetchAndCacheProducts())
+                emit(fetchAndProcessProducts())
             }
             emit(Resource.Loading(false))
         } catch (e: Exception) {

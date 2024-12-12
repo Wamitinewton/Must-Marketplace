@@ -23,6 +23,7 @@ import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.explore.ExploreScreen
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
+import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -101,7 +102,7 @@ fun SetUpNavGraph(
                 )
             }) {
             BookmarksScreen(
-                onProductClick = {}
+                navController = navController
             )
         }
         composable(route = Screen.Profile.route,
@@ -135,6 +136,9 @@ fun SetUpNavGraph(
             ProductSearchScreen(navController = navController)
         }
 
+        composable(route = Screen.AllProductsList.route) {
+            AllProductsListScreen(navController = navController)
+        }
     }
 }
 

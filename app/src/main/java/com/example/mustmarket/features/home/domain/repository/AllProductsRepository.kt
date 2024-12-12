@@ -7,12 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface AllProductsRepository {
     suspend fun shouldRefresh(): Boolean
 
-    suspend fun processAndCacheProducts(
-        rawProducts: List<NetworkProduct>
-    ): Resource<List<NetworkProduct>>
-
-    suspend fun fetchAndCacheProducts(): Resource<List<NetworkProduct>>
-
     suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>>
 
     suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>>

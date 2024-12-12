@@ -17,6 +17,8 @@ import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.mapper.toAuthedUser
 import com.example.mustmarket.features.auth.mapper.toLoginResult
+import com.example.mustmarket.features.home.data.local.db.CategoryDao
+import com.example.mustmarket.features.home.data.local.db.ProductDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
@@ -27,7 +29,9 @@ import retrofit2.HttpException as RetrofitHttpException
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val sessionManger: SessionManager,
-    private val userStoreManager: UserStoreManager
+    private val userStoreManager: UserStoreManager,
+    private val categoryDao: CategoryDao,
+    private val productDao: ProductDao
 ) : AuthRepository {
     override suspend fun signUp(signUp: SignUpUser): Flow<Resource<AuthedUser>> = flow {
 
@@ -44,7 +48,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: IOException) {
             emit(
                 Resource.Error(
-                    message = "Couldn't reach server, check your internet connection"
+                    message = e.message ?: "Could not reach server, check your internet connection",
                 )
             )
         }
@@ -56,41 +60,47 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading(true))
                 val response = authApi.loginUser(loginCredentials)
-                emit(Resource.Success(data = response.toLoginResult()))
-                emit(Resource.Loading(false))
-                sessionManger.saveTokens(response.data.token, response.data.refreshToken)
-                val newUserData = UserData(
-                    id = response.data.user.id.toString(),
-                    name = response.data.user.name,
-                    email = response.data.user.email,
-                    lastLoginTimeStamp = System.currentTimeMillis()
-                )
+               if (response.message == "Success") {
+                   emit(Resource.Success(data = response.toLoginResult()))
+                   emit(Resource.Loading(false))
+                   sessionManger.saveTokens(response.data.token, response.data.refreshToken)
+                   val newUserData = UserData(
+                       id = response.data.user.id.toString(),
+                       name = response.data.user.name,
+                       email = response.data.user.email,
+                       lastLoginTimeStamp = System.currentTimeMillis()
+                   )
 
-                if (userStoreManager.isFirstLogin()) {
-                    userStoreManager.saveUserData(newUserData)
-                } else {
-                    userStoreManager.updateUserData(newUserData)
-                }
+                   if (userStoreManager.isFirstLogin()) {
+                       userStoreManager.saveUserData(newUserData)
+                   } else {
+                       userStoreManager.updateUserData(newUserData)
+                   }
+               } else {
+                   emit(Resource.Error(response.message))
+               }
 
             } catch (e: IOException) {
                 emit(
                     Resource.Error(
-                        message = "Couldn't reach server, check your internet connection",
+                        message = e.message ?: "Could not reach server, check your internet connection",
                     )
                 )
             }
 
         }
 
-    override suspend fun logout(): Flow<Resource<Boolean>> {
+    override suspend fun logout(): Flow<Resource<Boolean>> = flow {
+        emit(Resource.Loading(true))
         val isValid = sessionManger.isSessionValid()
         if (!isValid) {
             sessionManger.clearTokens()
             userStoreManager.clearUserData()
+            categoryDao.clearAllCategory()
+            productDao.clearAllProducts()
         }
-        return flow {
-            emit(Resource.Success(data = isValid))
-        }
+        emit(Resource.Success(data = isValid))
+        emit(Resource.Loading(false))
     }
 
     override suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>> = flow {
@@ -112,7 +122,7 @@ class AuthRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 "An unexpected error occurred"
             }
-            emit(Resource.Error(message = errorMessage))
+            emit(Resource.Error(message = errorMessage.toString()))
         } catch (e: Exception) {
             emit(
                 Resource.Error(
@@ -142,7 +152,7 @@ class AuthRepositoryImpl @Inject constructor(
                 } catch (e: Exception) {
                     "An unexpected error occurred"
                 }
-                emit(Resource.Error(message = errorMessage))
+                emit(Resource.Error(message = errorMessage.toString()))
             } catch (e: Exception) {
                 emit(
                     Resource.Error(

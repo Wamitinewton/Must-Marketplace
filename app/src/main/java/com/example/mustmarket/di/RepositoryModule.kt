@@ -43,12 +43,16 @@ object RepositoryModule {
     fun provideAuthRepository(
         authApi: AuthApi,
         sessionManager: SessionManager,
-        userStoreManager: UserStoreManager
+        userStoreManager: UserStoreManager,
+        categoryDao: CategoryDao,
+        productDao: ProductDao
     ): AuthRepository {
         return AuthRepositoryImpl(
             authApi = authApi,
             sessionManager,
-            userStoreManager = userStoreManager
+            userStoreManager = userStoreManager,
+            categoryDao = categoryDao,
+            productDao = productDao
         )
     }
 

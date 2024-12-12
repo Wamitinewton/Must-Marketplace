@@ -7,4 +7,5 @@ sealed class LoginEvent {
     data class TogglePasswordVisibility(val show: Boolean) : LoginEvent()
     data object Login : LoginEvent()
     data object ClearError : LoginEvent()
+    data object Logout : LoginEvent()
 }

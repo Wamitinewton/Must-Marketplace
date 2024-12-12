@@ -20,7 +20,8 @@ fun SignUpPrompt(
     modifier: Modifier = Modifier,
     onSignUpClick: () -> Unit,
     authCheck: String,
-    authMethod: String
+    authMethod: String,
+    isLoading: Boolean
 ) {
     Row(
         modifier = modifier,
@@ -37,7 +38,10 @@ fun SignUpPrompt(
             modifier = Modifier.padding(end = 3.dp)
         )
 
-        TextButton(onClick = onSignUpClick) {
+        TextButton(
+            onClick = onSignUpClick,
+            enabled = !isLoading
+        ) {
             Text(
                 text = authMethod,
                 style = MaterialTheme.typography.h6,
