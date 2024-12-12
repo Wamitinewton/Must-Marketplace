@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.auth.presentation.login.view
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -102,8 +101,8 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         loginViewModel.navigateToHome.collect {
-            navController.navigate(Screen.HomeScreen.route)
             navController.popBackStack()
+            navController.navigate(Screen.HomeScreen.route)
         }
     }
 
@@ -153,16 +152,16 @@ fun LoginScreen(
                 passwordInput = uiState.passwordInput,
                 showPassword = uiState.showPassword,
                 emailError = uiState.emailError,
-                passwordError = uiState.passwordError,
                 onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
                 onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
+                onTogglePassword = {
+                    loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
+                },
                 onNavigateToForgotPassword = {
                     navController.popBackStack()
                     navController.navigate(Screen.Otp.route)
                 },
-                onTogglePassword = {
-                    loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
-                }
+                isLoading = uiState.isLoading
             )
 
             ButtonLoading(
@@ -192,7 +191,8 @@ fun LoginScreen(
                     }
                 },
                 authCheck = "Don't have an account?",
-                authMethod = "Sign Up"
+                authMethod = "Sign Up",
+                isLoading = uiState.isLoading
             )
         }
     }

@@ -2,7 +2,6 @@ package com.example.mustmarket.features.auth.presentation.signup.state
 
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
-import com.example.mustmarket.features.auth.presentation.login.state.AuthState
 
 data class SignUpViewModelState(
     val isLoading: Boolean = false,

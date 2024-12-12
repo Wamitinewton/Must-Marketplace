@@ -1,14 +1,10 @@
 package com.example.mustmarket.features.auth.presentation.login.view
 
-import android.view.WindowInsets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +20,11 @@ fun LoginForm(
     passwordInput: String,
     showPassword: Boolean,
     emailError: String,
-    passwordError: String? = null,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onTogglePassword: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    onNavigateToForgotPassword: () -> Unit
+    onNavigateToForgotPassword: () -> Unit,
+    isLoading: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -40,13 +35,21 @@ fun LoginForm(
     ) {
         DefaultTextInput(
             inputText = emailInput,
-            onInputChanged = onEmailChanged,
+            onInputChanged = {
+                if (!isLoading){
+                    onEmailChanged(it)
+                }
+            },
             name = "Email",
             errorMessage = emailError
         )
 
         PasswordInput(
-            onInputChanged = onPasswordChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onPasswordChanged(it)
+                }
+            },
             inputText = passwordInput,
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
@@ -57,11 +60,13 @@ fun LoginForm(
                 .fillMaxWidth()
                 .padding(vertical = 10.dp, horizontal = 30.dp)
                 .clickable(
+                    enabled = !isLoading,
                     onClick = onNavigateToForgotPassword
                 ),
             text = "Forgot password",
             style = MaterialTheme.typography.h6.copy(
                 color = MaterialTheme.colors.primary
+
             )
         )
     }

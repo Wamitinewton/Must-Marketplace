@@ -189,7 +189,13 @@ fun Content(
                                Text(
                                    modifier = Modifier
                                        .clickable(
-                                           onClick = {}
+                                           onClick = {
+                                               navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                   key = "products",
+                                                   value = uiState.products
+                                               )
+                                               navController.navigate(Screen.AllProductsList.route)
+                                           }
                                        ),
                                    text = "See all",
                                    color = ThemeUtils.AppColors.Text.themed(),

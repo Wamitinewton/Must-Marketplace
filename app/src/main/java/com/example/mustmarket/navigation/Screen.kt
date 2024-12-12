@@ -24,6 +24,7 @@ sealed class Screen(
     data object Onboarding: Screen("onboarding_screen")
     data object Otp: Screen("otp_screen")
     data object ProductSearch: Screen("product_search_screen")
+    data object AllProductsList: Screen("all_products_list_screen")
 
     object BottomNavItems {
         val items = listOf(

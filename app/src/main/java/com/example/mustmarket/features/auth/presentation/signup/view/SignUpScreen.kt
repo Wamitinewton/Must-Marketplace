@@ -210,8 +210,8 @@ fun SignUpScreen(
                passwordStrength = uiState.passwordStrength,
                onToggleConfirmPassword = {
                    signUpViewModel.onEvent(SignupEvent.ToggleConfirmPasswordVisibility(!uiState.showPassword))
-
                },
+               isLoading = uiState.isLoading
            )
 
            Spacer(modifier = Modifier.height(20.dp))
@@ -243,8 +243,8 @@ fun SignUpScreen(
                    navController.navigate(Screen.Login.route)
                },
                authCheck = "Already have an account?",
-               authMethod = "Log in"
-
+               authMethod = "Log in",
+               isLoading = uiState.isLoading
            )
            Spacer(modifier = Modifier.height(24.dp))
        }

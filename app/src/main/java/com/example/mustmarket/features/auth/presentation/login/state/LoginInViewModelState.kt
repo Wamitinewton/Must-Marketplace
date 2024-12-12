@@ -1,5 +1,7 @@
 package com.example.mustmarket.features.auth.presentation.login.state
 
+import com.example.mustmarket.features.auth.presentation.login.enums.AuthState
+
 data class LoginState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -9,5 +11,6 @@ data class LoginState(
     val showPassword: Boolean = false,
     val emailError: String = "",
     val passwordError: String = "",
-    val authState: AuthState = AuthState.LOGGED_OUT
+    val authState: AuthState = AuthState.LOGGED_OUT,
+    val logOutError: String? = null
 )
