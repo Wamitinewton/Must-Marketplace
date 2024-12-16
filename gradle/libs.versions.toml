@@ -1,5 +1,5 @@
 [versions]
-agp = "8.6.1"
+agp = "8.7.3"
 converterGson = "2.11.0"
 datastorePreferences = "1.1.1"
 hiltAndroid = "2.51.1"
@@ -16,6 +16,7 @@ retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "0.8.0"
 timber = "5.0.1"
 workRuntimeKtx = "2.10.0"
+media3Exoplayer = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,7 +43,10 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
+
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+=======
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
