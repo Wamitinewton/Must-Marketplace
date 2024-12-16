@@ -31,6 +31,10 @@ object ThemeUtils {
             light = Color(0xFF181725),
             dark = Color.White
         )
+        val ChatBubble = ThemeColorPair(
+            dark = Color(0xFF1E1E1E),
+            light = Color(231, 246, 237)
+        )
 
         val InvertText = ThemeColorPair(
             dark = Color(0xFF181725),

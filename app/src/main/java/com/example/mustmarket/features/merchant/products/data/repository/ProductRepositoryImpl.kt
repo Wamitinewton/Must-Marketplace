@@ -149,6 +149,7 @@ class ProductRepositoryImpl @Inject constructor(
 
             scaledBitmap = scaleBitmap(bitmap)
 
+
             outputFile = createTempFile(prefix = "optimized_", suffix = ".jpg")
             FileOutputStream(outputFile).use { out ->
                 scaledBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)

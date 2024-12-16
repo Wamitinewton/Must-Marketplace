@@ -10,7 +10,7 @@ import coil.util.DebugLogger
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class BaseApplication: Application(), ImageLoaderFactory{
+class MustApplication: Application(), ImageLoaderFactory{
     override fun newImageLoader(): ImageLoader {
         return ImageLoader(this).newBuilder()
             .memoryCachePolicy(CachePolicy.ENABLED)

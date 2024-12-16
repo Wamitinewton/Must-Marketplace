@@ -17,7 +17,6 @@ sealed class Screen(
         fun createRoute(productId: Int) = "detail_screen/$productId"
     }
 
-    data object Explore: Screen("explore_screen")
     data object Bookmarks: Screen("bookmarks_screen")
     data object Profile: Screen("profile_screen")
     data object Favourites: Screen("favourites_screen")
@@ -25,11 +24,12 @@ sealed class Screen(
     data object Otp: Screen("otp_screen")
     data object ProductSearch: Screen("product_search_screen")
     data object AllProductsList: Screen("all_products_list_screen")
+    data object ChatScreen: Screen("chat_screen")
 
     object BottomNavItems {
         val items = listOf(
             HomeScreen,
-            Explore,
+            ChatScreen,
             Bookmarks,
             Favourites,
             Profile,

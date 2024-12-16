@@ -5,6 +5,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +40,7 @@ fun BottomNavBar(
                     Icon(
                         imageVector = when (screen) {
                             Screen.HomeScreen -> Icons.Default.Home
-                            Screen.Explore -> Icons.Default.ShoppingCart
+                            Screen.ChatScreen -> Icons.AutoMirrored.Filled.Message
 
                             Screen.Bookmarks -> Icons.Default.Bookmark
 
@@ -54,7 +55,7 @@ fun BottomNavBar(
                     Text(
                         text = when (screen) {
                             Screen.HomeScreen -> "Home"
-                            Screen.Explore -> "Explore"
+                            Screen.ChatScreen -> "Messages"
                             Screen.Bookmarks -> "Bookmarks"
                             Screen.Favourites -> "Favourites"
                             Screen.Profile -> "Account"
