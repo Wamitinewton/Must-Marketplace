@@ -34,8 +34,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mustmarket.core.SharedComposables.LoadingState
-import com.example.mustmarket.core.SharedComposables.PasswordStrengthIndicator
+import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.core.sharedComposable.PasswordStrengthIndicator
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 
 @Composable

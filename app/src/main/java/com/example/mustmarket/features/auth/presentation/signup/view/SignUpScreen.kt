@@ -29,9 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.mustmarket.R
-import com.example.mustmarket.core.SharedComposables.ButtonLoading
-import com.example.mustmarket.core.SharedComposables.NetworkAlertDialog
-import com.example.mustmarket.core.SharedComposables.SocialAuthButton
+import com.example.mustmarket.core.sharedComposable.ButtonLoading
+import com.example.mustmarket.core.sharedComposable.NetworkAlertDialog
+import com.example.mustmarket.core.sharedComposable.SocialAuthButton
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX

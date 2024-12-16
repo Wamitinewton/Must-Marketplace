@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
-import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 
 @Composable

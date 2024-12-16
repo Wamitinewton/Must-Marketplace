@@ -1,16 +1,16 @@
 package com.example.mustmarket.features.home.data.mapper
 
-import com.example.mustmarket.features.home.data.local.converters.ProductConverters
-import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
+import com.example.mustmarket.database.converters.DataConverters
+import com.example.mustmarket.database.entities.BookmarkedProductEntity
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 
-fun NetworkProduct.toBookmarkedProduct(): BookmarkedProduct {
-    return BookmarkedProduct(
+fun NetworkProduct.toBookmarkedProduct(): BookmarkedProductEntity {
+    return BookmarkedProductEntity(
         id = id,
         name = name,
         description = description,
         price = price,
-        images = ProductConverters().toStringImageList(images),
+        images = DataConverters().toStringImageList(images),
         inventory = inventory,
         category = category,
         brand = brand,
@@ -18,13 +18,13 @@ fun NetworkProduct.toBookmarkedProduct(): BookmarkedProduct {
     )
 }
 
-fun BookmarkedProduct.toNetworkProduct(): NetworkProduct {
+fun BookmarkedProductEntity.toNetworkProduct(): NetworkProduct {
     return NetworkProduct(
         id = id,
         name = name,
         description = description,
         price = price,
-        images = ProductConverters().fromStringImageList(images),
+        images = DataConverters().fromStringImageList(images),
         inventory = inventory,
         category = category,
         brand = brand,

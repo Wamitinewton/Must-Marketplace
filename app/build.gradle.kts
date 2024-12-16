@@ -20,7 +20,6 @@ android {
                 "META-INF/INDEX.LIST",
                 "META-INF/LICENSE-notice.md",
                 "win32-x86-64/attach_hotspot_windows.dll",
-                "win32-x86-64/attach_hotspot_windows.dll",
                 "META-INF/DEPENDENCIES",
                 "META-INF/io.netty.versions.properties"
             )
@@ -68,10 +67,11 @@ android {
         release {
             isCrunchPngs = true
             isMinifyEnabled = true
-            proguardFiles(
+                    proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -114,11 +114,17 @@ dependencies {
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.3.0")
+    implementation("androidx.room:room-ktx:2.6.1")
 
-    implementation("com.amazonaws:aws-android-sdk-s3:2.77.1")
-    implementation("com.amazonaws:aws-android-sdk-core:2.77.1")
-    implementation("com.amazonaws:aws-android-sdk-mobile-client:2.77.1")
+    //Prefs Datastore
+    implementation(libs.androidx.datastore.preferences)
+
+    // WorkManger
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+
+    // Timber
+    implementation(libs.timber)
 
     // Networking
     implementation(libs.retrofit)
@@ -164,5 +170,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+}
 
+kapt {
+    correctErrorTypes = true
+    useBuildCache = false
 }

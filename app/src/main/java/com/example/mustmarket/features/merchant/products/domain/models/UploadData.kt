@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.merchant.products.domain.models
 
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import kotlinx.serialization.Serializable
 
@@ -14,14 +15,6 @@ data class UploadData(
     val inventory: Int,
     val name: String,
     val price: Int,
-    val user: UserData?
+    val user: AuthedUser?
 )
 
-
-@Serializable
-data class UserData(
-    val email: String,
-    val id: Int,
-    val name: String,
-    val number: Int? = null
-)

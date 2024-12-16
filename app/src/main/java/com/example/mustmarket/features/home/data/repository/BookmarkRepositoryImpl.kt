@@ -1,8 +1,8 @@
 package com.example.mustmarket.features.home.data.repository
 
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.home.data.local.db.BookmarkDao
-import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
+import com.example.mustmarket.database.dao.BookmarkDao
+import com.example.mustmarket.database.entities.BookmarkedProductEntity
 import com.example.mustmarket.features.home.data.mapper.toBookmarkedProduct
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class BookmarkRepositoryImpl @Inject constructor(
     private val bookmarkDao: BookmarkDao
 ) : BookmarkRepository {
-    override  fun getBookmarkedProducts(): Flow<Resource<List<BookmarkedProduct>>> = flow {
+    override  fun getBookmarkedProducts(): Flow<Resource<List<BookmarkedProductEntity>>> = flow {
         emit(Resource.Loading(true))
         try {
             emitAll(bookmarkDao.getBookmarkedProducts().map { products ->
@@ -76,7 +76,7 @@ class BookmarkRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun removeProduct(product: BookmarkedProduct) {
+    override suspend fun removeProduct(product: BookmarkedProductEntity) {
         try {
             bookmarkDao.removeBookmark(product)
         } catch (e: Exception) {

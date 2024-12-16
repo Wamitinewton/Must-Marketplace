@@ -38,9 +38,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
-import com.example.mustmarket.core.SharedComposables.LoadingState
-import com.example.mustmarket.core.SharedComposables.ProductInputFields
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.core.sharedComposable.ProductInputFields
 import com.example.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
 
 @Composable

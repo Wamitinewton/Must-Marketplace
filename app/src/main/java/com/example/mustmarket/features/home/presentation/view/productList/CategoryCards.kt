@@ -32,12 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mustmarket.core.SharedComposables.CustomImageLoader
-import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
-import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.CustomImageLoader
+import com.example.mustmarket.core.sharedComposable.ErrorState
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
-import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed

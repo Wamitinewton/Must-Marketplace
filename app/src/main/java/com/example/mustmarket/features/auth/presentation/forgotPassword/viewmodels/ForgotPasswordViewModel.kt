@@ -2,8 +2,8 @@ package com.example.mustmarket.features.auth.presentation.forgotPassword.viewmod
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
-import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.usecase.UseCases
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
