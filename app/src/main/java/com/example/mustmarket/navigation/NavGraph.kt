@@ -20,6 +20,7 @@ import com.example.mustmarket.features.auth.presentation.forgotPassword.view.For
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
+import com.example.mustmarket.features.chat.view.ChatScreen
 import com.example.mustmarket.features.explore.ExploreScreen
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
@@ -43,6 +44,7 @@ fun SetUpNavGraph(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
+        //Screen.Profile.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -111,9 +113,12 @@ fun SetUpNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
-            AccountScreen(
-                navController = navController
+            ChatScreen(
+                navController = navController,
             )
+//            AccountScreen(
+//                navController = navController
+//            )
         }
         composable(route = Screen.Favourites.route,
             enterTransition = {

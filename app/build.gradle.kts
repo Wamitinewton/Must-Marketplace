@@ -106,6 +106,7 @@ dependencies {
 
     // Hilt DI
     implementation(libs.hilt.android)
+    implementation(libs.androidx.media3.exoplayer)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     kapt("androidx.hilt:hilt-compiler:1.2.0")
