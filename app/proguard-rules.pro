@@ -8,3 +8,5 @@
 # Gson specific rules
 -keepattributes *Annotation*
 -keep class com.google.gson.stream.** { *; }
+
+# Keep Base Application

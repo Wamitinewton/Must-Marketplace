@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +30,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.mustmarket.features.chat.domain.ChatMessage
 import com.example.mustmarket.ui.theme.Purple700
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.colorPrimary
 
 
@@ -50,11 +53,11 @@ fun ChatMessageItem(
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalAlignment = if (message.isSentByCurrentUser) Alignment.End else Alignment.Start
+        horizontalAlignment = if (message.isSentByCurrentUser) Alignment.End else Alignment.Start,
+        verticalArrangement = Arrangement.Top
     ) {
         Row(
             modifier = Modifier
-                .background(color = Color.White)
                 .fillMaxWidth()
                 .padding(top = 4.dp),
             horizontalArrangement = if (message.isSentByCurrentUser) Arrangement.End else Arrangement.Start,
@@ -73,11 +76,11 @@ fun ChatMessageItem(
             Column(
                 modifier = Modifier
                     .background(
-                        if (message.isSentByCurrentUser) colorPrimary else Purple700,
+                        if (message.isSentByCurrentUser) ThemeUtils.AppColors.Primary else ThemeUtils.AppColors.ChatBubble.themed(),
                         shape = chatBubbleShape
                     )
                     .padding(15.dp)
-                    .widthIn(max = 270.dp)
+                    .widthIn(max = 250.dp)
             ) {
                 CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
                     Text(
@@ -86,19 +89,29 @@ fun ChatMessageItem(
                         } else {
                             "${message.message.take(maxMessageLength)}..."
                         },
-                        color = Color.White,
-                        style = MaterialTheme.typography.body1
-                    )
+                        color = ThemeUtils.AppColors.Text.themed(),
+                        style = MaterialTheme.typography.body1,
+                        textAlign = if (message.isSentByCurrentUser) TextAlign.Start else TextAlign.Start,
+                        )
 
                     // "More" clickable for long messages
                     if (message.message.length > maxMessageLength && !isExpanded) {
                         Text(
                             text = "Read More",
-                            color = Color.Cyan,
+                            color = ThemeUtils.AppColors.Primary,
                             style = MaterialTheme.typography.caption,
                             modifier = Modifier
                                 .padding(top = 4.dp)
                                 .clickable { isExpanded = true }
+                        )
+                    } else if (isExpanded) {
+                        Text(
+                            text = "Read Less",
+                            color = ThemeUtils.AppColors.Primary,
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .clickable { isExpanded = false }
                         )
                     }
 

@@ -10,9 +10,4 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
 }
 
-allprojects {
-    tasks.matching { it.name.contains("kapt") }.configureEach {
-        enabled = false
-    }
-}
 

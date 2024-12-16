@@ -21,13 +21,12 @@ import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.chat.view.ChatScreen
-import com.example.mustmarket.features.explore.ExploreScreen
-import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 
@@ -43,8 +42,7 @@ fun SetUpNavGraph(
     val context = LocalContext.current
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route,
-        //Screen.Profile.route,
+        startDestination = Screen.HomeScreen.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -91,12 +89,14 @@ fun SetUpNavGraph(
                 onBackPressed = { navController.popBackStack() }
             )
         }
-        composable(route = Screen.Explore.route,
+        composable(route = Screen.ChatScreen.route,
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { ExploreScreen() }
+            }) { ChatScreen(
+                navController = navController
+            ) }
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -113,12 +113,10 @@ fun SetUpNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
-            ChatScreen(
-                navController = navController,
+
+            AccountScreen(
+                navController = navController
             )
-//            AccountScreen(
-//                navController = navController
-//            )
         }
         composable(route = Screen.Favourites.route,
             enterTransition = {
