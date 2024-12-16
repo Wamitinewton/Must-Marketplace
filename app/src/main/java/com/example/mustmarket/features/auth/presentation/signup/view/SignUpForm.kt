@@ -28,7 +28,8 @@ fun SignUpForm(
     onTogglePassword: (Boolean) -> Unit,
     onToggleConfirmPassword: (Boolean) -> Unit,
     passwordStrength: PasswordStrength,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLoading: Boolean
 ) {
     Column(
         modifier = modifier,
@@ -38,19 +39,31 @@ fun SignUpForm(
 
         DefaultTextInput(
             inputText = userNameInput,
-            onInputChanged = onUserNameChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onUserNameChanged(it)
+                }
+            },
             name = "Full Name",
             errorMessage = userNameError
         )
         DefaultTextInput(
             inputText = emailInput,
-            onInputChanged = onEmailChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onEmailChanged(it)
+                }
+            },
             name = "Email",
             errorMessage = emailError
         )
 
         PasswordInput(
-            onInputChanged = onPasswordChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onPasswordChanged(it)
+                }
+            },
             inputText = passwordInput,
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
@@ -60,7 +73,11 @@ fun SignUpForm(
         )
 
         PasswordInput(
-            onInputChanged = onConfirmPasswordChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onConfirmPasswordChanged(it)
+                }
+            },
             inputText = confirmPasswordInput,
             showPassword = showConfirmPassword,
             toggleShowPassword = onToggleConfirmPassword,

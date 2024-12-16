@@ -1,14 +1,18 @@
 package com.example.mustmarket.features.auth.presentation.login.view
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
@@ -97,9 +101,8 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         loginViewModel.navigateToHome.collect {
-            navController.navigate(Screen.HomeScreen.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
-            }
+            navController.popBackStack()
+            navController.navigate(Screen.HomeScreen.route)
         }
     }
 
@@ -112,78 +115,85 @@ fun LoginScreen(
     }
 
 
- Scaffold(
-     scaffoldState = scaffoldState,
+    Scaffold(
+        scaffoldState = scaffoldState,
 
- ) { padding ->
-     Column(
-         modifier = Modifier
-             .padding(padding)
-             .fillMaxSize()
-             .background(
-                 brush = Brush.verticalGradient(
-                     colors = listOf(
-                         ThemeUtils.AppColors.Surface.themed(),
-                         ThemeUtils.AppColors.Surface.themed(),
-                         ThemeUtils.AppColors.Surface.themed(),
-                     )
-                 )
-             )
-             .verticalScroll(rememberScrollState()),
-         horizontalAlignment = Alignment.CenterHorizontally,
-         verticalArrangement = Arrangement.Center
-     ) {
-         AuthHeader(
-             authText = "Enter your credentials to continue",
-             authTitle = "Log In"
-         )
+        ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            ThemeUtils.AppColors.Surface.themed(),
+                            ThemeUtils.AppColors.Surface.themed(),
+                            ThemeUtils.AppColors.Surface.themed(),
+                        )
+                    )
+                )
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .windowInsetsPadding(
+                    insets = androidx.compose.foundation.layout.WindowInsets.navigationBars.union(
+                        androidx.compose.foundation.layout.WindowInsets.ime
+                    )
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AuthHeader(
+                authText = "Enter your credentials to continue",
+                authTitle = "Log In"
+            )
 
-         LoginForm(
-             emailInput = uiState.emailInput,
-             passwordInput = uiState.passwordInput,
-             showPassword = uiState.showPassword,
-             emailError = uiState.emailError,
-             passwordError = uiState.passwordError,
-             onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
-             onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-             onNavigateToForgotPassword = {
-                 navController.popBackStack()
-                 navController.navigate(Screen.Otp.route)
-             },
-             onTogglePassword = {
-                 loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
-             }
-         )
+            LoginForm(
+                emailInput = uiState.emailInput,
+                passwordInput = uiState.passwordInput,
+                showPassword = uiState.showPassword,
+                emailError = uiState.emailError,
+                onEmailChanged = { loginViewModel.onEvent(LoginEvent.EmailChanged(it)) },
+                onPasswordChanged = { loginViewModel.onEvent(LoginEvent.PasswordChanged(it)) },
+                onTogglePassword = {
+                    loginViewModel.onEvent(LoginEvent.TogglePasswordVisibility(!uiState.showPassword))
+                },
+                onNavigateToForgotPassword = {
+                    navController.popBackStack()
+                    navController.navigate(Screen.Otp.route)
+                },
+                isLoading = uiState.isLoading
+            )
 
-         ButtonLoading(
-             name = "Login",
-             isLoading = uiState.isLoading,
-             enabled = btnEnabled,
-             onClicked = ::handleLoginClick
-         )
+            ButtonLoading(
+                name = "Login",
+                isLoading = uiState.isLoading,
+                enabled = btnEnabled,
+                onClicked = ::handleLoginClick
+            )
 
-         Spacer(modifier = Modifier.height(22.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
-         SocialAuthButton(
-             onClick = {},
-             iconId = R.drawable.google,
-             text = "Continue with Google"
-         )
+            SocialAuthButton(
+                onClick = {},
+                iconId = R.drawable.google,
+                text = "Continue with Google"
+            )
 
-         Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-         SignUpPrompt(
-             onSignUpClick = {
-                 navController.popBackStack()
-                 navController.navigate(Screen.SignUp.route) {
-                     popUpTo(Screen.Login.route)
+            SignUpPrompt(
+                onSignUpClick = {
+                    navController.popBackStack()
+                    navController.navigate(Screen.SignUp.route) {
+                        popUpTo(Screen.Login.route)
 
-                     launchSingleTop = true
-                 }
-             },
-             authCheck = "Don't have an account?",
-             authMethod = "Sign Up"
-         )
-     }
- }
+                        launchSingleTop = true
+                    }
+                },
+                authCheck = "Don't have an account?",
+                authMethod = "Sign Up",
+                isLoading = uiState.isLoading
+            )
+        }
+    }
 }

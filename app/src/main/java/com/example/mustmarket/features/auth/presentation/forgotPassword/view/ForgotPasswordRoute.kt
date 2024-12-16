@@ -22,7 +22,7 @@ fun ForgotPasswordRoute(
         ForgotPasswordScreen.EMAIL_INPUT -> {
             EmailInputScreen(
                 email = state.email,
-                isLoading = state.isLoading,
+                isLoading = state.isOtpLoading,
                 emailError = state.emailError,
                 onEmailChanged = { viewModel.onEvent(ForgotPasswordEvent.EmailChanged(it)) },
                 onSubmit = { viewModel.onEvent(ForgotPasswordEvent.RequestOtp) },
@@ -34,12 +34,14 @@ fun ForgotPasswordRoute(
         ForgotPasswordScreen.OTP_INPUT -> {
             OtpVerificationScreen(
                 otp = state.otp,
-                isLoading = state.isLoading,
+                isLoading = state.isVerificationLoading,
                 otpError = state.otpError,
                 email = state.email,
                 onOtpChanged = { viewModel.onEvent(ForgotPasswordEvent.OtpChanged(it)) },
                 onResendOtp = { viewModel.onEvent(ForgotPasswordEvent.RequestOtp) },
-                onVerifyOtp = { viewModel.onEvent(ForgotPasswordEvent.VerifyOtp) }
+                onVerifyOtp = { viewModel.onEvent(ForgotPasswordEvent.VerifyOtp) },
+                onBackPressed = onNavigateToLogin,
+                resendOtpError = state.errorMessage
             )
         }
 
@@ -51,7 +53,7 @@ fun ForgotPasswordRoute(
             NewPasswordScreen(
                 newPassword = state.newPassword,
                 confirmPassword = state.confirmPassword,
-                isLoading = state.isLoading,
+                isLoading = state.isVerificationLoading,
                 passwordError = state.passwordError,
                 confirmPasswordError = state.confirmPasswordError,
                 passwordStrength = state.passwordStrength,

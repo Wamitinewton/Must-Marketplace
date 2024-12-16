@@ -9,17 +9,19 @@ import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.core.coroutine.CoroutineDebugger
 import com.example.mustmarket.features.auth.datastore.SessionManager
+import com.example.mustmarket.features.auth.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
-import com.example.mustmarket.features.auth.presentation.login.state.AuthState
+import com.example.mustmarket.features.auth.presentation.login.enums.AuthState
 import com.example.mustmarket.features.auth.presentation.login.state.LoginState
+import com.example.mustmarket.features.home.data.local.db.CategoryDao
+import com.example.mustmarket.features.home.data.local.db.ProductDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +29,10 @@ class LoginViewModel @Inject constructor(
 
     private val authUseCase: UseCases,
 
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val userStoreManager: UserStoreManager,
+    private val productDao: ProductDao,
+    private val categoryDao: CategoryDao
 
 ) : ViewModel() {
 
@@ -36,6 +41,9 @@ class LoginViewModel @Inject constructor(
     private val _navigateToHome = Channel<Unit>()
 
     val navigateToHome = _navigateToHome.receiveAsFlow()
+
+    private val _navigateToLogin = Channel<Unit>()
+    val navigateToLogin = _navigateToLogin.receiveAsFlow()
 
     private val _uiEvent = Channel<LoginEvent>()
 
@@ -91,6 +99,28 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun logOut() {
+        coroutineDebugger.launchTracked(
+            scope = viewModelScope,
+            tag = "Logout_process"
+        ) {
+            try {
+                sessionManager.clearTokens()
+
+                clearUserData()
+
+                _isLoggedIn.value = false
+
+                // Navigate to login screen
+                _navigateToLogin.send(Unit)
+
+                Log.d("Logout", "Logout process completed successfully.")
+            } catch (e: Exception) {
+                Log.e("Logout", "Error during logout: ${e.localizedMessage}", e)
+            }
+        }
+    }
+
     private fun logInWithEmailAndPassword() {
 
         val email = _authUiState.value.emailInput
@@ -108,9 +138,6 @@ class LoginViewModel @Inject constructor(
             if (email.isEmpty() || password.isEmpty()) {
 
                 _authUiState.value = _authUiState.value.copy(
-
-                    authState = AuthState.LOGGED_OUT,
-
                     isLoading = false,
 
                     errorMessage = "All Inputs Are Required"
@@ -145,8 +172,6 @@ class LoginViewModel @Inject constructor(
 
                             _authUiState.value = _authUiState.value.copy(
 
-                                authState = AuthState.LOGGED_OUT,
-
                                 isLoading = true,
 
                                 errorMessage = null
@@ -156,8 +181,6 @@ class LoginViewModel @Inject constructor(
                         is Resource.Error -> {
 
                             _authUiState.value = _authUiState.value.copy(
-
-                                authState = AuthState.LOGGED_OUT,
 
                                 isLoading = false,
 
@@ -169,8 +192,6 @@ class LoginViewModel @Inject constructor(
                         is Resource.Success -> {
 
                             _authUiState.value = _authUiState.value.copy(
-
-                                authState = AuthState.AUTHENTICATED,
 
                                 isLoading = false,
 
@@ -268,8 +289,23 @@ class LoginViewModel @Inject constructor(
 
                 )
             }
+
+            LoginEvent.Logout -> {
+                logOut()
+            }
         }
     }
 
+    private suspend fun clearUserData() {
+        try {
+            productDao.clearAllProducts()
+            categoryDao.clearAllCategory()
+            userStoreManager.clearUserData()
+            Log.d("Logout", "User data cleared successfully.")
+        } catch (e: Exception) {
+            Log.e("Logout", "Failed to clear user data: ${e.localizedMessage}", e)
+            throw e
+        }
+    }
 
 }

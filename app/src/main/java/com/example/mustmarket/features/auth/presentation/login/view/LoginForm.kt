@@ -20,27 +20,36 @@ fun LoginForm(
     passwordInput: String,
     showPassword: Boolean,
     emailError: String,
-    passwordError: String? = null,
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onTogglePassword: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    onNavigateToForgotPassword: () -> Unit
+    onNavigateToForgotPassword: () -> Unit,
+    isLoading: Boolean
 ) {
     Column(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         DefaultTextInput(
             inputText = emailInput,
-            onInputChanged = onEmailChanged,
+            onInputChanged = {
+                if (!isLoading){
+                    onEmailChanged(it)
+                }
+            },
             name = "Email",
             errorMessage = emailError
         )
 
         PasswordInput(
-            onInputChanged = onPasswordChanged,
+            onInputChanged = {
+                if (!isLoading) {
+                    onPasswordChanged(it)
+                }
+            },
             inputText = passwordInput,
             showPassword = showPassword,
             toggleShowPassword = onTogglePassword,
@@ -51,11 +60,13 @@ fun LoginForm(
                 .fillMaxWidth()
                 .padding(vertical = 10.dp, horizontal = 30.dp)
                 .clickable(
+                    enabled = !isLoading,
                     onClick = onNavigateToForgotPassword
                 ),
             text = "Forgot password",
             style = MaterialTheme.typography.h6.copy(
                 color = MaterialTheme.colors.primary
+
             )
         )
     }

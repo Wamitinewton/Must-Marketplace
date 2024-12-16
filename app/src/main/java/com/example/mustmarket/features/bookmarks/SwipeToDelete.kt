@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mustmarket.R
+import com.example.mustmarket.core.SharedComposables.CustomImageLoader
 import com.example.mustmarket.core.SharedComposables.ImageLoaderUtil
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
@@ -160,10 +161,9 @@ fun SwipeToDelete(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.size(100.dp)
                     ) {
-                        ImageLoaderUtil(
-                            imageUrl = product.images,
-                            contentDescription = "bookmark-image"
-                        )
+                       CustomImageLoader(
+                           imageUrl = product.images
+                       )
                     }
 
                     Spacer(modifier = Modifier.width(16.dp))

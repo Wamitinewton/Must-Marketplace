@@ -117,7 +117,7 @@ class ForgotPasswordViewModel @Inject constructor(
                     when (result) {
                         is Resource.Loading -> {
                             _state.update { it.copy(
-                                isLoading = true,
+                                isOtpLoading = true,
                                 isOtpSent = false,
                                 errorMessage = null
                             ) }
@@ -127,7 +127,7 @@ class ForgotPasswordViewModel @Inject constructor(
                             _state.update {
                                 it.copy(
                                     errorMessage = result.message,
-                                    isLoading = false,
+                                    isOtpLoading = false,
                                     isOtpSent = false
                                 )
                             }
@@ -138,7 +138,7 @@ class ForgotPasswordViewModel @Inject constructor(
                                 it.copy(
                                     isOtpSent = true,
                                     currentScreen = ForgotPasswordScreen.OTP_INPUT,
-                                    isLoading = false,
+                                    isOtpLoading = false,
                                     errorMessage = null
                                 )
                             }
@@ -163,7 +163,7 @@ class ForgotPasswordViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is Resource.Loading -> {
-                            _state.update { it.copy(isLoading = result.isLoading) }
+                            _state.update { it.copy(isVerificationLoading = result.isLoading) }
                         }
 
                         is Resource.Error -> {
