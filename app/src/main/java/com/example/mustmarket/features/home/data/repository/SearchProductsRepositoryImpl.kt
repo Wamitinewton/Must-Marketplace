@@ -2,8 +2,8 @@ package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.home.data.local.db.BookmarkDao
-import com.example.mustmarket.features.home.data.local.db.ProductDao
+import com.example.mustmarket.database.dao.BookmarkDao
+import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProduct
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntity

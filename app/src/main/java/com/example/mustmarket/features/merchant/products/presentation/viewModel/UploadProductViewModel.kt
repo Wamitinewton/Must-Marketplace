@@ -3,11 +3,10 @@ package com.example.mustmarket.features.merchant.products.presentation.viewModel
 import  android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
-import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.usecase.UseCases
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.merchant.products.domain.models.UploadProductRequest
 import com.example.mustmarket.features.merchant.products.presentation.event.UploadEvent
@@ -22,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -43,15 +43,11 @@ class UploadProductViewModel @Inject constructor(
         coroutineDebugger.cancelAllCoroutines()
         val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
         if (activeCoroutines.isNotEmpty()) {
-            Log.d(
-                "register",
-                "⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:"
-            )
+            Timber.tag("register")
+                .d("⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:")
             activeCoroutines.forEach { info ->
-                Log.d(
-                    "register",
-                    "📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms"
-                )
+                Timber.tag("register")
+                    .d("📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms")
             }
         }
     }

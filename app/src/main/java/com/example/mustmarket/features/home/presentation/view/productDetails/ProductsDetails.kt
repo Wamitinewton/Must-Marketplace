@@ -60,11 +60,11 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.core.SharedComposables.BottomNavBar
-import com.example.mustmarket.core.SharedComposables.CustomImageLoader
-import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
-import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.sharedComposable.BottomNavBar
+import com.example.mustmarket.core.sharedComposable.CustomImageLoader
+import com.example.mustmarket.core.sharedComposable.ErrorState
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct

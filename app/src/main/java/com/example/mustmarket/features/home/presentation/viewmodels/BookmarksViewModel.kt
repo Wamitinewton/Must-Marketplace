@@ -2,9 +2,9 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
+import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
+import com.example.mustmarket.database.entities.BookmarkedProductEntity
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.BookmarksUiState
@@ -90,7 +90,7 @@ class BookmarksViewModel @Inject constructor(
         }
     }
 
-    private fun handleSuccessResult(data: List<BookmarkedProduct>?) {
+    private fun handleSuccessResult(data: List<BookmarkedProductEntity>?) {
         _uiState.value = BookmarksUiState.Success(data)
         _bookmarkStatusUpdates.value = data?.associate { it.id to true } ?: emptyMap()
     }
@@ -100,7 +100,7 @@ class BookmarksViewModel @Inject constructor(
         _events.emit(BookmarkEvent.Error(message))
     }
 
-    fun removeBookmark(product: BookmarkedProduct) {
+    fun removeBookmark(product: BookmarkedProductEntity) {
         viewModelScope.launch {
             runCatching {
                 bookmarksUseCases.homeUseCases.removeProduct(product)

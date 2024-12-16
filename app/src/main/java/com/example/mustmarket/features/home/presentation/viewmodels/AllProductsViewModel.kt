@@ -2,25 +2,21 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
+import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.datastore.UserData
-import com.example.mustmarket.features.auth.datastore.UserStoreManager
+import com.example.mustmarket.features.auth.data.datastore.UserData
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,7 +31,15 @@ class AllProductsViewModel @Inject constructor(
     val userData: StateFlow<UserData?> = _userData.asStateFlow()
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
-    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
+    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.
+        onStart {
+            loadProducts(forceRefresh = true)
+        }
+        .stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        AllProductsViewModelState()
+    )
 
     private val _productDetailsState =
         MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
@@ -44,7 +48,7 @@ class AllProductsViewModel @Inject constructor(
 
     init {
         observeUserData()
-        initializeProducts()
+//        initializeProducts()
     }
 
     private fun observeUserData() {

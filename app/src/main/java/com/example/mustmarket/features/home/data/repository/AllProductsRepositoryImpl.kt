@@ -1,12 +1,11 @@
 package com.example.mustmarket.features.home.data.repository
 
-import android.util.Log
 import coil.network.HttpException
 import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.di.IODispatcher
-import com.example.mustmarket.features.auth.datastore.SessionManager
-import com.example.mustmarket.features.home.data.local.db.ProductDao
+import com.example.mustmarket.features.auth.data.datastore.SessionManager
+import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities

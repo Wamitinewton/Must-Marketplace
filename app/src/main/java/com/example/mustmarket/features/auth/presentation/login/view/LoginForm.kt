@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.mustmarket.core.SharedComposables.DefaultTextInput
-import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.core.sharedComposable.DefaultTextInput
+import com.example.mustmarket.core.sharedComposable.PasswordInput
 
 @Composable
 fun LoginForm(

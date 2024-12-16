@@ -2,7 +2,6 @@ package com.example.mustmarket.features.merchant.products.data.repository
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import com.example.mustmarket.core.util.Constants
 import com.example.mustmarket.core.util.Constants.SUCCESS_RESPONSE
 import com.example.mustmarket.core.util.Resource
@@ -32,6 +31,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -67,7 +67,6 @@ class ProductRepositoryImpl @Inject constructor(
                     emit(Resource.Loading(false))
                 } else {
                     emit(Resource.Error(message = response.message))
-
                 }
             } catch (e: Exception) {
                 emit(Resource.Error(message = e.message ?: Constants.UPLOAD_ERROR))
@@ -239,7 +238,7 @@ class ProductRepositoryImpl @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.d("TAG", "cleanUpFiles: ${e.message}")
+            Timber.tag("TAG").d("cleanUpFiles: ${e.message}")
         }
     }
 

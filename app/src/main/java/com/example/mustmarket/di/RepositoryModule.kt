@@ -1,17 +1,16 @@
 package com.example.mustmarket.di
 
-import android.content.SharedPreferences
-import com.example.mustmarket.UseCases
+import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
-import com.example.mustmarket.features.auth.datastore.SessionManager
-import com.example.mustmarket.features.auth.datastore.UserStoreManager
+import com.example.mustmarket.features.auth.data.datastore.SessionManager
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
-import com.example.mustmarket.features.home.data.local.db.BookmarkDao
-import com.example.mustmarket.features.home.data.local.db.CategoryDao
-import com.example.mustmarket.features.home.data.local.db.ProductDao
+import com.example.mustmarket.database.dao.BookmarkDao
+import com.example.mustmarket.database.dao.CategoryDao
+import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl

@@ -30,8 +30,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,11 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
-import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.LoadingAnimationType
-import com.example.mustmarket.core.SharedComposables.LoadingState
-import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
-import com.example.mustmarket.core.SharedComposables.SearchBar
+import com.example.mustmarket.core.sharedComposable.ErrorState
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel

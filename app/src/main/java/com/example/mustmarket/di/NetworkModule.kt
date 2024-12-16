@@ -3,7 +3,7 @@ package com.example.mustmarket.di
 import android.content.Context
 import com.example.mustmarket.BuildConfig
 import com.example.mustmarket.core.interceptor.ErrorInterceptor
-import com.example.mustmarket.features.auth.workmanager.AuthInterceptor
+import com.example.mustmarket.features.auth.data.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi

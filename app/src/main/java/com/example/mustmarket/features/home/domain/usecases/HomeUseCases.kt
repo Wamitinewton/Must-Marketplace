@@ -1,6 +1,6 @@
 package com.example.mustmarket.features.home.domain.usecases
 
-import com.example.mustmarket.features.home.data.local.entities.BookmarkedProduct
+import com.example.mustmarket.database.entities.BookmarkedProductEntity
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
@@ -21,7 +21,7 @@ class HomeUseCases(
     suspend fun toggleBookmark(product: NetworkProduct) =
         bookmarksRepository.toggleBookmark(product)
 
-    suspend fun removeProduct(product: BookmarkedProduct) =
+    suspend fun removeProduct(product: BookmarkedProductEntity) =
         bookmarksRepository.removeProduct(product)
 
     suspend fun refreshProducts() = productRepository.refreshProducts()

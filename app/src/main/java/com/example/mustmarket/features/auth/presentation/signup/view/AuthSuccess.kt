@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.mustmarket.R
-import com.example.mustmarket.core.SharedComposables.LoopReverseLottieLoader
+import com.example.mustmarket.core.sharedComposable.LoopReverseLottieLoader
 import kotlinx.coroutines.launch
 
 @Composable

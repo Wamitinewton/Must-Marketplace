@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.core.SharedComposables.ErrorState
-import com.example.mustmarket.core.SharedComposables.LoadingState
-import com.example.mustmarket.core.SharedComposables.NoSearchResultsState
-import com.example.mustmarket.core.SharedComposables.SearchBar
+import com.example.mustmarket.core.sharedComposable.ErrorState
+import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.core.sharedComposable.NoSearchResultsState
+import com.example.mustmarket.core.sharedComposable.SearchBar
 import com.example.mustmarket.features.home.presentation.event.SearchProductEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.SearchProductsViewModel
 import com.example.mustmarket.navigation.Screen

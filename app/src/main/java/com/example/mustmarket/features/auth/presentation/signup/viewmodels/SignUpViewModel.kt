@@ -3,11 +3,10 @@ package com.example.mustmarket.features.auth.presentation.signup.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
+import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
-import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.presentation.auth_utils.PwdValidators.SCORE_THRESHOLDS
@@ -32,9 +31,6 @@ class SignUpViewModel @Inject constructor(
 
     private val _navigateToLogin = Channel<Unit>()
     val navigateToLogin = _navigateToLogin.receiveAsFlow()
-
-    private val _uiEvent = Channel<SignupEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _authUiState: MutableStateFlow<SignUpViewModelState> = MutableStateFlow(
         SignUpViewModelState()

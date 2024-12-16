@@ -1,13 +1,13 @@
 package com.example.mustmarket.features.home.data.mapper
 
-import com.example.mustmarket.features.home.data.local.converters.ProductConverters
-import com.example.mustmarket.features.home.data.local.entities.ProductListingEntity
+import com.example.mustmarket.database.converters.DataConverters
+import com.example.mustmarket.database.entities.ProductListingEntity
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
 import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
 import com.example.mustmarket.features.home.data.remote.dto.UserDataDto
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
-import com.example.mustmarket.features.merchant.products.domain.models.UserData
 
 
 fun NetworkProductDto.toDomainProduct(): NetworkProduct {
@@ -39,7 +39,7 @@ fun NetworkProduct.toProductListingEntity(): ProductListingEntity {
         brand = brand,
         price = price,
 
-        images = ProductConverters().toStringImageList(images),
+        images = DataConverters().toStringImageList(images),
         inventory = inventory,
         description = description,
         category = category,
@@ -57,13 +57,13 @@ fun ProductListingEntity.toNetworkProduct(): NetworkProduct {
         brand = brand,
         description = description,
         category = category,
-        images = ProductConverters().fromStringImageList(images),
+        images = DataConverters().fromStringImageList(images),
         userData = userData
     )
 }
 
-fun UserDataDto.toUser(): UserData {
-    return UserData(
+fun UserDataDto.toUser(): AuthedUser {
+    return AuthedUser(
         email = email,
         id = id,
         name = name,

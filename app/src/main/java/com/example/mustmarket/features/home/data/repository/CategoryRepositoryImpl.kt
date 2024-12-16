@@ -2,7 +2,7 @@ package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.home.data.local.db.CategoryDao
+import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.features.home.data.mapper.toCategoryListingEntity
 import com.example.mustmarket.features.home.data.mapper.toDomainCategory
 import com.example.mustmarket.features.home.data.mapper.toProductCategory

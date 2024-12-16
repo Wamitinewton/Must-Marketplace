@@ -7,6 +7,7 @@ import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.LoginResult
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+import com.example.mustmarket.features.auth.domain.model.RefreshToken
 import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,5 @@ interface AuthRepository {
     suspend fun logout(): Flow<Resource<Boolean>>
     suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>>
     suspend fun resetPassword(otpRequest: OtpRequest): Flow<Resource<PasswordResetResponse>>
+    suspend fun refreshTokenFromServer(refreshToken: RefreshToken): Flow<Resource<AuthedUser>>
 }

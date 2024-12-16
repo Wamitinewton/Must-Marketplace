@@ -35,8 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mustmarket.core.AdaptableLayout.ResponsiveSizeUtil
-import com.example.mustmarket.core.SharedComposables.LoadingState
+import com.example.mustmarket.core.adaptableLayout.ResponsiveSizeUtil
+import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.otpUtils.OtpBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

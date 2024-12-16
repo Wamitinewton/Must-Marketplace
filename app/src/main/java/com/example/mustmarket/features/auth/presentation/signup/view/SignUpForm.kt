@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.mustmarket.core.SharedComposables.DefaultTextInput
-import com.example.mustmarket.core.SharedComposables.PasswordInput
+import com.example.mustmarket.core.sharedComposable.DefaultTextInput
+import com.example.mustmarket.core.sharedComposable.PasswordInput
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 
 @Composable

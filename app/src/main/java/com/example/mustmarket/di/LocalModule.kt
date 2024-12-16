@@ -2,10 +2,9 @@ package com.example.mustmarket.di
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.room.Room
-import com.example.mustmarket.features.auth.datastore.UserStoreManager
-import com.example.mustmarket.features.home.data.local.db.AppDatabase
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
+import com.example.mustmarket.database.database.AppDatabase
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
 import dagger.Provides
@@ -41,6 +40,10 @@ object LocalModule {
     @Provides
     @Singleton
     fun provideBookmarkDao(db: AppDatabase) = db.bookmarkDao
+
+    @Provides
+    @Singleton
+    fun provideUserDao(db: AppDatabase) = db.userDao
 
     @Provides
     @Singleton

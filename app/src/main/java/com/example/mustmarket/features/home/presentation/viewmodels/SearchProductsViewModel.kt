@@ -2,8 +2,8 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.UseCases
-import com.example.mustmarket.core.coroutine.CoroutineDebugger
+import com.example.mustmarket.usecase.UseCases
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.presentation.event.SearchProductEvent
 import com.example.mustmarket.features.home.presentation.state.SearchProductsState
