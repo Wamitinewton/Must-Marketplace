@@ -5,9 +5,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,6 +24,8 @@ import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.chat.view.ChatScreen
+import com.example.mustmarket.features.chatsList.view.ChatListScreen
+import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
@@ -89,14 +94,29 @@ fun SetUpNavGraph(
                 onBackPressed = { navController.popBackStack() }
             )
         }
+
+//        composable(route = Screen.ChatListScreen.route,
+//            enterTransition = {
+//                return@composable slideIntoContainer(
+//                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+//                )
+//            }) {
+//            val chatListViewModel: ChatListViewModel = viewModel()
+//            ChatListScreen(
+//                viewModel = chatListViewModel
+//            )
+//        }
+
         composable(route = Screen.ChatScreen.route,
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { ChatScreen(
+            }) {
+            ChatScreen(
                 navController = navController
-            ) }
+            )
+        }
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(
