@@ -49,9 +49,7 @@ object RepositoryModule {
         return AuthRepositoryImpl(
             authApi = authApi,
             sessionManager,
-            userStoreManager = userStoreManager,
-            categoryDao = categoryDao,
-            productDao = productDao
+            userStoreManager = userStoreManager
         )
     }
 

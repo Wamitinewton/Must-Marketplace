@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     suspend fun signUp(signUp: SignUpUser): Flow<Resource<AuthedUser>>
     suspend fun loginUser(loginCredentials: LoginRequest): Flow<Resource<LoginResult>>
-    suspend fun logout(): Flow<Resource<Boolean>>
     suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>>
     suspend fun resetPassword(otpRequest: OtpRequest): Flow<Resource<PasswordResetResponse>>
     suspend fun refreshTokenFromServer(refreshToken: RefreshToken): Flow<Resource<AuthedUser>>
+    suspend fun storeAuthTokens(accessToken: String, refreshToken: String)
 }

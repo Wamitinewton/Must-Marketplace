@@ -17,9 +17,8 @@ import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.data.mapper.toAuthedUser
 import com.example.mustmarket.features.auth.data.mapper.toLoginResult
+import com.example.mustmarket.features.auth.data.tokenHolder.AuthTokenHolder
 import com.example.mustmarket.features.auth.domain.model.RefreshToken
-import com.example.mustmarket.database.dao.CategoryDao
-import com.example.mustmarket.database.dao.ProductDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
@@ -30,9 +29,8 @@ import retrofit2.HttpException as RetrofitHttpException
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val sessionManger: SessionManager,
-    private val userStoreManager: UserStoreManager,
-    private val categoryDao: CategoryDao,
-    private val productDao: ProductDao
+    
+    private val userStoreManager: UserStoreManager
 ) : AuthRepository {
     override suspend fun signUp(signUp: SignUpUser): Flow<Resource<AuthedUser>> = flow {
 
@@ -92,18 +90,6 @@ class AuthRepositoryImpl @Inject constructor(
 
         }
 
-    override suspend fun logout(): Flow<Resource<Boolean>> = flow {
-        emit(Resource.Loading(true))
-        val isValid = sessionManger.isSessionValid()
-        if (!isValid) {
-            sessionManger.clearTokens()
-            userStoreManager.clearUserData()
-            categoryDao.clearAllCategory()
-            productDao.clearAllProducts()
-        }
-        emit(Resource.Success(data = isValid))
-        emit(Resource.Loading(false))
-    }
 
     override suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>> =
         flow {
@@ -193,5 +179,14 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             }
         }
+
+    override suspend fun storeAuthTokens(accessToken: String, refreshToken: String) {
+        AuthTokenHolder.accessToken = accessToken
+        AuthTokenHolder.refreshToken = refreshToken
+        sessionManger.updateTokens(
+            accessToken,
+            refreshToken
+        )
+    }
 
 }
