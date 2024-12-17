@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         CoroutineDebugger.enableDebugging()
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
+
             val navController = rememberNavController()
             MustMarketTheme {
                 Scaffold(

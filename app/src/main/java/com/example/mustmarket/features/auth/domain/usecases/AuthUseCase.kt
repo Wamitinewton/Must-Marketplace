@@ -16,8 +16,6 @@ class AuthUseCase(private val repository: AuthRepository) {
     suspend fun registerUseCase(signUpUser: SignUpUser): Flow<Resource<AuthedUser>> =
         repository.signUp(signUpUser)
 
-    suspend fun logoutUseCase() = repository.logout()
-
     suspend fun requestOtpUseCase(email: RequestPasswordReset) = repository.requestOtp(email)
 
     suspend fun resetPasswordUseCase(otpRequest: OtpRequest) = repository.resetPassword(otpRequest)
