@@ -2,12 +2,14 @@ package com.example.mustmarket.features.chatsList.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,19 +28,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.features.chatsList.model.Chat
+import com.example.mustmarket.navigation.Screen
 
 @Composable
-fun ChatListItem(chat: Chat) {
+fun ChatListItem(
+    chat: Chat,
+    navController: NavController
+) {
     Row(
         modifier = Modifier
+            .clickable {
+                //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+            }
             .fillMaxWidth()
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(modifier = Modifier.weight(1f)) {
+        Row(
+            modifier = Modifier
+                .weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             // Profile image or initials
             if (chat.profileImageUrl != null) {
                 Image(
@@ -108,4 +121,5 @@ fun ChatListItem(chat: Chat) {
             }
         }
     }
+    Spacer(Modifier.height(4.dp))
 }

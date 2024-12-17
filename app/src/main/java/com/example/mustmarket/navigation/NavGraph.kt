@@ -5,11 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -95,26 +93,30 @@ fun SetUpNavGraph(
             )
         }
 
-//        composable(route = Screen.ChatListScreen.route,
-//            enterTransition = {
-//                return@composable slideIntoContainer(
-//                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-//                )
-//            }) {
-//            val chatListViewModel: ChatListViewModel = viewModel()
-//            ChatListScreen(
-//                viewModel = chatListViewModel
-//            )
-//        }
-
-        composable(route = Screen.ChatScreen.route,
+        composable(route = Screen.ChatListScreen.route,
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
+            val chatListViewModel: ChatListViewModel = viewModel()
+            ChatListScreen(
+                navController = navController,
+                viewModel = chatListViewModel
+            )
+        }
+
+        composable(
+            route = Screen.ChatScreen.route,
+            arguments = listOf(navArgument("chatId") { type = NavType.StringType }),
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId")
             ChatScreen(
-                navController = navController
+                navController = navController,
             )
         }
         composable(route = Screen.Bookmarks.route,
