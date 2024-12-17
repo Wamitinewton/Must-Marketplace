@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">MustMarket</string>
+    <string name="shop">Shop</string>
+    <string name="explore">Explore</string>
+    <string name="account">Account</string>
+    <string name="cart">Cart</string>
+    <string name="favourite">Liked</string>
+    <string name="cart_item">cart item</string>
+    <string name="CLOSE_ICON">Close Icon</string>
+    <string name="screen_label">Screen label</string>
+    <string name="welcome">Welcome</string>
+    <string name="to_our_store">to our store</string>
+    <string name="get_groceries">Get your groceries as fast as one hour</string>
+    <string name="get_started">Get Started</string>
+    <string name="logo">logo</string>
+    <string name="password_visibility">Password visibility</string>
+    <string name="onboarding_title1">Discover Everything You Need, Right Around Campus</string>
+    <string name="onboarding_title2">Shop Smart, Live Easy</string>
+    <string name="onboarding_title3">Unbeatable Deals for Students</string>
+    <string name="Onboarding1">From textbooks and stationery to snacks and dorm essentials, MustMarket brings a wide variety of products to your fingertips, all tailored for students like you.</string>
+    <string name="Onboarding2">Experience a seamless shopping journey designed with students in mind. Enjoy fast delivery, secure checkout, and convenient access to everything you need to thrive on campus.</string>
+    <string name="Onboarding3">Save big on the products you love! With exclusive discounts and special offers, MustMarket helps you stretch your budget while still getting the best.</string>
+</resources>
