@@ -1,7 +1,6 @@
 package com.example.mustmarket.di
 
 import android.content.Context
-import com.example.mustmarket.BuildConfig
 import com.example.mustmarket.core.interceptor.ErrorInterceptor
 import com.example.mustmarket.features.auth.data.workmanager.AuthInterceptor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
@@ -35,8 +34,10 @@ object NetworkModule {
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
             .addInterceptor(errorInterceptor)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
             .build()
 
     @Provides
@@ -48,7 +49,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
-        val baseKey = BuildConfig.SERVER_BASE_URL
+        val baseKey = "https://sv99tncg-8080.uks1.devtunnels.ms/"
         val json = Json {
             ignoreUnknownKeys = true
             isLenient = true

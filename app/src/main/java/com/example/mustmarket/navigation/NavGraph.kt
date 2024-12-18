@@ -14,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
@@ -39,10 +39,10 @@ fun SetUpNavGraph(
     productViewModel: AllProductsViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-    val context = LocalContext.current
+
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route,
+        startDestination = Screen.Splash.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -94,9 +94,11 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { ChatScreen(
+            }) {
+            ChatScreen(
                 navController = navController
-            ) }
+            )
+        }
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -125,7 +127,6 @@ fun SetUpNavGraph(
                 )
             }) {
             UploadProducts(
-                userStoreManager = UserStoreManager(context)
             )
         }
 
