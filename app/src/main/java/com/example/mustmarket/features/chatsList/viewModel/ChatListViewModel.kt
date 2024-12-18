@@ -18,8 +18,8 @@ class ChatListViewModel : ViewModel() {
         val sampleChats = listOf(
             Chat("1", "John Doe", null, "Hey! How are you?", true, "10:45 AM", 2),
             Chat("2", null, null, "Let's meet tomorrow.", false, "Yesterday", 0),
-            Chat("3", "Alice", "https://example.com/profile.jpg", "Sure! I'll bring it.", true, "Mon", 5),
-            Chat("4", "Bob", null, "See you later.", true, "12:00 PM", 1)
+            Chat("3", "Alice", "https://photos.app.goo.gl/G5j6peRZ538DKMPo8", "Sure! I'll bring it.", true, "Mon", 5),
+            Chat("4", "Bob", null, "See you later.", true, "17/12/2024", 1)
         )
         _chats.value = sampleChats
     }
