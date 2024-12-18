@@ -4,14 +4,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -39,62 +44,74 @@ fun ChatListScreen(
 ) {
     val chats by viewModel.chats.observeAsState(emptyList())
 
-    Column(
-        modifier = Modifier
-            .background(
-                color = greenishA
+    Scaffold(
+        backgroundColor = greenishA,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Market-Chat",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = Color.White
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = gray01
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            //
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.dslr_camera),
+                            contentDescription = "",
+                            colorFilter = ColorFilter.tint(gray01),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .background(Color.Transparent)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "More",
+                            tint = gray01
+                        )
+                    }
+                }
             )
-            .fillMaxSize()
-    ) {
-        TopAppBar(
-            title = {
-                Text(
-                    "Market-Chat",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = Color.White
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(bottom = 50.dp),
+                onClick = {
+                    //navController.navigate(ChatRoutes.NewChat.route)
+                },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Start New Chat"
                 )
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = gray01
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        //
-                    }
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.dslr_camera),
-                        contentDescription = "",
-                        colorFilter = ColorFilter.tint(gray01),
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(Color.Transparent)
-                    )
-                }
-                IconButton(
-                    onClick = {
-
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.MoreVert,
-                        contentDescription = "More",
-                        tint = gray01
-                    )
-                }
             }
-        )
-
+        }
+    ) { padding ->
         LazyColumn {
             items(chats) { chat ->
                 ChatListItem(
