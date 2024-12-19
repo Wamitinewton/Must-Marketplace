@@ -72,6 +72,7 @@ import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import kotlinx.coroutines.launch
@@ -79,15 +80,15 @@ import kotlin.math.abs
 
 @Composable
 fun ProductDetailsScreen(
-    productId: Int,
     onBackPressed: () -> Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
-    productsViewModel: AllProductsViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    sharedViewModel: SharedViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val detailsState by productsViewModel.productDetailsState.collectAsState()
+
+    val details = sharedViewModel.details
 
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
@@ -112,27 +113,16 @@ fun ProductDetailsScreen(
         }
     }
 
-    LaunchedEffect(productId) {
-        Log.d("ProducDetails", "LaunchedEffect triggered with productId: $productId")
-        productsViewModel.loadProductDetails(productId)
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        when (detailsState) {
-            is ProductDetailsState.Loading -> LoadingState(type = LoadingAnimationType.BOUNCING_DOTS)
-
-            is ProductDetailsState.Error -> {
-                ErrorState()
-            }
-
-            is ProductDetailsState.Success -> {
-                val product = (detailsState as ProductDetailsState.Success).product
+        when (details) {
+            is NetworkProduct->{
                 ProductDetailsContent(
-                    product = product,
+                    product = details,
                     onBackPressed = onBackPressed,
                     bookmarksViewModel = viewModel,
                     navController = navController
