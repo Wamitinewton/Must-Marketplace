@@ -27,6 +27,7 @@ import com.example.mustmarket.features.home.presentation.view.productList.AllPro
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
@@ -38,6 +39,7 @@ import com.example.mustmarket.features.splash.view.SplashScreen
 fun SetUpNavGraph(
     navController: NavHostController,
     productViewModel: AllProductsViewModel = hiltViewModel(),
+    sharedViewModel: SharedViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
 
@@ -71,23 +73,21 @@ fun SetUpNavGraph(
             }) {
             HomeScreen(
                 navController = navController,
-                allProductsViewModel = productViewModel
+                allProductsViewModel = productViewModel,
+                sharedViewModel = sharedViewModel
             )
         }
         composable(route = Screen.Detail.route,
-            arguments = listOf(
-                navArgument("productId") { type = NavType.IntType }
-            ),
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left, tween(500)
                 )
-            }) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
+            }) {
             ProductDetailsScreen(
-                productId = productId,
                 navController = navController,
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                sharedViewModel = sharedViewModel
+
             )
         }
         composable(route = Screen.ChatScreen.route,
@@ -153,7 +153,7 @@ fun SetUpNavGraph(
         }
 
         composable(route = Screen.AllProductsList.route) {
-            AllProductsListScreen(navController = navController)
+            AllProductsListScreen(navController,sharedViewModel)
         }
     }
 }
