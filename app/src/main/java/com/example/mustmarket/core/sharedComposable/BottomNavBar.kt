@@ -40,7 +40,7 @@ fun BottomNavBar(
                     Icon(
                         imageVector = when (screen) {
                             Screen.HomeScreen -> Icons.Default.Home
-                            Screen.ChatScreen -> Icons.AutoMirrored.Filled.Message
+                            Screen.ChatListScreen -> Icons.AutoMirrored.Filled.Message
 
                             Screen.Bookmarks -> Icons.Default.Bookmark
 
@@ -55,7 +55,7 @@ fun BottomNavBar(
                     Text(
                         text = when (screen) {
                             Screen.HomeScreen -> "Home"
-                            Screen.ChatScreen -> "Messages"
+                            Screen.ChatListScreen -> "Messages"
                             Screen.Bookmarks -> "Bookmarks"
                             Screen.Favourites -> "Favourites"
                             Screen.Profile -> "Account"
