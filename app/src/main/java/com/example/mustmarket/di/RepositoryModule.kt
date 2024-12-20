@@ -38,7 +38,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-    @Binds
+    @Provides
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApi,
