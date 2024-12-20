@@ -39,7 +39,11 @@ fun SplashScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     var animateLogo by remember { mutableStateOf(false) }
+<<<<<<< HEAD
     val isLoggedIn by loginViewModel.isUserLoggedIn.collectAsStateWithLifecycle()
+=======
+    val isLoggedIn by loginViewModel.isLoggedIn.collectAsStateWithLifecycle()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     LaunchedEffect(Unit) {
         delay(2000)

@@ -2,7 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
+<<<<<<< HEAD
     "identityHash": "6d966df5db93db5fbb29409c2b158e72",
+=======
+    "identityHash": "4c7126dc0e923bddee020ddb254bdca6",
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     "entities": [
       {
         "tableName": "products",
@@ -192,7 +196,11 @@
       },
       {
         "tableName": "user",
+<<<<<<< HEAD
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `number` INTEGER, PRIMARY KEY(`id`))",
+=======
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `password` TEXT NOT NULL, PRIMARY KEY(`id`))",
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
         "fields": [
           {
             "fieldPath": "id",
@@ -213,10 +221,17 @@
             "notNull": true
           },
           {
+<<<<<<< HEAD
             "fieldPath": "number",
             "columnName": "number",
             "affinity": "INTEGER",
             "notNull": false
+=======
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": true
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
           }
         ],
         "primaryKey": {
@@ -232,7 +247,11 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+<<<<<<< HEAD
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d966df5db93db5fbb29409c2b158e72')"
+=======
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c7126dc0e923bddee020ddb254bdca6')"
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     ]
   }
 }

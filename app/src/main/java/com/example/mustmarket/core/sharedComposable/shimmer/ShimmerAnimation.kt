@@ -6,6 +6,11 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+<<<<<<< HEAD
+=======
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -35,8 +40,14 @@ fun ShimmerAnimation(modifier: Modifier) {
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
+<<<<<<< HEAD
     ShimmerItem(
         brush = brush,
         modifier = modifier
+=======
+    Box(
+        modifier = modifier
+            .background(brush = brush),
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     )
 }
