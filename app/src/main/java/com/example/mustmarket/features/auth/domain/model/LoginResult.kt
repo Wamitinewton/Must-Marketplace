@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginResult(
     val message: String,
-
     val data: LoginData
 )
 

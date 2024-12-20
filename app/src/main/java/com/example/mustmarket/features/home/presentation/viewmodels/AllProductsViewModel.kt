@@ -2,14 +2,12 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.data.datastore.UserData
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
-import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
+import com.example.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,10 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
-    private val userStoreManager: UserStoreManager
 ) : ViewModel() {
-    private val _userData = MutableStateFlow<UserData?>(null)
-    val userData: StateFlow<UserData?> = _userData.asStateFlow()
+
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.
@@ -47,25 +43,10 @@ class AllProductsViewModel @Inject constructor(
 
 
     init {
-        observeUserData()
 //        initializeProducts()
     }
 
-    private fun observeUserData() {
-        viewModelScope.launch {
-            _userData.value = userStoreManager.fetchUserData()
 
-            while (true) {
-                kotlinx.coroutines.delay(1000)
-                val currentData = _userData.value
-                val newData = userStoreManager.fetchUserData()
-
-                if (newData != currentData) {
-                    _userData.value = newData
-                }
-            }
-        }
-    }
 
     private fun initializeProducts() {
         viewModelScope.launch {

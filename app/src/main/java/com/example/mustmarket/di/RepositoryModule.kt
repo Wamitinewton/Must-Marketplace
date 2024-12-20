@@ -5,12 +5,12 @@ import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
+import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
@@ -26,6 +26,7 @@ import com.example.mustmarket.features.merchant.products.data.remote.UploadProdu
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,19 +38,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApi,
         sessionManager: SessionManager,
-        userStoreManager: UserStoreManager,
-        categoryDao: CategoryDao,
-        productDao: ProductDao
+        userDao: UserDao
     ): AuthRepository {
         return AuthRepositoryImpl(
             authApi = authApi,
-            sessionManager,
-            userStoreManager = userStoreManager
+            sessionManger = sessionManager,
+            userDao = userDao
         )
     }
 
