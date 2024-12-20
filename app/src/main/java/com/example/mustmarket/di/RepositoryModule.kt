@@ -5,19 +5,12 @@ import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
-<<<<<<< HEAD
-=======
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
-<<<<<<< HEAD
 import com.example.mustmarket.database.dao.UserDao
-=======
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
@@ -33,10 +26,7 @@ import com.example.mustmarket.features.merchant.products.data.remote.UploadProdu
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
-<<<<<<< HEAD
 import dagger.Binds
-=======
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,32 +38,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-<<<<<<< HEAD
-    @Binds
-=======
     @Provides
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApi,
         sessionManager: SessionManager,
-<<<<<<< HEAD
         userDao: UserDao
     ): AuthRepository {
         return AuthRepositoryImpl(
             authApi = authApi,
             sessionManger = sessionManager,
             userDao = userDao
-=======
-        userStoreManager: UserStoreManager,
-        categoryDao: CategoryDao,
-        productDao: ProductDao
-    ): AuthRepository {
-        return AuthRepositoryImpl(
-            authApi = authApi,
-            sessionManager,
-            userStoreManager = userStoreManager
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
         )
     }
 

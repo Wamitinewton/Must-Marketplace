@@ -3,10 +3,6 @@ package com.example.mustmarket.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-<<<<<<< HEAD
-=======
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.database.database.AppDatabase
 import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
@@ -56,15 +52,4 @@ object LocalModule {
         return SecureProductStorage(context)
     }
 
-<<<<<<< HEAD
-=======
-    @Provides
-    @Singleton
-    fun provideUserStore(
-        @ApplicationContext context: Context
-    ): UserStoreManager {
-        return UserStoreManager(context)
-
-    }
->>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 }
