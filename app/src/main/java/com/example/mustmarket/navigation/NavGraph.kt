@@ -8,22 +8,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.chat.view.ChatScreen
-import com.example.mustmarket.features.chatsList.view.ChatListScreen
-import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
@@ -42,10 +39,10 @@ fun SetUpNavGraph(
     productViewModel: AllProductsViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-    val context = LocalContext.current
+
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route,
+        startDestination = Screen.Splash.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -92,31 +89,14 @@ fun SetUpNavGraph(
                 onBackPressed = { navController.popBackStack() }
             )
         }
-
-        composable(route = Screen.ChatListScreen.route,
+        composable(route = Screen.ChatScreen.route,
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
-            val chatListViewModel: ChatListViewModel = viewModel()
-            ChatListScreen(
-                navController = navController,
-                viewModel = chatListViewModel
-            )
-        }
-
-        composable(
-            route = Screen.ChatScreen.route,
-            arguments = listOf(navArgument("chatId") { type = NavType.StringType }),
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) { backStackEntry ->
-            val chatId = backStackEntry.arguments?.getString("chatId")
             ChatScreen(
-                navController = navController,
+                navController = navController
             )
         }
         composable(route = Screen.Bookmarks.route,
@@ -147,7 +127,6 @@ fun SetUpNavGraph(
                 )
             }) {
             UploadProducts(
-                userStoreManager = UserStoreManager(context)
             )
         }
 

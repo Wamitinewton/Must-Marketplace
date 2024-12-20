@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.auth.data.workmanager
+package com.example.mustmarket.features.auth.authInterceptor
 
 object HeadersManager {
     const val TAG = "AuthInterceptor"

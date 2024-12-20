@@ -1,18 +1,17 @@
-package com.example.mustmarket.features.auth.data.workmanager
+package com.example.mustmarket.features.auth.authInterceptor
 
 import android.content.Context
-import android.util.Log
 import com.example.mustmarket.features.auth.data.datastore.DatastoreKeys.KEY_ACCESS_TOKEN
 import com.example.mustmarket.features.auth.data.datastore.DatastoreKeys.KEY_REFRESH_TOKEN
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
-import com.example.mustmarket.features.auth.data.workmanager.HeadersManager.AUTHORIZATION_HEADER
-import com.example.mustmarket.features.auth.data.workmanager.HeadersManager.BEARER_PREFIX
-import com.example.mustmarket.features.auth.data.workmanager.HeadersManager.NEW_ACCESS_TOKEN_HEADER
-import com.example.mustmarket.features.auth.data.workmanager.HeadersManager.REFRESH_HEADER
-import com.example.mustmarket.features.auth.data.workmanager.HeadersManager.TAG
+import com.example.mustmarket.features.auth.authInterceptor.HeadersManager.AUTHORIZATION_HEADER
+import com.example.mustmarket.features.auth.authInterceptor.HeadersManager.BEARER_PREFIX
+import com.example.mustmarket.features.auth.authInterceptor.HeadersManager.NEW_ACCESS_TOKEN_HEADER
+import com.example.mustmarket.features.auth.authInterceptor.HeadersManager.REFRESH_HEADER
+import com.example.mustmarket.features.auth.authInterceptor.HeadersManager.TAG
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.net.HttpURLConnection
+import timber.log.Timber
 
 class AuthInterceptor(context: Context) : Interceptor {
 
@@ -60,11 +59,11 @@ class AuthInterceptor(context: Context) : Interceptor {
 
             sessionManager.updateTokenExpiry()
 
-            Log.d(TAG, "access: $accessToken")
+            Timber.tag(TAG).d("access: $accessToken")
 
         } else {
 
-            Log.d(TAG, "Not token ${response.headers}")
+            Timber.tag(TAG).d("Not token ${response.headers}")
 
         }
     }
