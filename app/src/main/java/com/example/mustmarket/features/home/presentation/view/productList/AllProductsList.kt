@@ -28,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
+<<<<<<< HEAD
+=======
 import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
@@ -36,7 +39,11 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 @Composable
 fun AllProductsListScreen(
     navController: NavController,
+<<<<<<< HEAD
+    modifier: Modifier = Modifier
+=======
     sharedViewModel: SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 ) {
 
     val products = navController.previousBackStackEntry
@@ -103,6 +110,9 @@ fun AllProductsListScreen(
                 ProductCard(
                     product = product,
                     onClick = {
+<<<<<<< HEAD
+                        navController.navigate(Screen.Detail.createRoute(productId = product.id))
+=======
                         val productDetails = NetworkProduct(
                             name = product.name,
                             id = product.id,
@@ -120,6 +130,7 @@ fun AllProductsListScreen(
                                 inclusive = true
                             }
                         }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     }
                 )
             }

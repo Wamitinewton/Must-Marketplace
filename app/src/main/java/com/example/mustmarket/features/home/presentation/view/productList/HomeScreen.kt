@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+<<<<<<< HEAD
+=======
 import androidx.compose.foundation.layout.Spacer
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,18 +49,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+<<<<<<< HEAD
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.sharedComposable.ErrorState
+<<<<<<< HEAD
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+=======
 import com.example.mustmarket.core.sharedComposable.shimmer.ProductShimmer
 import com.example.mustmarket.core.sharedComposable.shimmer.ShimmerAnimation
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
+<<<<<<< HEAD
+=======
 import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
@@ -67,18 +83,29 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+<<<<<<< HEAD
+import timber.log.Timber
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     allProductsViewModel: AllProductsViewModel,
+<<<<<<< HEAD
+=======
     sharedViewModel: SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 ) {
 
     Content(
         viewModel = allProductsViewModel,
+<<<<<<< HEAD
+        navController = navController
+=======
         navController = navController,
         sharedViewModel = sharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     )
 }
 
@@ -88,17 +115,27 @@ fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     navController: NavController,
+<<<<<<< HEAD
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
+    val coroutineScope = rememberCoroutineScope()
+=======
     sharedViewModel: SharedViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val userData by viewModel.userData.collectAsState()
 
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = isRefreshing
     )
+<<<<<<< HEAD
+    val user by loginViewModel.loggedInUser.collectAsStateWithLifecycle()
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     Scaffold(
         topBar = {
@@ -164,7 +201,11 @@ fun Content(
             ) {
 
                 item {
+<<<<<<< HEAD
+                    HeaderBar(userName = user?.name)
+=======
                     HeaderBar(userName = userData?.name)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                 }
 
                 item { Promotions() }
@@ -176,6 +217,38 @@ fun Content(
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
+<<<<<<< HEAD
+                           Row(
+                               horizontalArrangement = Arrangement.SpaceBetween,
+                               verticalAlignment = Alignment.CenterVertically,
+                               modifier = Modifier
+                                   .padding(horizontal = 15.dp)
+                           ) {
+                               Text(
+                                   text = "All Products",
+                                   color = ThemeUtils.AppColors.Text.themed(),
+                                   fontSize = 18.sp
+                               )
+
+                               Text(
+                                   modifier = Modifier
+                                       .clickable(
+                                           onClick = {
+                                               navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                   key = "products",
+                                                   value = uiState.products
+                                               )
+                                               navController.navigate(Screen.AllProductsList.route)
+                                           }
+                                       ),
+                                   text = "See all",
+                                   color = ThemeUtils.AppColors.Text.themed(),
+                                   fontSize = 16.sp
+                               )
+                           }
+                        }
+                    }
+=======
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
@@ -206,20 +279,31 @@ fun Content(
                         }
                     }
                 }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
 
 
                 when {
+<<<<<<< HEAD
+                    uiState.isLoading && uiState.products.isEmpty() -> {
+                        item {
+                            LoadingState(type = LoadingAnimationType.PULSING_DOTS)
+=======
                     uiState.isLoading -> {
                         items(count = 5){
                             ProductShimmer()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                         }
                     }
 
                     uiState.errorMessage?.isNotEmpty() == true -> {
                         item {
                             uiState.errorMessage?.let { ErrorState(message = it) }
+<<<<<<< HEAD
+                            uiState.errorMessage?.let { Timber.tag("Error").d(it) }
+=======
                             uiState.errorMessage?.let { Log.d("Error", it) }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                         }
                     }
 
@@ -238,6 +322,9 @@ fun Content(
                             ProductCard(
                                 product = product,
                                 onClick = {
+<<<<<<< HEAD
+                                    navController.navigate(Screen.Detail.createRoute(productId = product.id))
+=======
                                     val productDetails = NetworkProduct(
                                         name = product.name,
                                         id = product.id,
@@ -255,6 +342,7 @@ fun Content(
                                             inclusive = true
                                         }
                                     }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                                 }
                             )
                             if (index < uiState.products.size - 1) {

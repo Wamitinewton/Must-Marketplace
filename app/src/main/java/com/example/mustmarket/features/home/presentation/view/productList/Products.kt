@@ -50,14 +50,22 @@ import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksVie
 @Composable
 fun ProductCard(
     product: NetworkProduct,
+<<<<<<< HEAD
+    onClick: (Int) -> Unit,
+=======
     onClick: ()->  Unit,
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val bookmarkStatuses = viewModel.bookmarkStatusUpdates.collectAsState()
 
+<<<<<<< HEAD
+    val isBookmarked = bookmarkStatuses.value[product.id] ?: false
+=======
     val isBookmarked = bookmarkStatuses.value[product.id] == true
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
@@ -69,6 +77,10 @@ fun ProductCard(
                         scope = scope
                     )
                 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                 is BookmarkEvent.Error -> {
                     event.message?.let { errorMessage ->
                         SingleToastManager.showToast(
@@ -86,12 +98,20 @@ fun ProductCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+<<<<<<< HEAD
+            .clickable(onClick = { onClick(product.id) }),
+=======
             .clickable(onClick= {onClick()}),
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
         elevation = 4.dp
     ) {
         Row(
             modifier = Modifier
+<<<<<<< HEAD
+                .padding(12.dp)
+=======
                 .padding(start = 8.dp, end = 8.dp)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                 .height(120.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

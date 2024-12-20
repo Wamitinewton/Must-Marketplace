@@ -37,7 +37,10 @@ import com.example.mustmarket.core.sharedComposable.ErrorState
 import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
 import com.example.mustmarket.core.sharedComposable.LoadingState
+<<<<<<< HEAD
+=======
 import com.example.mustmarket.core.sharedComposable.shimmer.CategoryListShimmer
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
@@ -55,7 +58,11 @@ fun CategoryGridView(
         CategoryHeader()
         Spacer(modifier = Modifier.height(8.dp))
         when {
+<<<<<<< HEAD
+            uiState.isLoading -> LoadingState(type = LoadingAnimationType.PULSING_DOTS)
+=======
             uiState.isLoading -> CategoryListShimmer()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             uiState.errorMessage.isNotEmpty() -> ErrorState(
                 message = uiState.errorMessage
             )
@@ -138,13 +145,22 @@ fun CategoryItem(
     ) {
         Column(
             modifier = Modifier
+<<<<<<< HEAD
+                .fillMaxSize()
+                .padding(8.dp),
+=======
                 .fillMaxSize(),
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
+<<<<<<< HEAD
+                    .weight(0.7f)
+=======
                     .height(60.dp)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
@@ -153,12 +169,21 @@ fun CategoryItem(
                     imageUrl = category.categoryImage,
                 )
             }
+<<<<<<< HEAD
+            Spacer(modifier = Modifier.height(3.dp))
+=======
             Spacer(modifier = Modifier.height(10.dp))
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             Text(
                 text = category.name,
                 modifier = Modifier
                     .weight(0.3f)
+<<<<<<< HEAD
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+=======
                     .fillMaxWidth(),
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                 style = MaterialTheme.typography.caption.copy(
                     color = ThemeUtils.AppColors.SecondaryText.themed(),
                     fontSize = 12.sp

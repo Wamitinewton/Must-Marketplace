@@ -72,7 +72,10 @@ import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
+<<<<<<< HEAD
+=======
 import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import kotlinx.coroutines.launch
@@ -80,6 +83,17 @@ import kotlin.math.abs
 
 @Composable
 fun ProductDetailsScreen(
+<<<<<<< HEAD
+    productId: Int,
+    onBackPressed: () -> Unit,
+    viewModel: BookmarksViewModel = hiltViewModel(),
+    productsViewModel: AllProductsViewModel = hiltViewModel(),
+    navController: NavController
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val detailsState by productsViewModel.productDetailsState.collectAsState()
+=======
     onBackPressed: () -> Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
     navController: NavController,
@@ -89,6 +103,7 @@ fun ProductDetailsScreen(
     val scope = rememberCoroutineScope()
 
     val details = sharedViewModel.details
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
@@ -113,16 +128,37 @@ fun ProductDetailsScreen(
         }
     }
 
+<<<<<<< HEAD
+    LaunchedEffect(productId) {
+        Log.d("ProducDetails", "LaunchedEffect triggered with productId: $productId")
+        productsViewModel.loadProductDetails(productId)
+    }
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+<<<<<<< HEAD
+        when (detailsState) {
+            is ProductDetailsState.Loading -> LoadingState(type = LoadingAnimationType.BOUNCING_DOTS)
+
+            is ProductDetailsState.Error -> {
+                ErrorState()
+            }
+
+            is ProductDetailsState.Success -> {
+                val product = (detailsState as ProductDetailsState.Success).product
+                ProductDetailsContent(
+                    product = product,
+=======
         when (details) {
             is NetworkProduct->{
                 ProductDetailsContent(
                     product = details,
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     onBackPressed = onBackPressed,
                     bookmarksViewModel = viewModel,
                     navController = navController

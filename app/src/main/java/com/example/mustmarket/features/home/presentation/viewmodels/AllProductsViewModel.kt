@@ -2,6 +2,14 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+<<<<<<< HEAD
+import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
+import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
+import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
+import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
+import com.example.mustmarket.usecase.UseCases
+=======
 import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.data.datastore.UserData
@@ -10,6 +18,7 @@ import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,10 +34,15 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
+<<<<<<< HEAD
+) : ViewModel() {
+
+=======
     private val userStoreManager: UserStoreManager
 ) : ViewModel() {
     private val _userData = MutableStateFlow<UserData?>(null)
     val userData: StateFlow<UserData?> = _userData.asStateFlow()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
     val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.
@@ -47,6 +61,12 @@ class AllProductsViewModel @Inject constructor(
 
 
     init {
+<<<<<<< HEAD
+//        initializeProducts()
+    }
+
+
+=======
         observeUserData()
 //        initializeProducts()
     }
@@ -66,6 +86,7 @@ class AllProductsViewModel @Inject constructor(
             }
         }
     }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     private fun initializeProducts() {
         viewModelScope.launch {
