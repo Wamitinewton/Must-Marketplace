@@ -65,8 +65,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
+<<<<<<< HEAD
 import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+=======
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -76,14 +80,22 @@ import com.example.mustmarket.features.merchant.products.presentation.event.Uplo
 import com.example.mustmarket.features.merchant.products.presentation.viewModel.UploadProductViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+<<<<<<< HEAD
 import timber.log.Timber
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
 @Composable
 fun UploadProducts(
     productViewModel: UploadProductViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
+<<<<<<< HEAD
     allProductsViewModel: AllProductsViewModel = hiltViewModel(),
     loginViewModel: LoginViewModel = hiltViewModel()
+=======
+    userStoreManager: UserStoreManager,
+    allProductsViewModel: AllProductsViewModel = hiltViewModel()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 ) {
     val context = LocalContext.current
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -98,8 +110,13 @@ fun UploadProducts(
     var newCategoryName by remember { mutableStateOf("") }
     var newCategoryImageUri by remember { mutableStateOf<Uri?>(null) }
     val categoryUiState by categoryViewModel.uiState.collectAsState()
+<<<<<<< HEAD
     val user by loginViewModel.loggedInUser.collectAsState()
 
+=======
+
+    val userId = userStoreManager.fetchUserData()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     val categoryLauncherPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -231,7 +248,11 @@ fun UploadProducts(
                         }
                     }
                 ) {
+<<<<<<< HEAD
                     Timber.tag("Errrrrrooooor").d(snackbarData.message)
+=======
+                    Log.d("Errrrrrooooor", snackbarData.message)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     Text(snackbarData.message)
                 }
             }
@@ -430,7 +451,11 @@ fun UploadProducts(
                                     inventory = uiState.productInput.productInventory,
                                     name = uiState.productInput.productName,
                                     price = uiState.productInput.productPrice,
+<<<<<<< HEAD
                                     userId = user!!.id.toString()
+=======
+                                    userId = userId?.id!!
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                                 )
                             )
                         )

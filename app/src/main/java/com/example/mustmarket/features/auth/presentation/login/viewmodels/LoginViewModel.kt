@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.auth.presentation.login.viewmodels
 
+<<<<<<< HEAD
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -18,20 +19,41 @@ import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
 import com.example.mustmarket.features.auth.presentation.login.state.LoginState
 import com.example.mustmarket.usecase.UseCases
+=======
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mustmarket.usecase.UseCases
+import com.example.mustmarket.core.util.Constants.EMAIL_REGEX
+import com.example.mustmarket.core.util.Constants.PASSWORD_REGEX
+import com.example.mustmarket.core.util.Resource
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
+import com.example.mustmarket.features.auth.data.datastore.SessionManager
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
+import com.example.mustmarket.features.auth.domain.model.LoginRequest
+import com.example.mustmarket.features.auth.presentation.login.event.LoginEvent
+import com.example.mustmarket.features.auth.presentation.login.state.LoginState
+import com.example.mustmarket.database.dao.CategoryDao
+import com.example.mustmarket.database.dao.ProductDao
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+<<<<<<< HEAD
 import kotlinx.coroutines.launch
 import timber.log.Timber
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
 
     private val authUseCase: UseCases,
+<<<<<<< HEAD
     private val sessionManager: SessionManager,
     private val productDao: ProductDao,
     private val categoryDao: CategoryDao,
@@ -40,6 +62,15 @@ class LoginViewModel @Inject constructor(
 
     private val _loggedInUser = MutableStateFlow<AuthedUser?>(null)
     val loggedInUser: StateFlow<AuthedUser?> get() = _loggedInUser
+=======
+
+    private val sessionManager: SessionManager,
+    private val userStoreManager: UserStoreManager,
+    private val productDao: ProductDao,
+    private val categoryDao: CategoryDao
+
+) : ViewModel() {
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     private val coroutineDebugger = CoroutineDebugger.getInstance()
 
@@ -50,11 +81,18 @@ class LoginViewModel @Inject constructor(
     private val _navigateToLogin = Channel<Unit>()
     val navigateToLogin = _navigateToLogin.receiveAsFlow()
 
+<<<<<<< HEAD
+=======
+    private val _uiEvent = Channel<LoginEvent>()
+
+    val uiEvent = _uiEvent.receiveAsFlow()
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
     private val _authUiState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState())
 
     val authUiState: StateFlow<LoginState> get() = _authUiState
 
+<<<<<<< HEAD
     private val _isUserLoggedIn = MutableStateFlow(false)
     val isUserLoggedIn: StateFlow<Boolean> get() = _isUserLoggedIn
 
@@ -77,6 +115,22 @@ class LoginViewModel @Inject constructor(
     private suspend fun getLoggedInUser() {
         val user = authUseCase.authUseCase.getLoggedInUser()
         _loggedInUser.value = user
+=======
+    private val _isLoggedIn = MutableStateFlow(false)
+
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    init {
+
+        checkSession()
+
+    }
+
+    private fun checkSession() {
+
+        _isLoggedIn.value = sessionManager.isSessionValid()
+
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     }
 
     override fun onCleared() {
@@ -89,12 +143,31 @@ class LoginViewModel @Inject constructor(
 
         if (activeCoroutines.isNotEmpty()) {
 
+<<<<<<< HEAD
             Timber.tag("register")
                 .d("⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:")
             activeCoroutines.forEach { info ->
 
                 Timber.tag("register")
                     .d("📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms")
+=======
+            Log.d(
+
+                "register",
+
+                "⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:"
+
+            )
+            activeCoroutines.forEach { info ->
+
+                Log.d(
+
+                    "register",
+
+                    "📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms"
+
+                )
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             }
         }
     }
@@ -106,6 +179,7 @@ class LoginViewModel @Inject constructor(
         ) {
             try {
                 sessionManager.clearTokens()
+<<<<<<< HEAD
                 clearUserData()
                 // Navigate to login screen
                 _navigateToLogin.send(Unit)
@@ -113,6 +187,19 @@ class LoginViewModel @Inject constructor(
                 Timber.tag("Logout").d("Logout process completed successfully.")
             } catch (e: Exception) {
                 Timber.tag("Logout").e(e, "Error during logout: ${e.localizedMessage}")
+=======
+
+                clearUserData()
+
+                _isLoggedIn.value = false
+
+                // Navigate to login screen
+                _navigateToLogin.send(Unit)
+
+                Log.d("Logout", "Logout process completed successfully.")
+            } catch (e: Exception) {
+                Log.e("Logout", "Error during logout: ${e.localizedMessage}", e)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             }
         }
     }
@@ -186,6 +273,7 @@ class LoginViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+<<<<<<< HEAD
                             val accessToken = loginResult.data!!.data.token
                             val refreshToken = loginResult.data.data.refreshToken
                             val user = loginResult.data.data.user
@@ -193,6 +281,13 @@ class LoginViewModel @Inject constructor(
                             authUseCase.authUseCase.storeLoggedInUser(user)
                             _authUiState.value = _authUiState.value.copy(
                                 isLoading = false,
+=======
+
+                            _authUiState.value = _authUiState.value.copy(
+
+                                isLoading = false,
+
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                                 errorMessage = null
 
                             )
@@ -233,6 +328,10 @@ class LoginViewModel @Inject constructor(
                         emailInput = event.email,
 
                         emailError = emailError
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     )
                 }
             }
@@ -255,6 +354,7 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.PasswordChanged -> {
 
                 coroutineDebugger.launchTracked(
+<<<<<<< HEAD
                     scope = viewModelScope,
                     tag = "PasswordValidation"
                 ) {
@@ -262,6 +362,21 @@ class LoginViewModel @Inject constructor(
                         if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
                             "Invalid password format"
                         } else ""
+=======
+
+                    scope = viewModelScope,
+
+                    tag = "PasswordValidation"
+
+                ) {
+                    val passwordError =
+                        if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
+
+                            "Invalid password format"
+
+                        } else ""
+
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
                     _authUiState.value = _authUiState.value.copy(
 
                         passwordInput = event.password,
@@ -291,10 +406,17 @@ class LoginViewModel @Inject constructor(
         try {
             productDao.clearAllProducts()
             categoryDao.clearAllCategory()
+<<<<<<< HEAD
             userDao.deleteUser()
             Timber.tag("Logout").d("User data cleared successfully.")
         } catch (e: Exception) {
             Timber.tag("Logout").e(e, "Failed to clear user data: ${e.localizedMessage}")
+=======
+            userStoreManager.clearUserData()
+            Log.d("Logout", "User data cleared successfully.")
+        } catch (e: Exception) {
+            Log.e("Logout", "Failed to clear user data: ${e.localizedMessage}", e)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             throw e
         }
     }

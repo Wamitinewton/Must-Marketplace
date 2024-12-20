@@ -4,7 +4,10 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.OtpRequest
+<<<<<<< HEAD
 import com.example.mustmarket.features.auth.domain.model.RefreshToken
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
@@ -21,6 +24,7 @@ class AuthUseCase(private val repository: AuthRepository) {
 
     suspend fun resetPasswordUseCase(otpRequest: OtpRequest) = repository.resetPassword(otpRequest)
 
+<<<<<<< HEAD
     suspend fun refreshTokens(refreshToken: RefreshToken) = repository.refreshTokenFromServer()
 
     suspend fun storeTokens(accessToken: String, refreshToken: String) = repository.storeAuthTokens(accessToken, refreshToken)
@@ -34,5 +38,7 @@ class AuthUseCase(private val repository: AuthRepository) {
     fun getRefreshToken() = repository.getRefreshToken()
 
 
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 
 }

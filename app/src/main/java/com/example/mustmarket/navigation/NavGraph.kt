@@ -14,8 +14,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+<<<<<<< HEAD
 import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
+=======
+import com.example.mustmarket.features.account.presentation.view.AccountScreen
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
@@ -26,6 +31,10 @@ import com.example.mustmarket.features.home.presentation.view.productList.AllPro
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+<<<<<<< HEAD
+=======
+import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
@@ -37,12 +46,22 @@ import com.example.mustmarket.features.splash.view.SplashScreen
 fun SetUpNavGraph(
     navController: NavHostController,
     productViewModel: AllProductsViewModel = hiltViewModel(),
+<<<<<<< HEAD
     modifier: Modifier
 ) {
 
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
+=======
+    sharedViewModel: SharedViewModel = hiltViewModel(),
+    modifier: Modifier
+) {
+    val context = LocalContext.current
+    NavHost(
+        navController = navController,
+        startDestination = Screen.HomeScreen.route,
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -70,6 +89,7 @@ fun SetUpNavGraph(
             }) {
             HomeScreen(
                 navController = navController,
+<<<<<<< HEAD
                 allProductsViewModel = productViewModel
             )
         }
@@ -77,16 +97,32 @@ fun SetUpNavGraph(
             arguments = listOf(
                 navArgument("productId") { type = NavType.IntType }
             ),
+=======
+                allProductsViewModel = productViewModel,
+                sharedViewModel = sharedViewModel
+            )
+        }
+        composable(route = Screen.Detail.route,
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left, tween(500)
                 )
+<<<<<<< HEAD
             }) { backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
             ProductDetailsScreen(
                 productId = productId,
                 navController = navController,
                 onBackPressed = { navController.popBackStack() }
+=======
+            }) {
+            ProductDetailsScreen(
+                navController = navController,
+                onBackPressed = { navController.popBackStack() },
+                sharedViewModel = sharedViewModel
+
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             )
         }
         composable(route = Screen.ChatScreen.route,
@@ -94,11 +130,17 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
+<<<<<<< HEAD
             }) {
             ChatScreen(
                 navController = navController
             )
         }
+=======
+            }) { ChatScreen(
+                navController = navController
+            ) }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -127,6 +169,10 @@ fun SetUpNavGraph(
                 )
             }) {
             UploadProducts(
+<<<<<<< HEAD
+=======
+                userStoreManager = UserStoreManager(context)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             )
         }
 
@@ -141,7 +187,11 @@ fun SetUpNavGraph(
         }
 
         composable(route = Screen.AllProductsList.route) {
+<<<<<<< HEAD
             AllProductsListScreen(navController = navController)
+=======
+            AllProductsListScreen(navController,sharedViewModel)
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
         }
     }
 }

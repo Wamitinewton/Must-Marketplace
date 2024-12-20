@@ -19,7 +19,11 @@ var version:Int = 0
 
 @Database(
     entities = [ProductListingEntity::class, CategoryListingEntity::class, BookmarkedProductEntity::class, UserEntity::class],
+<<<<<<< HEAD
     version = 5,
+=======
+    version = 4,
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     exportSchema = true
 )
 @TypeConverters(DataConverters::class)

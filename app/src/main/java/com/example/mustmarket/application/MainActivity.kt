@@ -12,8 +12,13 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
+<<<<<<< HEAD
 import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.sharedComposable.BottomNavBar
+=======
+import com.example.mustmarket.core.sharedComposable.BottomNavBar
+import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.navigation.SetUpNavGraph
 import com.example.mustmarket.ui.theme.ThemeUtils.MustMarketTheme
@@ -25,7 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CoroutineDebugger.enableDebugging()
@@ -33,7 +41,10 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberNavController()
+<<<<<<< HEAD
 
+=======
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
             MustMarketTheme {
                 Scaffold(
                     bottomBar = {
@@ -54,9 +65,14 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+<<<<<<< HEAD
 
         }
     }
 
+=======
+        }
+    }
+>>>>>>> f3e2d5b65c670c1fee62838628eedb0d5e05fdfa
 }
 
