@@ -51,7 +51,7 @@ fun ChatListItem(
         modifier = Modifier
             .background(Color.DarkGray)
             .clickable {
-                //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+                navController.navigate(Screen.ChatScreen.createRoute(chat.id))
             }
             .fillMaxWidth()
             .padding(8.dp),
