@@ -26,6 +26,7 @@ import com.example.mustmarket.features.merchant.products.data.remote.UploadProdu
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +38,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApi,
