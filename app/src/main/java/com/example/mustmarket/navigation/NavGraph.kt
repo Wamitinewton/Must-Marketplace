@@ -14,13 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.chat.view.ChatScreen
+import com.example.mustmarket.features.chatsList.view.ChatListScreen
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
@@ -41,10 +42,10 @@ fun SetUpNavGraph(
     sharedViewModel: SharedViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-    val context = LocalContext.current
+
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route,
+        startDestination = Screen.Splash.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composable(route = Screen.SignUp.route, enterTransition = {
@@ -94,9 +95,22 @@ fun SetUpNavGraph(
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
-            }) { ChatScreen(
+            }) {
+            ChatScreen(
                 navController = navController
-            ) }
+            )
+        }
+
+        composable(route = Screen.ChatListScreen.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) {
+            ChatListScreen(
+                navController = navController
+            )
+        }
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(
@@ -125,7 +139,6 @@ fun SetUpNavGraph(
                 )
             }) {
             UploadProducts(
-                userStoreManager = UserStoreManager(context)
             )
         }
 

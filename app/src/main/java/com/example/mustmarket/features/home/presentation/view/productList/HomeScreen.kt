@@ -46,13 +46,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.sharedComposable.ErrorState
+
 import com.example.mustmarket.core.sharedComposable.shimmer.ProductShimmer
 import com.example.mustmarket.core.sharedComposable.shimmer.ShimmerAnimation
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
+
+import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
+import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -67,6 +74,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -88,17 +96,20 @@ fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     navController: NavController,
+
     sharedViewModel: SharedViewModel
+
+    loginViewModel: LoginViewModel = hiltViewModel()
+
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val userData by viewModel.userData.collectAsState()
-
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = isRefreshing
     )
+    val user by loginViewModel.loggedInUser.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -164,7 +175,7 @@ fun Content(
             ) {
 
                 item {
-                    HeaderBar(userName = userData?.name)
+                    HeaderBar(userName = user?.name)
                 }
 
                 item { Promotions() }
@@ -219,7 +230,7 @@ fun Content(
                     uiState.errorMessage?.isNotEmpty() == true -> {
                         item {
                             uiState.errorMessage?.let { ErrorState(message = it) }
-                            uiState.errorMessage?.let { Log.d("Error", it) }
+                            uiState.errorMessage?.let { Timber.tag("Error").d(it) }
                         }
                     }
 

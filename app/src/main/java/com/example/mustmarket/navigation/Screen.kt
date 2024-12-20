@@ -24,12 +24,19 @@ sealed class Screen(
     data object Otp: Screen("otp_screen")
     data object ProductSearch: Screen("product_search_screen")
     data object AllProductsList: Screen("all_products_list_screen")
-    data object ChatScreen: Screen("chat_screen")
+    data object ChatListScreen: Screen("chat_list_screen")
+    data object ChatScreen : Screen("chat_screen/{chatId}/{userId?}") {
+        fun createRoute(chatId: String, userId: String? = null): String {
+            return if (userId != null) "chat_screen/$chatId/$userId"
+            else "chat_screen/$chatId"
+        }
+    }
+
 
     object BottomNavItems {
         val items = listOf(
             HomeScreen,
-            ChatScreen,
+            ChatListScreen,
             Bookmarks,
             Favourites,
             Profile,
