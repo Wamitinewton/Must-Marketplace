@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.home.presentation.view.productDetails
 
-import android.util.Log
 import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -60,17 +58,11 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.core.sharedComposable.BottomNavBar
 import com.example.mustmarket.core.sharedComposable.CustomImageLoader
-import com.example.mustmarket.core.sharedComposable.ErrorState
-import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
-import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
-import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
-import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
@@ -225,14 +217,6 @@ fun ProductDetailsContent(
 
     Scaffold(
         scaffoldState = rememberScaffoldState(),
-        bottomBar = {
-            BottomAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = 8.dp,
-            ) {
-                BottomNavBar(modifier = Modifier.fillMaxWidth(), navController = navController)
-            }
-        },
         topBar = {
             TopAppBar(
                 title = {

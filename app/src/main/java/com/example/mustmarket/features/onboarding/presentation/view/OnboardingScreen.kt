@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mustmarket.core.adaptableLayout.ResponsiveSizeUtil
 import com.example.mustmarket.core.sharedComposable.LoopReverseLottieLoader
 import com.example.mustmarket.features.onboarding.data.pages
 import com.example.mustmarket.navigation.Screen
@@ -64,7 +65,7 @@ fun OnboardingScreen(
             ) {
                 LoopReverseLottieLoader(
                     lottieFile = pages[page].content.animation,
-                    modifier = Modifier.size(300.dp)
+                    modifier = Modifier.size(ResponsiveSizeUtil.responsiveDimension(baseDimension = 300.dp))
                 )
 
                 Text(
@@ -73,9 +74,9 @@ fun OnboardingScreen(
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     softWrap = true,
-                    modifier = Modifier.padding(horizontal = 40.dp)
+                    modifier = Modifier.padding(horizontal = ResponsiveSizeUtil.responsivePadding(basePadding = 20.dp))
                 )
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(ResponsiveSizeUtil.responsivePadding(20.dp)))
                 Text(
                     text = stringResource(id = pages[page].content.text),
                     style = MaterialTheme.typography.body1.copy(
@@ -83,7 +84,7 @@ fun OnboardingScreen(
                     ),
                     textAlign = TextAlign.Center,
                     softWrap = true,
-                    modifier = Modifier.padding(horizontal = 40.dp)
+                    modifier = Modifier.padding(horizontal = ResponsiveSizeUtil.responsivePadding(basePadding = 20.dp))
                 )
             }
         }

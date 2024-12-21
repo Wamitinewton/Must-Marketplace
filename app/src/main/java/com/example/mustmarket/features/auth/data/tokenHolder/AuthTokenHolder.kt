@@ -6,7 +6,7 @@ object AuthTokenHolder {
     var accessToken: String? = null
     var refreshToken: String? = null
 
-    fun initialize(sessionManager: SessionManager) {
+    fun initializeTokens(sessionManager: SessionManager) {
         accessToken = sessionManager.fetchAccessToken()
         refreshToken = sessionManager.fetchRefreshToken()
     }

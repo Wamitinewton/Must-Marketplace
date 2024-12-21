@@ -6,15 +6,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen

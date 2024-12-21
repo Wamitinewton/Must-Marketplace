@@ -16,28 +16,22 @@ class HomeUseCases(
 ) {
     fun getBookmarkedProducts() = bookmarksRepository.getBookmarkedProducts()
 
-    fun isProductBookmarked(productId: Int) = bookmarksRepository.isProductBookmarked(productId)
-
     suspend fun toggleBookmark(product: NetworkProduct) =
         bookmarksRepository.toggleBookmark(product)
 
     suspend fun removeProduct(product: BookmarkedProductEntity) =
         bookmarksRepository.removeProduct(product)
 
-    suspend fun refreshProducts() = productRepository.refreshProducts()
-
-    suspend fun shouldRefresh() = productRepository.shouldRefresh()
-
     suspend fun getAllProducts(forceRefresh: Boolean) =
         productRepository.getAllProducts(forceRefresh = forceRefresh)
 
-    suspend fun getCategoryBySize(size: Int) = categoryRepository.getCategories(size)
+    suspend fun shouldRefreshProducts() = productRepository.shouldRefresh()
 
-    suspend fun getAllCategories() = categoryRepository.getAllCategories()
+    suspend fun shouldRefreshCategories() = categoryRepository.shouldRefresh()
 
-    suspend fun refreshCategories() = categoryRepository.refreshCategories()
-
-    suspend fun getProductsById(productId: Int) = productRepository.getProductsById(productId)
+    suspend fun getAllCategories(shouldRefresh: Boolean) = categoryRepository.getAllCategories(
+        shouldRefresh = shouldRefresh
+    )
 
     suspend fun searchProducts(query: String) = searchProductsRepository.searchProducts(query)
 

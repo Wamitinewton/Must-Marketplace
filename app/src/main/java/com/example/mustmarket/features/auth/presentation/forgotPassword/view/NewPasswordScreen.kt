@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.core.sharedComposable.PasswordInput
 import com.example.mustmarket.core.sharedComposable.PasswordStrengthIndicator
 import com.example.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 
@@ -73,6 +74,7 @@ fun NewPasswordScreen(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 32.dp)
         )
+
 
         OutlinedTextField(
             value = newPassword,

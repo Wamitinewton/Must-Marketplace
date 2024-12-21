@@ -6,15 +6,11 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
-import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
 import com.example.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,33 +23,21 @@ class AllProductsViewModel @Inject constructor(
 
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
-    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.
-        onStart {
-            loadProducts(forceRefresh = true)
-        }
-        .stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        AllProductsViewModelState()
-    )
-
-    private val _productDetailsState =
-        MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
-    val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
+    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
 
 
     init {
-//        initializeProducts()
+        viewModelScope.launch {
+            initiateProductLoading()
+        }
     }
 
-
-
-    private fun initializeProducts() {
-        viewModelScope.launch {
-            val currentProducts = productsUiState.value.products
-            if (currentProducts.isEmpty()) {
-                loadProducts(forceRefresh = true)
-            }
+    private suspend fun initiateProductLoading() {
+        val loadRemote = productsUseCases.homeUseCases.shouldRefreshProducts()
+        if (loadRemote) {
+            loadProducts(forceRefresh = true)
+        } else {
+            loadProducts(forceRefresh = false)
         }
     }
 
@@ -63,35 +47,12 @@ class AllProductsViewModel @Inject constructor(
         }
     }
 
-
-    fun loadProductDetails(productId: Int) {
-        viewModelScope.launch {
-            productsUseCases.homeUseCases.getProductsById(productId)
-                .collect { result ->
-                    _productDetailsState.value = when (result) {
-                        is Resource.Success -> result.data?.let {
-                            ProductDetailsState.Success(it)
-                        } ?: ProductDetailsState.Error("Product not found")
-
-                        is Resource.Error -> ProductDetailsState.Error(
-                            result.message ?: "An unexpected error occurred"
-                        )
-
-                        is Resource.Loading -> ProductDetailsState.Loading
-                    }
-                }
-        }
-    }
-
     private fun loadProducts(forceRefresh: Boolean) {
         viewModelScope.launch {
             _viewModelState.update { it.copy(isLoading = true) }
             productsUseCases.homeUseCases.getAllProducts(forceRefresh = forceRefresh)
                 .collect { result ->
                     handleProductsResult(result)
-                    if (forceRefresh) {
-                        _viewModelState.update { it.copy(isRefreshing = false) }
-                    }
                 }
         }
     }

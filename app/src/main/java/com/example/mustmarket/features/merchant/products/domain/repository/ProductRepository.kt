@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.merchant.products.domain.repository
 
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.merchant.products.domain.models.UploadData
 import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadImageListOfImageResponse
 import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadProductResponse
 import com.example.mustmarket.features.merchant.products.data.remote.uploadResponse.UploadSingleImageResponse

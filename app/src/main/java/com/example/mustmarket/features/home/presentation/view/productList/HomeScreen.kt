@@ -1,7 +1,5 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
-import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,15 +48,9 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.sharedComposable.ErrorState
-
 import com.example.mustmarket.core.sharedComposable.shimmer.ProductShimmer
-import com.example.mustmarket.core.sharedComposable.shimmer.ShimmerAnimation
-import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
-
-import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
-import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
-
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
@@ -90,14 +81,13 @@ fun HomeScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     navController: NavController,
 
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
 
     loginViewModel: LoginViewModel = hiltViewModel()
 
@@ -199,21 +189,25 @@ fun Content(
                                 fontSize = 18.sp
                             )
 
-                            Text(
-                                modifier = Modifier
-                                    .clickable(
-                                        onClick = {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                key = "products",
-                                                value = uiState.products
-                                            )
-                                            navController.navigate(Screen.AllProductsList.route)
-                                        }
-                                    ),
-                                text = "See all",
-                                color = ThemeUtils.AppColors.Text.themed(),
-                                fontSize = 16.sp
-                            )
+                           if (uiState.products.isNotEmpty() && uiState.errorMessage.isNullOrEmpty()) {
+                               Text(
+                                   modifier = Modifier
+                                       .clickable(
+                                           onClick = {
+                                               val products = uiState.products
+                                               sharedViewModel.addProductList(products)
+                                               navController.navigate(Screen.AllProductsList.route) {
+                                                   popUpTo(Screen.AllProductsList.route) {
+                                                       inclusive = true
+                                                   }
+                                               }
+                                           }
+                                       ),
+                                   text = "See all",
+                                   color = ThemeUtils.AppColors.Text.themed(),
+                                   fontSize = 16.sp
+                               )
+                           }
                         }
                     }
                 }

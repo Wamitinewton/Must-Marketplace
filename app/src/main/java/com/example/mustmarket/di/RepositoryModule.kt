@@ -21,12 +21,10 @@ import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
-import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,9 +54,16 @@ object RepositoryModule {
     @Singleton
     fun provideCategoryRepository(
         categoryProductsApi: ProductsApi,
-        dao: CategoryDao
+        dao: CategoryDao,
+        @IODispatcher ioDispatcher: CoroutineDispatcher,
+        retryUtil: RetryUtil
     ): CategoryRepository {
-        return CategoryRepositoryImpl(categoryApi = categoryProductsApi, dao = dao)
+        return CategoryRepositoryImpl(
+            categoryApi = categoryProductsApi,
+            dao = dao,
+            ioDispatcher = ioDispatcher,
+            retryUtil = retryUtil
+        )
     }
 
     @Provides
@@ -66,18 +71,14 @@ object RepositoryModule {
     fun provideAllProductsRepository(
         allProductsApi: ProductsApi,
         dao: ProductDao,
-        preferences: SecureProductStorage,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        retryUtil: RetryUtil,
-        sessionManager: SessionManager
+        retryUtil: RetryUtil
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
-            preferences = preferences,
             ioDispatcher = ioDispatcher,
-            retryUtil = retryUtil,
-            sessionManager = sessionManager
+            retryUtil = retryUtil
         )
     }
 

@@ -1,14 +1,11 @@
 package com.example.mustmarket.di
 
 import android.app.Application
-import android.content.Context
 import androidx.room.Room
 import com.example.mustmarket.database.database.AppDatabase
-import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -44,12 +41,5 @@ object LocalModule {
     @Singleton
     fun provideUserDao(db: AppDatabase) = db.userDao
 
-    @Provides
-    @Singleton
-    fun provideSecuredProductStorage(
-        @ApplicationContext context: Context
-    ): SecureProductStorage {
-        return SecureProductStorage(context)
-    }
 
 }

@@ -12,7 +12,7 @@ data class ForgotPasswordState(
     val isVerificationLoading: Boolean = false,
     val isOtpSent: Boolean = false,
     val isPasswordReset: Boolean = false,
-    val currentScreen: ForgotPasswordScreen = ForgotPasswordScreen.EMAIL_INPUT,
+    val currentScreen: ForgotPasswordScreen = ForgotPasswordScreen.OTP_INPUT,
     val emailError: String? = null,
     val otpError: String? = null,
     val passwordError: String? = null,

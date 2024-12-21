@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
-import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent

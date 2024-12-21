@@ -27,14 +27,23 @@ class ProductCategoryViewModel @Inject constructor(
     val uiState = _viewModelState.asStateFlow()
 
     init {
-        getAllCategories()
+        viewModelScope.launch {
+            initiateCategoryLoading()
+        }
+    }
+
+    private suspend fun initiateCategoryLoading() {
+        val loadRemote = productUseCases.homeUseCases.shouldRefreshCategories()
+        if (loadRemote) {
+            getAllCategories(forceRefresh = true)
+        } else {
+            getAllCategories(forceRefresh = false)
+        }
     }
 
     fun onCategoryEvent(event: CategoryEvent) {
         when (event) {
-            is CategoryEvent.Refresh -> {
-                refreshCategories()
-            }
+            is CategoryEvent.Refresh -> getAllCategories(forceRefresh = true)
 
             is CategoryEvent.CategoryUploadEvent -> {
                 if (validateCategory(event.name, event.uri)) {
@@ -130,36 +139,16 @@ class ProductCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun getAllCategories() {
+    private fun getAllCategories(forceRefresh: Boolean) {
         viewModelScope.launch {
-            productUseCases.homeUseCases.getAllCategories()
-                .collect { result ->
-                    if (result is Resource.Success && result.data.isNullOrEmpty()) {
-                        refreshCategories()
-                    } else {
-                        handleCategoriesResult(result)
-                    }
-                }
-        }
-    }
-
-    private fun refreshCategories() {
-        viewModelScope.launch {
-            productUseCases.homeUseCases.refreshCategories()
+            _viewModelState.update { it.copy(isLoading = true) }
+            productUseCases.homeUseCases.getAllCategories(shouldRefresh = forceRefresh)
                 .collect { result ->
                     handleCategoriesResult(result)
                 }
         }
     }
 
-    fun getCategoriesWithLimit(size: Int) {
-        viewModelScope.launch {
-            productUseCases.homeUseCases.getCategoryBySize(size)
-                .collect { result ->
-                    handleCategoriesResult(result)
-                }
-        }
-    }
 
     private fun handleCategoriesResult(result: Resource<List<ProductCategory>>) {
         _viewModelState.update { state ->
@@ -177,7 +166,7 @@ class ProductCategoryViewModel @Inject constructor(
                 )
 
                 is Resource.Loading -> state.copy(
-                    isLoading = true
+                    isLoading = result.isLoading
                 )
             }
         }

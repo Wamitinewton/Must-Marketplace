@@ -20,9 +20,6 @@ import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.data.mapper.toAuthedUser
 import com.example.mustmarket.features.auth.data.mapper.toLoginResult
 import com.example.mustmarket.features.auth.data.tokenHolder.AuthTokenHolder
-import com.example.mustmarket.features.auth.domain.model.LoginData
-import com.example.mustmarket.features.auth.domain.model.RefreshToken
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -40,7 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     init {
         runBlocking {
-            AuthTokenHolder.initialize(sessionManger)
+            AuthTokenHolder.initializeTokens(sessionManger)
             Timber.d("Successfully initialized")
         }
     }
@@ -178,6 +175,15 @@ class AuthRepositoryImpl @Inject constructor(
         val savedAccessToken = sessionManger.fetchAccessToken()
         val savedRefreshToken = sessionManger.fetchRefreshToken()
         Timber.d("Tokens saved successfully: AccessToken=$savedAccessToken, RefreshToken=$savedRefreshToken")
+    }
+
+    override suspend fun updateAuthTokens(accessToken: String, refreshToken: String) {
+        AuthTokenHolder.accessToken = accessToken
+        AuthTokenHolder.refreshToken = refreshToken
+        sessionManger.updateTokens(
+            accessToken,
+            refreshToken
+        )
     }
 
     override suspend fun getLoggedInUser(): AuthedUser? {

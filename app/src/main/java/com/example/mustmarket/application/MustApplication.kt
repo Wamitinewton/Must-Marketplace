@@ -8,8 +8,8 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.util.DebugLogger
-import com.example.mustmarket.features.auth.data.workmanager.TokenRefreshWorkerFactory
-import com.example.mustmarket.features.auth.data.workmanager.scheduleTokenRefreshWork
+import com.example.mustmarket.features.auth.data.authWorkManager.TokenRefreshWorkerFactory
+import com.example.mustmarket.features.auth.data.authWorkManager.scheduleTokenRefreshWork
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -28,7 +28,7 @@ class MustApplication : Application(), ImageLoaderFactory, Configuration.Provide
         scheduleTokenRefreshWork(this)
     }
 
-    override val workManagerConfiguration: Configuration by lazy {
+    override val workManagerConfiguration: Configuration by lazy(LazyThreadSafetyMode.PUBLICATION) {
         Configuration.Builder()
             .setExecutor(Dispatchers.Default.asExecutor())
             .setWorkerFactory(workerFactory)

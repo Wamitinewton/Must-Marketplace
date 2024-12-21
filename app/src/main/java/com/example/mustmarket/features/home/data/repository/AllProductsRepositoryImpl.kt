@@ -3,18 +3,15 @@ package com.example.mustmarket.features.home.data.repository
 import coil.network.HttpException
 import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.di.IODispatcher
-import com.example.mustmarket.features.auth.data.datastore.SessionManager
 import com.example.mustmarket.database.dao.ProductDao
+import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl.CacheBatch.BATCH_SIZE
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
-import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.BATCH_SIZE
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.CACHE_DURATION
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,26 +23,19 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.hours
 
 class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
-    private val preferences: SecureProductStorage,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val retryUtil: RetryUtil,
-    private val sessionManager: SessionManager
+    private val retryUtil: RetryUtil
 ) : AllProductsRepository {
 
 
     private val cacheMutex = Mutex()
-
-    override suspend fun shouldRefresh(): Boolean = withContext(ioDispatcher) {
-        val lastUpdate = preferences.getLastUpdateTimestamp()
-        val currentTime = System.currentTimeMillis()
-        val cacheExpired = (currentTime - lastUpdate) > CACHE_DURATION.hours.inWholeMilliseconds
-        val cacheEmpty = dao.getAllProducts().firstOrNull()?.isEmpty() ?: true
-        cacheEmpty || cacheExpired
+    override suspend fun shouldRefresh(): Boolean {
+        val products = dao.getAllProducts().firstOrNull()
+        return products.isNullOrEmpty()
     }
 
     override suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>> =
@@ -70,7 +60,6 @@ class AllProductsRepositoryImpl @Inject constructor(
     private suspend fun fetchAndProcessProducts(): Resource<List<NetworkProduct>> =
         withContext(ioDispatcher) {
             try {
-                val tokenResult = sessionManager.fetchAccessToken()
                 val response = retryUtil.executeWithRetry { productsApi.getAllProducts() }
 
                 if (response.message == "Success") {
@@ -86,7 +75,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                         }
                     }
 
-                    preferences.updateLastUpdateTimestamp()
 
                     val freshProducts = dao.getAllProducts().firstOrNull()
                     if (!freshProducts.isNullOrEmpty()) {
@@ -123,18 +111,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                 emit(handleError(e))
             }
         }.flowOn(ioDispatcher)
-
-    override suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
-        emit(Resource.Loading(true))
-        try {
-            cacheMutex.withLock {
-                emit(fetchAndProcessProducts())
-            }
-            emit(Resource.Loading(false))
-        } catch (e: Exception) {
-            emit(handleError(e))
-        }
-    }.flowOn(ioDispatcher)
 
 
     private fun <T> handleError(exception: Throwable): Resource<T> {

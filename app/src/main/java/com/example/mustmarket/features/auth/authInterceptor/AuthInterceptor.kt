@@ -57,8 +57,6 @@ class AuthInterceptor(context: Context) : Interceptor {
 
             sessionManager.saveRefreshToken(refreshToken)
 
-            sessionManager.updateTokenExpiry()
-
             Timber.tag(TAG).d("access: $accessToken")
 
         } else {

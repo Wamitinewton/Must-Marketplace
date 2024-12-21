@@ -18,8 +18,15 @@ constructor(
     var details by mutableStateOf<NetworkProduct?>(null)
         private set
 
+    var productList by mutableStateOf<List<NetworkProduct>?>(null)
+        private set
+
 
     fun addDetails(newsDetails: NetworkProduct) {
         details = newsDetails
+    }
+
+    fun addProductList(products: List<NetworkProduct>) {
+        productList = products
     }
 }

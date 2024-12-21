@@ -117,6 +117,7 @@ fun ProductCard(
 
             Column(
                 modifier = Modifier
+                    .padding(top = 5.dp)
                     .weight(1f)
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween

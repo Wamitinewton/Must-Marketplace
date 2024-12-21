@@ -1,11 +1,9 @@
 package com.example.mustmarket.features.merchant.products.presentation.viewModel
 
-import  android.content.Context
+import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.features.merchant.products.domain.models.UploadProductRequest
@@ -13,6 +11,7 @@ import com.example.mustmarket.features.merchant.products.presentation.event.Uplo
 import com.example.mustmarket.features.merchant.products.presentation.state.UploadMultipleImageState
 import com.example.mustmarket.features.merchant.products.presentation.state.UploadProductUiState
 import com.example.mustmarket.features.merchant.products.presentation.state.UploadSingleImageUrlState
+import com.example.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -39,9 +39,7 @@ fun AllProductsListScreen(
     sharedViewModel: SharedViewModel
 ) {
 
-    val products = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<List<NetworkProduct>>("products") ?: emptyList()
+    val products = sharedViewModel.productList
 
     Scaffold(
         topBar = {
@@ -99,31 +97,36 @@ fun AllProductsListScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(products) { product ->
-                ProductCard(
-                    product = product,
-                    onClick = {
-                        val productDetails = NetworkProduct(
-                            name = product.name,
-                            id = product.id,
-                            brand = product.brand,
-                            price = product.price,
-                            images = product.images,
-                            category = product.category,
-                            userData = product.userData,
-                            inventory = product.inventory,
-                            description = product.description
-                        )
-                        sharedViewModel.addDetails(productDetails)
-                        navController.navigate(Screen.Detail.route){
-                            popUpTo(Screen.Detail.route){
-                                inclusive = true
+            when(products) {
+                is List<NetworkProduct> -> {
+                    items(products) { product ->
+                        ProductCard(
+                            product = product,
+                            onClick = {
+                                val productDetails = NetworkProduct(
+                                    name = product.name,
+                                    id = product.id,
+                                    brand = product.brand,
+                                    price = product.price,
+                                    images = product.images,
+                                    category = product.category,
+                                    userData = product.userData,
+                                    inventory = product.inventory,
+                                    description = product.description
+                                )
+                                sharedViewModel.addDetails(productDetails)
+                                navController.navigate(Screen.Detail.route){
+                                    popUpTo(Screen.Detail.route){
+                                        inclusive = true
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
-                )
+                }
             }
         }
     }
 
 }
+
