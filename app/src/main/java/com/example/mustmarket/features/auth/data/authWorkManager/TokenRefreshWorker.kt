@@ -18,7 +18,7 @@ class TokenRefreshWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
-        const val WORK_NAME = "TokenRefreshWorker"
+        const val TOKEN_WORK_NAME = "TokenRefreshWorker"
     }
 
     override suspend fun doWork(): Result {

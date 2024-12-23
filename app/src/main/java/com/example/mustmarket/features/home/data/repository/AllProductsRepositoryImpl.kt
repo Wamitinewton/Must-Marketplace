@@ -12,6 +12,7 @@ import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl.CacheBatch.BATCH_SIZE
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
+import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,8 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val retryUtil: RetryUtil
+    private val retryUtil: RetryUtil,
+    private val syncManager: ProductSyncManager
 ) : AllProductsRepository {
 
 
@@ -75,6 +77,7 @@ class AllProductsRepositoryImpl @Inject constructor(
                         }
                     }
 
+                    syncManager.updateLastSyncTimeStamp()
 
                     val freshProducts = dao.getAllProducts().firstOrNull()
                     if (!freshProducts.isNullOrEmpty()) {
@@ -111,6 +114,11 @@ class AllProductsRepositoryImpl @Inject constructor(
                 emit(handleError(e))
             }
         }.flowOn(ioDispatcher)
+
+    override suspend fun manageCache() {
+        val clearCache = dao.clearAllProducts()
+        return clearCache
+    }
 
 
     private fun <T> handleError(exception: Throwable): Resource<T> {

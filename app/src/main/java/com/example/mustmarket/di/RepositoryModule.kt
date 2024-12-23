@@ -21,6 +21,7 @@ import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
+import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
@@ -72,13 +73,15 @@ object RepositoryModule {
         allProductsApi: ProductsApi,
         dao: ProductDao,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        retryUtil: RetryUtil
+        retryUtil: RetryUtil,
+        syncManager: ProductSyncManager
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
             ioDispatcher = ioDispatcher,
-            retryUtil = retryUtil
+            retryUtil = retryUtil,
+            syncManager = syncManager
         )
     }
 
