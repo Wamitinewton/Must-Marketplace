@@ -1,6 +1,7 @@
 package com.example.mustmarket.application
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -21,6 +22,7 @@ class MustApplication : Application(), ImageLoaderFactory, Configuration.Provide
 
     @Inject
     lateinit var workerFactory: TokenRefreshWorkerFactory
+
 
     override fun onCreate() {
         super.onCreate()

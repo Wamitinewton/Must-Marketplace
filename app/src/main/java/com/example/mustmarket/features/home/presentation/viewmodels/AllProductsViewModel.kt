@@ -47,7 +47,7 @@ class AllProductsViewModel @Inject constructor(
         }
     }
 
-    private fun loadProducts(forceRefresh: Boolean) {
+     private fun loadProducts(forceRefresh: Boolean) {
         viewModelScope.launch {
             _viewModelState.update { it.copy(isLoading = true) }
             productsUseCases.homeUseCases.getAllProducts(forceRefresh = forceRefresh)

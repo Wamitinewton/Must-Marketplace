@@ -112,6 +112,11 @@ class AllProductsRepositoryImpl @Inject constructor(
             }
         }.flowOn(ioDispatcher)
 
+    override suspend fun manageCache() {
+       val clearCache =  dao.clearAllProducts()
+        return clearCache
+    }
+
 
     private fun <T> handleError(exception: Throwable): Resource<T> {
         return when (exception) {

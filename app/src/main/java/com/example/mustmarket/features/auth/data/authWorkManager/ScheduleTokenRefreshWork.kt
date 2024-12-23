@@ -27,7 +27,7 @@ fun scheduleTokenRefreshWork(context: Context) {
 
     WorkManager.getInstance(context)
         .enqueueUniquePeriodicWork(
-            TokenRefreshWorker.WORK_NAME,
+            TokenRefreshWorker.TOKEN_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             tokenRefreshWorkRequest
         )

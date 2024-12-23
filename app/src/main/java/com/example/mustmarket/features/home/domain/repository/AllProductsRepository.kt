@@ -11,4 +11,6 @@ interface AllProductsRepository {
 
     suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>>
 
+    suspend fun manageCache()
+
 }
