@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chatsList.presentation
+package com.example.mustmarket.features.inbox.chatsList.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,20 +38,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
-import com.example.mustmarket.features.chatsList.model.Chat
+import com.example.mustmarket.features.inbox.chatsList.model.Chat
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.gray01
 
 @Composable
 fun ChatListItem(
     chat: Chat,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = Modifier
             .background(Color.DarkGray)
             .clickable {
-                //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+                navController.navigate(Screen.ChatScreen.createRoute(chat.id))
             }
             .fillMaxWidth()
             .padding(8.dp),
@@ -104,7 +105,7 @@ fun ChatListItem(
             // Username and last message
             Column {
                 Text(
-                    text = chat.username ?: "Unknown",
+                    text = chat.contactName ?: "Unknown",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = Color.White

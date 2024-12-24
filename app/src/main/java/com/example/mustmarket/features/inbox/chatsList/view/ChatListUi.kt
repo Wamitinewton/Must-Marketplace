@@ -1,7 +1,8 @@
-package com.example.mustmarket.features.chatsList.view
+package com.example.mustmarket.features.inbox.chatsList.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,19 +31,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
-import com.example.mustmarket.features.chatsList.presentation.ChatListItem
-import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
+import com.example.mustmarket.features.inbox.chatsList.presentation.ChatListItem
+import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
+import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.gray01
 import com.example.mustmarket.ui.theme.greenishA
 
 @Composable
 fun ChatListScreen(
     navController: NavController,
-    viewModel: ChatListViewModel
+    chatListViewModel: ChatListViewModel = viewModel()
 ) {
-    val chats by viewModel.chats.observeAsState(emptyList())
+
+    val activeChats by chatListViewModel.activeChats.observeAsState(emptyList())
 
     Scaffold(
         backgroundColor = greenishA,
@@ -101,7 +105,7 @@ fun ChatListScreen(
                 modifier = Modifier
                     .padding(bottom = 50.dp),
                 onClick = {
-                    //navController.navigate(ChatRoutes.NewChat.route)
+                    navController.navigate(Screen.NewChat.route)
                 },
                 backgroundColor = MaterialTheme.colors.primary
             ) {
@@ -112,9 +116,17 @@ fun ChatListScreen(
             }
         }
     ) { padding ->
-        LazyColumn {
-            items(chats) { chat ->
+        LazyColumn (
+            modifier = Modifier
+                .padding(padding)
+        ){
+            items(activeChats) { chat ->
                 ChatListItem(
+                    modifier = Modifier
+                        .clickable {
+                            navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+                        }
+                        .padding(16.dp),
                     chat = chat,
                     navController = navController
                 )

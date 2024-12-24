@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chat.presentation
+package com.example.mustmarket.features.inbox.chat.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -28,12 +28,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mustmarket.features.inbox.chat.viewModel.ChatViewModel
 import com.example.mustmarket.ui.theme.greenishA
 
 @Composable
 fun MessageInput(
-    onMessageSent: (String) -> Unit
+    onMessageSent: (String) -> Unit,
+    currentUser: String
 ) {
+    val chatViewModel: ChatViewModel = viewModel()
     var message by remember { mutableStateOf("") }
 
     Row(
@@ -91,7 +95,8 @@ fun MessageInput(
                 ,
             onClick = {
                 if (message.isNotBlank()) {
-                    onMessageSent(message)
+                    chatViewModel.sendMessage(currentUser, message)
+                    //onMessageSent(message)
                     message = "" // Clear the input
                 }
             }

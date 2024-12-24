@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chat.presentation
+package com.example.mustmarket.features.inbox.chat.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.example.mustmarket.features.chat.domain.ChatMessage
+import com.example.mustmarket.features.inbox.chat.domain.ChatMessage
 import com.example.mustmarket.ui.theme.Purple700
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed

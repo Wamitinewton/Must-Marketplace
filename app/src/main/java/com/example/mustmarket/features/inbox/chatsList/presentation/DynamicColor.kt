@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chatsList.presentation
+package com.example.mustmarket.features.inbox.chatsList.presentation
 
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random

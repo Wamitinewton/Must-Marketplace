@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chat.presentation
+package com.example.mustmarket.features.inbox.chat.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable

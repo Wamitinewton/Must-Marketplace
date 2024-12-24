@@ -109,6 +109,7 @@ dependencies {
     // Hilt DI
     implementation(libs.hilt.android)
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.generativeai)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     kapt("androidx.hilt:hilt-compiler:1.2.0")
@@ -149,6 +150,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.24.10-beta")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.18.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha")
+    implementation ("com.google.accompanist:accompanist-permissions:0.32.0")
 
     // Animation
     implementation("com.airbnb.android:lottie-compose:5.0.3")

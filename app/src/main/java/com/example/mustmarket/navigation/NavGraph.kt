@@ -21,14 +21,16 @@ import com.example.mustmarket.features.auth.presentation.forgotPassword.view.For
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
-import com.example.mustmarket.features.chat.view.ChatScreen
-import com.example.mustmarket.features.chatsList.view.ChatListScreen
-import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
+import com.example.mustmarket.features.inbox.chat.view.ChatScreen
+import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
+import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.example.mustmarket.features.inbox.chat.view.NewChatScreen
+import com.example.mustmarket.features.inbox.chatsList.model.Chat
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
@@ -102,7 +104,7 @@ fun SetUpNavGraph(
             val chatListViewModel: ChatListViewModel = viewModel()
             ChatListScreen(
                 navController = navController,
-                viewModel = chatListViewModel
+                chatListViewModel = chatListViewModel
             )
         }
 
@@ -115,10 +117,19 @@ fun SetUpNavGraph(
                 )
             }) { backStackEntry ->
             val chatId = backStackEntry.arguments?.getString("chatId")
+            val recipientName = backStackEntry.arguments?.getString("recipientName") ?: return@composable
             ChatScreen(
                 navController = navController,
+                chatId = chatId ?: "",
+                currentUser = "user!",
+                contactName = recipientName
             )
         }
+
+        composable(Screen.NewChat.route) {
+            NewChatScreen(navController)
+        }
+
         composable(route = Screen.Bookmarks.route,
             enterTransition = {
                 return@composable slideIntoContainer(

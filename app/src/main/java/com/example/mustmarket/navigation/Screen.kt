@@ -25,10 +25,10 @@ sealed class Screen(
     data object ProductSearch: Screen("product_search_screen")
     data object AllProductsList: Screen("all_products_list_screen")
     data object ChatListScreen: Screen("chat_list_screen")
-    data object ChatScreen : Screen("chat_screen/{chatId}/{userId?}") {
-        fun createRoute(chatId: String, userId: String? = null): String {
-            return if (userId != null) "chat_screen/$chatId/$userId"
-            else "chat_screen/$chatId"
+    data object NewChat : Screen("new_chat_screen")
+    data object ChatScreen : Screen("chat_screen/{chatId}") {
+        fun createRoute(chatId: String): String {
+            return "chat_screen/$chatId"
         }
     }
 
