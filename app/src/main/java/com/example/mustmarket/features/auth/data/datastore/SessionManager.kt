@@ -27,7 +27,6 @@ class SessionManager @Inject constructor(
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-
     fun saveAccessToken(token: String) {
         securePreferences.edit().apply {
             putString(KEY_ACCESS_TOKEN, token)

@@ -1,12 +1,10 @@
 package com.example.mustmarket.core.retryConfig
 
-import com.example.mustmarket.core.util.RepositoryError
-
 data class RetryConfig(
     val maxAttempts: Int = 3,
     val initialDelayMillis: Long = 1000,
+    val maxDelayMillis: Long = 3000,
     val factor: Double = 2.0,
-    val shouldRetry: (Exception) -> Boolean = { it !is RepositoryError }
 ) {
     companion object {
         val DEFAULT = RetryConfig()
