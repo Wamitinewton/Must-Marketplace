@@ -1,4 +1,4 @@
-package com.example.mustmarket.core.threads
+package com.example.mustmarket.core.threadExecutor
 
 enum class OperationType {
     NETWORK,

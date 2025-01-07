@@ -2,8 +2,8 @@ package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
 import com.example.mustmarket.core.retryConfig.RetryUtil
-import com.example.mustmarket.core.threads.MultiThreadingActivity
-import com.example.mustmarket.core.threads.OperationType
+import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
+import com.example.mustmarket.core.threadExecutor.OperationType
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.di.IODispatcher
@@ -11,7 +11,6 @@ import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import com.example.mustmarket.features.home.data.remote.ProductsApi
-import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl.CacheBatch.BATCH_SIZE
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
 import com.example.mustmarket.features.home.workManager.ProductSyncManager
@@ -22,9 +21,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -35,11 +31,9 @@ class AllProductsRepositoryImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val retryUtil: RetryUtil,
     private val syncManager: ProductSyncManager,
-    private val threadingActivity: MultiThreadingActivity
+    private val threadingActivity: ThreadPoolExecutor
 ) : AllProductsRepository {
 
-
-    private val cacheMutex = Mutex()
 
     private companion object {
         const val NETWORK_TIMEOUT = 30000L // 30 seconds

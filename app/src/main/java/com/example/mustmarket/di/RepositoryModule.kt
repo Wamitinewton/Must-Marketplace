@@ -2,7 +2,7 @@ package com.example.mustmarket.di
 
 import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.retryConfig.RetryUtil
-import com.example.mustmarket.core.threads.MultiThreadingActivity
+import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
@@ -76,7 +76,7 @@ object RepositoryModule {
         @IODispatcher ioDispatcher: CoroutineDispatcher,
         retryUtil: RetryUtil,
         syncManager: ProductSyncManager,
-        multiThreadingActivity: MultiThreadingActivity
+        multiThreadingActivity: ThreadPoolExecutor
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,

@@ -1,6 +1,6 @@
 package com.example.mustmarket.di
 
-import com.example.mustmarket.core.threads.MultiThreadingActivity
+import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +28,7 @@ object ThreadingModule {
     fun provideMultiThreadingActivity(
         @IODispatcher ioDispatcher: CoroutineDispatcher,
         exceptionHandler: CoroutineExceptionHandler
-    ): MultiThreadingActivity {
-        return MultiThreadingActivity(ioDispatcher, exceptionHandler)
+    ): ThreadPoolExecutor {
+        return ThreadPoolExecutor(ioDispatcher, exceptionHandler)
     }
 }

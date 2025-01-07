@@ -1,4 +1,4 @@
-package com.example.mustmarket.core.threads
+package com.example.mustmarket.core.threadExecutor
 
 import com.example.mustmarket.di.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,7 +26,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MultiThreadingActivity @Inject constructor(
+class ThreadPoolExecutor @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val exceptionHandler: CoroutineExceptionHandler
 ) {
