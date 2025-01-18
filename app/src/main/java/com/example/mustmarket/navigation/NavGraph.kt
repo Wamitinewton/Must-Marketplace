@@ -110,19 +110,23 @@ fun SetUpNavGraph(
 
         composable(
             route = Screen.ChatScreen.route,
-            arguments = listOf(navArgument("chatId") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("chatId") { type = NavType.StringType },
+                navArgument("contactName") {type = NavType.StringType},
+                navArgument("currentUser") { type = NavType.StringType}
+                ),
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) { backStackEntry ->
-            val chatId = backStackEntry.arguments?.getString("chatId")
-            val recipientName = backStackEntry.arguments?.getString("recipientName") ?: return@composable
+            //val chatId = backStackEntry.arguments?.getString("chatId")
+            //val recipientName = backStackEntry.arguments?.getString("recipientName") ?: return@composable
             ChatScreen(
                 navController = navController,
-                chatId = chatId ?: "",
-                currentUser = "user!",
-                contactName = recipientName
+                chatId = backStackEntry.arguments?.getString("chatId") ?: "",
+                contactName = backStackEntry.arguments?.getString("contactName") ?: "",
+                currentUser = backStackEntry.arguments?.getString("currentUser") ?: ""
             )
         }
 

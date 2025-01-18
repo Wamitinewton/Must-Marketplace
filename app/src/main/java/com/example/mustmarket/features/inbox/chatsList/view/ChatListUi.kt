@@ -124,7 +124,7 @@ fun ChatListScreen(
                 ChatListItem(
                     modifier = Modifier
                         .clickable {
-                            navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+                            //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
                         }
                         .padding(16.dp),
                     chat = chat,

@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun NewChatScreen(
     navController: NavController,
-    chatListViewModel: ChatListViewModel = viewModel()
+    chatListViewModel: ChatListViewModel = viewModel(),
+    currentUser: String = "anonymous"
 ) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
@@ -98,7 +99,15 @@ fun NewChatScreen(
                                     lastMessageTime = getCurrentTimestamp()
                                 )
                                 chatListViewModel.startNewChat(recipientName = contact.name)
-                                navController.navigate(Screen.ChatScreen.createRoute(contact.phoneNumber))
+                                navController.navigate(
+                                    Screen.ChatScreen.route.replace(
+                                        "{chatId}", contact.id
+                                    ).replace(
+                                        "{contactName}", contact.name
+                                    ).replace(
+                                        "{currentUser}", currentUser
+                                    )
+                                )
                             }
                         )
                     }
