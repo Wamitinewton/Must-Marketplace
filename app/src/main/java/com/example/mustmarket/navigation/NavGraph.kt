@@ -126,7 +126,12 @@ fun SetUpNavGraph(
             )
         }
 
-        composable(Screen.NewChat.route) {
+        composable(Screen.NewChat.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) {
             NewChatScreen(navController)
         }
 

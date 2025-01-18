@@ -58,7 +58,7 @@ class ChatListViewModel : ViewModel() {
         )
     }
 
-    private fun generateChatId(): String {
+     fun generateChatId(): String {
         return "chat_${System.currentTimeMillis()}"
     }
 
