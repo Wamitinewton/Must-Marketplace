@@ -2,9 +2,6 @@ package com.example.mustmarket.features.inbox.chatsList.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +15,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -31,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.features.inbox.chatsList.presentation.ChatListItem
@@ -43,7 +39,7 @@ import com.example.mustmarket.ui.theme.greenishA
 @Composable
 fun ChatListScreen(
     navController: NavController,
-    chatListViewModel: ChatListViewModel = viewModel()
+    chatListViewModel: ChatListViewModel = hiltViewModel(),
 ) {
 
     val activeChats by chatListViewModel.activeChats.observeAsState(emptyList())
@@ -116,6 +112,7 @@ fun ChatListScreen(
             }
         }
     ) { padding ->
+
         LazyColumn (
             modifier = Modifier
                 .padding(padding)
@@ -123,9 +120,6 @@ fun ChatListScreen(
             items(activeChats) { chat ->
                 ChatListItem(
                     modifier = Modifier
-                        .clickable {
-                            //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
-                        }
                         .padding(16.dp),
                     chat = chat,
                     navController = navController

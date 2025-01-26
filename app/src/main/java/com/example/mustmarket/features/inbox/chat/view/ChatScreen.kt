@@ -15,11 +15,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,19 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.features.inbox.chat.domain.ChatMessage
+import com.example.mustmarket.features.inbox.chat.model.ChatMessage
 import com.example.mustmarket.features.inbox.chat.presentation.ChatMessageItem
 import com.example.mustmarket.features.inbox.chat.presentation.MessageInput
 import com.example.mustmarket.features.inbox.chat.viewModel.ChatViewModel
-import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
@@ -47,8 +43,8 @@ fun ChatScreen(
     chatId: String,
     contactName: String,
     currentUser: String,
-    chatViewModel: ChatViewModel = viewModel(),
-    chatListViewModel: ChatListViewModel = viewModel()
+    chatViewModel: ChatViewModel = hiltViewModel(),
+    //chatListViewModel: ChatListViewModel = viewModel()
 ) {
 
     val messages by chatViewModel.messages.observeAsState(emptyList())
@@ -86,7 +82,7 @@ fun ChatScreen(
                         )
                     }
                 },
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = MaterialTheme.colors.primarySurface,
                 elevation = 0.dp
             )
         }
@@ -95,7 +91,7 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(bottom = 59.dp),
+                .padding(bottom = 1.dp),
         ) {
 
 
@@ -106,7 +102,7 @@ fun ChatScreen(
                     .padding(horizontal = 16.dp),
                 reverseLayout = true
             ) {
-                items(messages.reversed()) { message ->
+                items(messages/*.reversed()*/) { message ->
                     ChatMessageItem(
                         message = message,
                         onMenuClicked = {
@@ -125,15 +121,6 @@ fun ChatScreen(
                         )
                 },
                 currentUser = currentUser
-//                message = message,
-//                onMessageSent = { message ->
-//                    message.add("$currentUser: $message")
-//                    chatViewModel.sendMessage(
-//                        currentUser,
-//                        message
-//                    )
-//                },
-//                currentUser = currentUser
             )
 
             showMenuForMessage?.let { message ->
@@ -166,9 +153,9 @@ fun ChatScreen(
     }
 }
 
-fun simulateBackendMessages(chatViewModel: ChatViewModel) {
-    CoroutineScope(Dispatchers.IO).launch {
-        Thread.sleep(5000) // Simulate delay
-        chatViewModel.receiveMessage("Demola", "This is a message from the server!")
-    }
-}
+//fun simulateBackendMessages(chatViewModel: ChatViewModel) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        Thread.sleep(5000) // Simulate delay
+//        chatViewModel.receiveMessage("Demola", "This is a message from the server!")
+//    }
+//}

@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.inbox.chat.domain
+package com.example.mustmarket.features.inbox.chat.model
 
 data class ChatMessage(
     val sender: String,

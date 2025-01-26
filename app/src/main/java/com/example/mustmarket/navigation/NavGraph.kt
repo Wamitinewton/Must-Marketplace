@@ -101,7 +101,7 @@ fun SetUpNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
-            val chatListViewModel: ChatListViewModel = viewModel()
+            val chatListViewModel: ChatListViewModel = hiltViewModel()
             ChatListScreen(
                 navController = navController,
                 chatListViewModel = chatListViewModel

@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.inbox.chat.domain
+package com.example.mustmarket.features.inbox.chat.model
 
 import android.Manifest
 import android.content.Context
@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

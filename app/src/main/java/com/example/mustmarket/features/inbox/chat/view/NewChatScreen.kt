@@ -1,31 +1,36 @@
 package com.example.mustmarket.features.inbox.chat.view
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.features.inbox.chat.domain.Contact
-import com.example.mustmarket.features.inbox.chat.domain.RequestContactsPermission
-import com.example.mustmarket.features.inbox.chat.domain.fetchContacts
-import com.example.mustmarket.features.inbox.chatsList.model.Chat
+import com.example.mustmarket.features.inbox.chat.model.Contact
+import com.example.mustmarket.features.inbox.chat.model.RequestContactsPermission
+import com.example.mustmarket.features.inbox.chat.model.fetchContacts
+import com.example.mustmarket.features.inbox.chat.presentation.ContactItem
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.ui.theme.gray01
+import com.example.mustmarket.ui.theme.greenishA
 import kotlinx.coroutines.launch
 
 @Composable
 fun NewChatScreen(
     navController: NavController,
-    chatListViewModel: ChatListViewModel = viewModel(),
+    chatListViewModel: ChatListViewModel = hiltViewModel(),
     currentUser: String = "anonymous"
 ) {
     val context = LocalContext.current
@@ -52,64 +57,93 @@ fun NewChatScreen(
         }
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Start a New Chat",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            error != null -> {
-                Text(
-                    text = error ?: "",
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-            contacts.isEmpty() -> {
-                Text(
-                    text = "No contacts found",
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-            else -> {
-                LazyColumn {
-                    itemsIndexed(contacts) { _, contact ->
-                        ContactItem(
-                            contact = contact,
-                            onClick = {
-                                val newChat = Chat(
-                                    id = contact.id,
-                                    contactName = contact.name,
-                                    lastMessage = "New chat started",
-                                    lastMessageTime = getCurrentTimestamp()
-                                )
-                                chatListViewModel.startNewChat(recipientName = contact.name)
-                                navController.navigate(
-                                    Screen.ChatScreen.route.replace(
-                                        "{chatId}", contact.id
-                                    ).replace(
-                                        "{contactName}", contact.name
-                                    ).replace(
-                                        "{currentUser}", currentUser
-                                    )
-                                )
-                            }
+    Scaffold(
+        backgroundColor = MaterialTheme.colors.primarySurface,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Select Contact",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = gray01
                         )
+                    }
+                },
+                backgroundColor = MaterialTheme.colors.primarySurface,
+                elevation = 0.dp
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color.White)
+        ) {
+            when {
+                isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = greenishA)
+                    }
+                }
+                error != null -> {
+                    Text(
+                        text = error ?: "",
+                        color = MaterialTheme.colors.error,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                contacts.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No contacts found",
+                            style = MaterialTheme.typography.body1,
+                            color = Color.Gray
+                        )
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        itemsIndexed(contacts) { _, contact ->
+                            ContactItem(
+                                contact = contact,
+                                onClick = {
+//                                    val newChat = Chat(
+//                                        id = contact.id,
+//                                        contactName = contact.name,
+//                                        lastMessage = "New chat started",
+//                                        lastMessageTime = getCurrentTimestamp()
+//                                    )
+                                    chatListViewModel.startNewChat(recipientName = contact.name)
+                                    navController.navigate(
+                                        Screen.ChatScreen.route.replace(
+                                            "{chatId}", contact.id
+                                        ).replace(
+                                            "{contactName}", contact.name
+                                        ).replace(
+                                            "{currentUser}", currentUser
+                                        )
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -117,28 +151,6 @@ fun NewChatScreen(
     }
 }
 
-@Composable
-private fun ContactItem(
-    contact: Contact,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp)
-    ) {
-        Text(
-            text = contact.name,
-            style = MaterialTheme.typography.subtitle1
-        )
-        Text(
-            text = contact.phoneNumber,
-            style = MaterialTheme.typography.caption,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
-}
 
 private fun getCurrentTimestamp(): String {
     return java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(java.util.Date())
