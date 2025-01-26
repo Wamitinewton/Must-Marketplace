@@ -29,7 +29,9 @@ interface ProductsApi {
     suspend fun getAllCategories(): CategoryResponseDto
 
     @GET("api/v1/products/all")
-    suspend fun getAllProducts(): AllProductsDto
+    suspend fun getAllProducts(
+        @Query("page") page: Int,
+    ): AllProductsDto
 
     @GET("api/v1/products/by-name/{query}")
     suspend fun searchProducts(

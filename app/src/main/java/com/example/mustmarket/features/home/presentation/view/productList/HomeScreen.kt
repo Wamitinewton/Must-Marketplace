@@ -1,7 +1,5 @@
 package com.example.mustmarket.features.home.presentation.view.productList
 
-import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,16 +43,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.R
 import com.example.mustmarket.core.sharedComposable.ErrorState
-import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
-import com.example.mustmarket.core.sharedComposable.LoadingState
+import com.example.mustmarket.core.sharedComposable.shimmer.ProductShimmer
+import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.event.CategoryEvent
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
@@ -64,35 +65,41 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     allProductsViewModel: AllProductsViewModel,
+    sharedViewModel: SharedViewModel
 ) {
 
     Content(
         viewModel = allProductsViewModel,
-        navController = navController
+        navController = navController,
+        sharedViewModel = sharedViewModel
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     navController: NavController,
+
+    sharedViewModel: SharedViewModel,
+
+    loginViewModel: LoginViewModel = hiltViewModel()
+
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val userData by viewModel.userData.collectAsState()
-
     val uiState by viewModel.productsUiState.collectAsState()
     val categoryUIState by categoryViewModel.uiState.collectAsState()
     val isRefreshing = categoryUIState.isRefreshing || uiState.isRefreshing
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = isRefreshing
     )
+    val user by loginViewModel.loggedInUser.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -158,7 +165,7 @@ fun Content(
             ) {
 
                 item {
-                    HeaderBar(userName = userData?.name)
+                    HeaderBar(userName = user?.name)
                 }
 
                 item { Promotions() }
@@ -170,27 +177,30 @@ fun Content(
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                           Row(
-                               horizontalArrangement = Arrangement.SpaceBetween,
-                               verticalAlignment = Alignment.CenterVertically,
-                               modifier = Modifier
-                                   .padding(horizontal = 15.dp)
-                           ) {
-                               Text(
-                                   text = "All Products",
-                                   color = ThemeUtils.AppColors.Text.themed(),
-                                   fontSize = 18.sp
-                               )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = 15.dp)
+                        ) {
+                            Text(
+                                text = "All Products",
+                                color = ThemeUtils.AppColors.Text.themed(),
+                                fontSize = 18.sp
+                            )
 
+                           if (uiState.products.isNotEmpty() && uiState.errorMessage.isNullOrEmpty()) {
                                Text(
                                    modifier = Modifier
                                        .clickable(
                                            onClick = {
-                                               navController.currentBackStackEntry?.savedStateHandle?.set(
-                                                   key = "products",
-                                                   value = uiState.products
-                                               )
-                                               navController.navigate(Screen.AllProductsList.route)
+                                               val products = uiState.products
+                                               sharedViewModel.addProductList(products)
+                                               navController.navigate(Screen.AllProductsList.route) {
+                                                   popUpTo(Screen.AllProductsList.route) {
+                                                       inclusive = true
+                                                   }
+                                               }
                                            }
                                        ),
                                    text = "See all",
@@ -200,20 +210,21 @@ fun Content(
                            }
                         }
                     }
+                }
 
 
 
                 when {
-                    uiState.isLoading && uiState.products.isEmpty() -> {
-                        item {
-                            LoadingState(type = LoadingAnimationType.PULSING_DOTS)
+                    uiState.isLoading -> {
+                        items(count = 5){
+                            ProductShimmer()
                         }
                     }
 
                     uiState.errorMessage?.isNotEmpty() == true -> {
                         item {
                             uiState.errorMessage?.let { ErrorState(message = it) }
-                            uiState.errorMessage?.let { Log.d("Error", it) }
+                            uiState.errorMessage?.let { Timber.tag("Error").d(it) }
                         }
                     }
 
@@ -232,7 +243,23 @@ fun Content(
                             ProductCard(
                                 product = product,
                                 onClick = {
-                                    navController.navigate(Screen.Detail.createRoute(productId = product.id))
+                                    val productDetails = NetworkProduct(
+                                        name = product.name,
+                                        id = product.id,
+                                        brand = product.brand,
+                                        price = product.price,
+                                        images = product.images,
+                                        category = product.category,
+                                        userData = product.userData,
+                                        inventory = product.inventory,
+                                        description = product.description
+                                    )
+                                    sharedViewModel.addDetails(productDetails)
+                                    navController.navigate(Screen.Detail.route) {
+                                        popUpTo(Screen.Detail.route) {
+                                            inclusive = true
+                                        }
+                                    }
                                 }
                             )
                             if (index < uiState.products.size - 1) {

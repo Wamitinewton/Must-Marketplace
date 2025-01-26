@@ -2,15 +2,16 @@ package com.example.mustmarket.di
 
 import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.retryConfig.RetryUtil
+import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
 import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
 import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
+import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
@@ -21,7 +22,7 @@ import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
-import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
+import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
@@ -42,14 +43,12 @@ object RepositoryModule {
     fun provideAuthRepository(
         authApi: AuthApi,
         sessionManager: SessionManager,
-        userStoreManager: UserStoreManager,
-        categoryDao: CategoryDao,
-        productDao: ProductDao
+        userDao: UserDao
     ): AuthRepository {
         return AuthRepositoryImpl(
             authApi = authApi,
-            sessionManager,
-            userStoreManager = userStoreManager
+            sessionManger = sessionManager,
+            userDao = userDao
         )
     }
 
@@ -57,9 +56,16 @@ object RepositoryModule {
     @Singleton
     fun provideCategoryRepository(
         categoryProductsApi: ProductsApi,
-        dao: CategoryDao
+        dao: CategoryDao,
+        @IODispatcher ioDispatcher: CoroutineDispatcher,
+        retryUtil: RetryUtil
     ): CategoryRepository {
-        return CategoryRepositoryImpl(categoryApi = categoryProductsApi, dao = dao)
+        return CategoryRepositoryImpl(
+            categoryApi = categoryProductsApi,
+            dao = dao,
+            ioDispatcher = ioDispatcher,
+            retryUtil = retryUtil
+        )
     }
 
     @Provides
@@ -67,18 +73,18 @@ object RepositoryModule {
     fun provideAllProductsRepository(
         allProductsApi: ProductsApi,
         dao: ProductDao,
-        preferences: SecureProductStorage,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
         retryUtil: RetryUtil,
-        sessionManager: SessionManager
+        syncManager: ProductSyncManager,
+        multiThreadingActivity: ThreadPoolExecutor
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
-            preferences = preferences,
             ioDispatcher = ioDispatcher,
             retryUtil = retryUtil,
-            sessionManager = sessionManager
+            syncManager = syncManager,
+            threadingActivity = multiThreadingActivity
         )
     }
 

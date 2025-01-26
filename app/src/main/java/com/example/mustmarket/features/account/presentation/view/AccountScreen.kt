@@ -56,8 +56,9 @@ fun AccountScreen(
     LaunchedEffect(Unit) {
         loginViewModel.navigateToLogin.collect {
             showLogoutDialog = false
-            navController.popBackStack()
-            navController.navigate(Screen.Login.route)
+           navController.navigate(Screen.Login.route) {
+               popUpTo(Screen.Login.route)
+           }
         }
     }
 

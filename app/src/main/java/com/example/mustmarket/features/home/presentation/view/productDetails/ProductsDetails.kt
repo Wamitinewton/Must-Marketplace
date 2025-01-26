@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.home.presentation.view.productDetails
 
-import android.util.Log
 import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -60,18 +58,13 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.core.sharedComposable.BottomNavBar
 import com.example.mustmarket.core.sharedComposable.CustomImageLoader
-import com.example.mustmarket.core.sharedComposable.ErrorState
-import com.example.mustmarket.core.sharedComposable.LoadingAnimationType
-import com.example.mustmarket.core.sharedComposable.LoadingState
 import com.example.mustmarket.core.util.Constants.formatPrice
 import com.example.mustmarket.core.util.SingleToastManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.presentation.state.BookmarkEvent
-import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
-import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksViewModel
+import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import kotlinx.coroutines.launch
@@ -79,15 +72,15 @@ import kotlin.math.abs
 
 @Composable
 fun ProductDetailsScreen(
-    productId: Int,
     onBackPressed: () -> Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
-    productsViewModel: AllProductsViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    sharedViewModel: SharedViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val detailsState by productsViewModel.productDetailsState.collectAsState()
+
+    val details = sharedViewModel.details
 
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
@@ -112,27 +105,16 @@ fun ProductDetailsScreen(
         }
     }
 
-    LaunchedEffect(productId) {
-        Log.d("ProducDetails", "LaunchedEffect triggered with productId: $productId")
-        productsViewModel.loadProductDetails(productId)
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        when (detailsState) {
-            is ProductDetailsState.Loading -> LoadingState(type = LoadingAnimationType.BOUNCING_DOTS)
-
-            is ProductDetailsState.Error -> {
-                ErrorState()
-            }
-
-            is ProductDetailsState.Success -> {
-                val product = (detailsState as ProductDetailsState.Success).product
+        when (details) {
+            is NetworkProduct->{
                 ProductDetailsContent(
-                    product = product,
+                    product = details,
                     onBackPressed = onBackPressed,
                     bookmarksViewModel = viewModel,
                     navController = navController
@@ -235,14 +217,6 @@ fun ProductDetailsContent(
 
     Scaffold(
         scaffoldState = rememberScaffoldState(),
-        bottomBar = {
-            BottomAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = 8.dp,
-            ) {
-                BottomNavBar(modifier = Modifier.fillMaxWidth(), navController = navController)
-            }
-        },
         topBar = {
             TopAppBar(
                 title = {

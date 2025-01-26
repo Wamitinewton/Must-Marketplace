@@ -2,57 +2,64 @@ package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
 import com.example.mustmarket.core.retryConfig.RetryUtil
+import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
+import com.example.mustmarket.core.threadExecutor.OperationType
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.di.IODispatcher
-import com.example.mustmarket.features.auth.data.datastore.SessionManager
 import com.example.mustmarket.database.dao.ProductDao
+import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.home.data.mapper.toDomainProduct
 import com.example.mustmarket.features.home.data.mapper.toNetworkProducts
 import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import com.example.mustmarket.features.home.data.remote.ProductsApi
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
-import com.example.mustmarket.features.home.secureStorage.SecureProductStorage
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.BATCH_SIZE
-import com.example.mustmarket.features.home.secureStorage.StorageKeys.CACHE_DURATION
+import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.hours
 
 class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
-    private val preferences: SecureProductStorage,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val retryUtil: RetryUtil,
-    private val sessionManager: SessionManager
+    private val syncManager: ProductSyncManager,
+    private val threadingActivity: ThreadPoolExecutor
 ) : AllProductsRepository {
 
 
-    private val cacheMutex = Mutex()
-
-    override suspend fun shouldRefresh(): Boolean = withContext(ioDispatcher) {
-        val lastUpdate = preferences.getLastUpdateTimestamp()
-        val currentTime = System.currentTimeMillis()
-        val cacheExpired = (currentTime - lastUpdate) > CACHE_DURATION.hours.inWholeMilliseconds
-        val cacheEmpty = dao.getAllProducts().firstOrNull()?.isEmpty() ?: true
-        cacheEmpty || cacheExpired
+    private companion object {
+        const val NETWORK_TIMEOUT = 30000L // 30 seconds
+        const val DB_TIMEOUT = 10000L // 10 seconds
+        const val BATCH_SIZE = 50
     }
+
+    override suspend fun shouldRefresh(): Boolean =
+        threadingActivity.executeIsolatedThread(
+            operationType = OperationType.DATABASE,
+            timeOuts = DB_TIMEOUT
+        ) {
+            dao.getAllProducts().firstOrNull().isNullOrEmpty()
+        }.first()
+
 
     override suspend fun getAllProducts(forceRefresh: Boolean): Flow<Resource<List<NetworkProduct>>> =
         flow {
             emit(Resource.Loading(true))
             try {
-                val cachedProducts = dao.getAllProducts().firstOrNull()
+                val cachedProducts = threadingActivity.executeIsolatedThread(
+                    operationType = OperationType.DATABASE,
+                    timeOuts = DB_TIMEOUT
+                ) {
+                    dao.getAllProducts().firstOrNull()
+                }.first()
 
                 if (!forceRefresh && !cachedProducts.isNullOrEmpty()) {
                     emit(Resource.Success(cachedProducts.toNetworkProducts()))
@@ -68,10 +75,15 @@ class AllProductsRepositoryImpl @Inject constructor(
         }.flowOn(ioDispatcher)
 
     private suspend fun fetchAndProcessProducts(): Resource<List<NetworkProduct>> =
+
         withContext(ioDispatcher) {
             try {
-                val tokenResult = sessionManager.fetchAccessToken()
-                val response = retryUtil.executeWithRetry { productsApi.getAllProducts() }
+                val response = threadingActivity.executeIsolatedThread(
+                    operationType = OperationType.NETWORK,
+                    timeOuts = NETWORK_TIMEOUT
+                ) {
+                    productsApi.getAllProducts()
+                }.first()
 
                 if (response.message == "Success") {
                     val processedProducts = response.data.map { it.toDomainProduct() }
@@ -79,14 +91,17 @@ class AllProductsRepositoryImpl @Inject constructor(
                         .sortedByDescending { it.id }
                         .distinctBy { it.id }
 
-                    cacheMutex.withLock {
+                    threadingActivity.executeIsolatedThread(
+                        operationType = OperationType.DATABASE,
+                        timeOuts = DB_TIMEOUT
+                    ) {
                         dao.clearAllProducts()
                         processedProducts.chunked(BATCH_SIZE).forEach { batch ->
                             dao.insertProducts(batch.toProductListingEntities())
                         }
-                    }
+                    }.first()
 
-                    preferences.updateLastUpdateTimestamp()
+                    syncManager.updateLastSyncTimeStamp()
 
                     val freshProducts = dao.getAllProducts().firstOrNull()
                     if (!freshProducts.isNullOrEmpty()) {
@@ -102,39 +117,36 @@ class AllProductsRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> =
-        flow {
-            emit(Resource.Loading(true))
-            try {
-                val response = retryUtil.executeWithRetry {
-                    productsApi.getProductsById(productId)
-                }
-                emit(Resource.Loading(false))
-
-                if (response.message == "Success") {
-                    emit(Resource.Success(response.data.toDomainProduct()))
-
-                } else {
-                    emit(Resource.Error(response.message))
-                }
-
-
-            } catch (e: Exception) {
-                emit(handleError(e))
-            }
-        }.flowOn(ioDispatcher)
-
-    override suspend fun refreshProducts(): Flow<Resource<List<NetworkProduct>>> = flow {
+    override suspend fun getProductsById(productId: Int): Flow<Resource<NetworkProduct>> = flow {
         emit(Resource.Loading(true))
         try {
-            cacheMutex.withLock {
-                emit(fetchAndProcessProducts())
-            }
+            val response = threadingActivity.executeIsolatedThread(
+                operationType = OperationType.NETWORK,
+                timeOuts = NETWORK_TIMEOUT
+            ) {
+                retryUtil.executeWithRetry { productsApi.getProductsById(productId) }
+            }.first()
+
             emit(Resource.Loading(false))
+
+            if (response.message == "Success") {
+                emit(Resource.Success(response.data.toDomainProduct()))
+            } else {
+                emit(Resource.Error(response.message))
+            }
         } catch (e: Exception) {
             emit(handleError(e))
         }
     }.flowOn(ioDispatcher)
+
+    override suspend fun manageCache() {
+        threadingActivity.executeIsolatedThread(
+            operationType = OperationType.CACHE,
+            timeOuts = DB_TIMEOUT
+        ) {
+            dao.clearAllProducts()
+        }
+    }
 
 
     private fun <T> handleError(exception: Throwable): Resource<T> {

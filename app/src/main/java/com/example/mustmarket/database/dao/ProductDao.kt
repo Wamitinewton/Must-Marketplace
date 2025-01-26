@@ -1,5 +1,6 @@
 package com.example.mustmarket.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
@@ -15,6 +16,9 @@ interface ProductDao {
 
     @Query("SELECT * FROM products ORDER BY id DESC")
     fun getAllProducts(): Flow<List<ProductListingEntity>>
+
+    @Query("SELECT * FROM products ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    fun getPagedProducts(limit: Int, offset: Int): Flow<List<ProductListingEntity>>
 
     @Query("DELETE FROM products")
     suspend fun clearAllProducts()

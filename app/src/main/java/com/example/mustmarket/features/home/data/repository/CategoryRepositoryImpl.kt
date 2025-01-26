@@ -1,18 +1,28 @@
 package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
+import com.example.mustmarket.core.retryConfig.RetryUtil
+import com.example.mustmarket.core.util.Constants.SUCCESS_RESPONSE
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.CategoryDao
+import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.home.data.mapper.toCategoryListingEntity
 import com.example.mustmarket.features.home.data.mapper.toDomainCategory
 import com.example.mustmarket.features.home.data.mapper.toProductCategory
 import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl.CacheBatch.BATCH_SIZE
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.features.home.domain.model.categories.UploadCategoryResponse
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -22,11 +32,28 @@ import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
     private val categoryApi: ProductsApi,
-    private val dao: CategoryDao
+    private val dao: CategoryDao,
+    private val retryUtil: RetryUtil,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : CategoryRepository {
+
+    object CacheBatch {
+        const val BATCH_SIZE = 100
+    }
+
+    private val cacheMutex = Mutex()
+
+    override suspend fun shouldRefresh(): Boolean {
+        val categories = dao.getAllCategories().firstOrNull()
+        return categories.isNullOrEmpty()
+    }
+
+
     override suspend fun getCategories(size: Int): Flow<Resource<List<ProductCategory>>> = flow {
         try {
-            val response = categoryApi.getCategories(size)
+            val response = retryUtil.executeWithRetry {
+                categoryApi.getCategories(size)
+            }
             emit(Resource.Success(data = response))
         } catch (e: HttpException) {
             emit(
@@ -43,87 +70,60 @@ class CategoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllCategories(): Flow<Resource<List<ProductCategory>>> = flow {
-        try {
+
+    override suspend fun getAllCategories(shouldRefresh: Boolean): Flow<Resource<List<ProductCategory>>> =
+        flow {
             emit(Resource.Loading(true))
-            dao.getAllCategories()
-                .map { entities ->
-                    Resource.Success(
-                        entities.toProductCategory()
-                    )
-                }
-                .collect { cachedData ->
-                    emit(cachedData)
-                }
+            try {
+                val cachedCategories = dao.getAllCategories().firstOrNull()
 
-        } catch (e: HttpException) {
-            emit(
-                Resource.Error(
-                    message = e.message.toString()
-                )
-            )
-        } catch (e: IOException) {
-            emit(
-                Resource.Error(
-                    message = e.message.toString()
-                )
-            )
-        }
-        try {
-            val response = categoryApi.getAllCategories()
-            if (response.message == "Success") {
-                val categories = response.data
-                    .map { it.toDomainCategory() }
-                    .sortedByDescending { it.id }
-                dao.clearAllCategory()
-                dao.insertCategories(categories.toCategoryListingEntity())
-                emit(Resource.Loading(false))
-                if (categories.isEmpty()) {
-                    emit(Resource.Error("No categories were found"))
+                if (!shouldRefresh && !cachedCategories.isNullOrEmpty()) {
+                    emit(Resource.Success(cachedCategories.toProductCategory()))
                 } else {
-                    emit(Resource.Success(categories))
+                    val fetchResult = fetchAndProcessCategories()
+                    emit(fetchResult)
                 }
-            } else {
-                emit(Resource.Error(response.message))
-            }
-        } catch (e: HttpException) {
-            emit(Resource.Error("Network error: ${e.message}"))
-        } catch (e: IOException) {
-            emit(Resource.Error("IO error: ${e.message}"))
-        } catch (e: Exception) {
-            emit(Resource.Error("Unknown error: ${e.message}"))
-        }
-    }
-
-    override suspend fun refreshCategories(): Flow<Resource<List<ProductCategory>>> = flow {
-
-        emit(Resource.Loading(true))
-        try {
-            val response = categoryApi.getAllCategories()
-            if (response.message == "Success") {
-                val categories = response.data
-                    .map { it.toDomainCategory() }
-                    .sortedByDescending { it.id }
-                dao.clearAllCategory()
-                dao.insertCategories(categories.toCategoryListingEntity())
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error occurred"))
+            } finally {
                 emit(Resource.Loading(false))
-                if (categories.isEmpty()) {
-                    emit(Resource.Error("No categories were found"))
-                } else {
-                    emit(Resource.Success(categories))
-                }
-            } else {
-                emit(Resource.Error(response.message))
             }
-        } catch (e: HttpException) {
-            emit(Resource.Error("Network error: ${e.message}"))
-        } catch (e: IOException) {
-            emit(Resource.Error("IO error: ${e.message}"))
-        } catch (e: Exception) {
-            emit(Resource.Error("Unknown error: ${e.message}"))
+        }.flowOn(ioDispatcher)
+
+
+
+    private suspend fun fetchAndProcessCategories(): Resource<List<ProductCategory>> =
+        withContext(ioDispatcher) {
+            try {
+                val response = retryUtil.executeWithRetry { categoryApi.getAllCategories() }
+
+                if (response.message == SUCCESS_RESPONSE) {
+                    val processedCategories = response.data.map { it.toDomainCategory() }
+                        .sortedByDescending { it.id }
+                        .distinctBy { it.id }
+
+                    cacheMutex.withLock {
+                        dao.clearAllCategory()
+                        processedCategories.chunked(BATCH_SIZE).forEach { batch ->
+                            dao.insertCategories(batch.toCategoryListingEntity())
+                        }
+                    }
+
+                    val freshCategories = dao.getAllCategories().firstOrNull()
+                    if (!freshCategories.isNullOrEmpty()) {
+                        Resource.Success(freshCategories.toProductCategory())
+                    } else {
+                        Resource.Error("No categories found")
+                    }
+                } else {
+                    Resource.Error(response.message)
+                }
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Unknown error has occurred")
+            }
         }
 
-    }
+
 
     override suspend fun addCategory(
         image: File,
@@ -132,7 +132,12 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading(true))
         try {
             val imageFile = image.toMultipartBodyPart("file")
-            val response = categoryApi.addCategory(name = name, image = imageFile)
+            val response = retryUtil.executeWithRetry {
+                categoryApi.addCategory(
+                    name = name,
+                    image = imageFile
+                )
+            }
             if (response.message == "Success") {
                 emit(Resource.Success(response))
                 emit(Resource.Loading(false))
@@ -146,8 +151,11 @@ class CategoryRepositoryImpl @Inject constructor(
         }
     }
 
+
     private fun File.toMultipartBodyPart(name: String): MultipartBody.Part {
         val requestFile = this.asRequestBody("image/jpeg".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(name, this.name, requestFile)
     }
+
+
 }

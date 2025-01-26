@@ -1,13 +1,8 @@
 package com.example.mustmarket.navigation
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import com.example.mustmarket.R
-
 sealed class Screen(
     val route: String,
-    @StringRes val resourceId: Int? = R.string.account,
-    @DrawableRes val drawableId: Int? = R.drawable.account
+
 ) {
     data object Splash : Screen("splash_screen")
     data object Login : Screen("login_screen")

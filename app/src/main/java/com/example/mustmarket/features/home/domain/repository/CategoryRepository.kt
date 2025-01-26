@@ -9,8 +9,8 @@ import java.io.File
 interface CategoryRepository {
 
     suspend fun getCategories(size: Int): Flow<Resource<List<ProductCategory>>>
-    suspend fun getAllCategories(): Flow<Resource<List<ProductCategory>>>
-    suspend fun refreshCategories(): Flow<Resource<List<ProductCategory>>>
+    suspend fun getAllCategories(shouldRefresh: Boolean): Flow<Resource<List<ProductCategory>>>
     suspend fun addCategory(image: File, name: String): Flow<Resource<UploadCategoryResponse>>
+    suspend fun shouldRefresh(): Boolean
 
 }

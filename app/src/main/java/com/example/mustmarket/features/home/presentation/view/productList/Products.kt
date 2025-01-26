@@ -50,14 +50,14 @@ import com.example.mustmarket.features.home.presentation.viewmodels.BookmarksVie
 @Composable
 fun ProductCard(
     product: NetworkProduct,
-    onClick: (Int) -> Unit,
+    onClick: ()->  Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val bookmarkStatuses = viewModel.bookmarkStatusUpdates.collectAsState()
 
-    val isBookmarked = bookmarkStatuses.value[product.id] ?: false
+    val isBookmarked = bookmarkStatuses.value[product.id] == true
 
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
@@ -69,7 +69,6 @@ fun ProductCard(
                         scope = scope
                     )
                 }
-
                 is BookmarkEvent.Error -> {
                     event.message?.let { errorMessage ->
                         SingleToastManager.showToast(
@@ -87,12 +86,12 @@ fun ProductCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable(onClick = { onClick(product.id) }),
+            .clickable(onClick= {onClick()}),
         elevation = 4.dp
     ) {
         Row(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(start = 8.dp, end = 8.dp)
                 .height(120.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -118,6 +117,7 @@ fun ProductCard(
 
             Column(
                 modifier = Modifier
+                    .padding(top = 5.dp)
                     .weight(1f)
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween

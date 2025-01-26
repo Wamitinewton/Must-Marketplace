@@ -2,19 +2,28 @@ package com.example.mustmarket.features.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.data.datastore.UserData
-import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
-import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.example.mustmarket.features.home.presentation.event.HomeScreenEvent
-import com.example.mustmarket.features.home.presentation.state.ProductDetailsState
+import com.example.mustmarket.features.home.presentation.state.AllProductsViewModelState
+import com.example.mustmarket.features.home.workManager.ProductSyncManager
+import com.example.mustmarket.features.home.workManager.ProductSyncState
+import com.example.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -22,57 +31,68 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
-    private val userStoreManager: UserStoreManager
+    syncManager: ProductSyncManager
 ) : ViewModel() {
-    private val _userData = MutableStateFlow<UserData?>(null)
-    val userData: StateFlow<UserData?> = _userData.asStateFlow()
 
-    private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
-    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.
-        onStart {
-            loadProducts(forceRefresh = true)
-        }
-        .stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        AllProductsViewModelState()
+    private val refreshTrigger = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_LATEST
     )
 
-    private val _productDetailsState =
-        MutableStateFlow<ProductDetailsState>(ProductDetailsState.Loading)
-    val productDetailsState: StateFlow<ProductDetailsState> = _productDetailsState.asStateFlow()
 
+    private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
+    val productsUiState: StateFlow<AllProductsViewModelState> = _viewModelState.asStateFlow()
+
+    private val syncState: StateFlow<ProductSyncState> = syncManager.getLastSyncState()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            ProductSyncState()
+        )
 
     init {
-        observeUserData()
-//        initializeProducts()
-    }
-
-    private fun observeUserData() {
         viewModelScope.launch {
-            _userData.value = userStoreManager.fetchUserData()
-
-            while (true) {
-                kotlinx.coroutines.delay(1000)
-                val currentData = _userData.value
-                val newData = userStoreManager.fetchUserData()
-
-                if (newData != currentData) {
-                    _userData.value = newData
+//            initiateProductLoading()
+            merge(
+                syncState
+                    .filter { it.isSyncing }
+                    .map { true },
+                refreshTrigger.map { true }
+            )
+                .distinctUntilChanged()
+                .onStart { emit(true) }
+                .flatMapLatest { shouldRefresh ->
+                    productsUseCases.homeUseCases.getAllProducts(shouldRefresh)
+                        .onStart {
+                            if (!syncState.value.isSyncing) {
+                                emit(Resource.Loading(true))
+                            }
+                        }
+                        .onCompletion {
+                            if (!syncState.value.isSyncing) {
+                                emit(Resource.Loading(false))
+                            }
+                        }
                 }
-            }
+                .catch { error ->
+                    emit(Resource.Error(error.message ?: "An unexpected error occurred"))
+                }
+                .collect { result ->
+                    handleProductsResult(result)
+                }
         }
     }
 
-    private fun initializeProducts() {
-        viewModelScope.launch {
-            val currentProducts = productsUiState.value.products
-            if (currentProducts.isEmpty()) {
-                loadProducts(forceRefresh = true)
-            }
+    private suspend fun initiateProductLoading() {
+        val loadRemote = productsUseCases.homeUseCases.shouldRefreshProducts()
+        if (loadRemote) {
+            loadProducts(forceRefresh = true)
+        } else {
+            loadProducts(forceRefresh = false)
         }
     }
 
@@ -82,35 +102,12 @@ class AllProductsViewModel @Inject constructor(
         }
     }
 
-
-    fun loadProductDetails(productId: Int) {
-        viewModelScope.launch {
-            productsUseCases.homeUseCases.getProductsById(productId)
-                .collect { result ->
-                    _productDetailsState.value = when (result) {
-                        is Resource.Success -> result.data?.let {
-                            ProductDetailsState.Success(it)
-                        } ?: ProductDetailsState.Error("Product not found")
-
-                        is Resource.Error -> ProductDetailsState.Error(
-                            result.message ?: "An unexpected error occurred"
-                        )
-
-                        is Resource.Loading -> ProductDetailsState.Loading
-                    }
-                }
-        }
-    }
-
-    private fun loadProducts(forceRefresh: Boolean) {
+     private fun loadProducts(forceRefresh: Boolean) {
         viewModelScope.launch {
             _viewModelState.update { it.copy(isLoading = true) }
             productsUseCases.homeUseCases.getAllProducts(forceRefresh = forceRefresh)
                 .collect { result ->
                     handleProductsResult(result)
-                    if (forceRefresh) {
-                        _viewModelState.update { it.copy(isRefreshing = false) }
-                    }
                 }
         }
     }

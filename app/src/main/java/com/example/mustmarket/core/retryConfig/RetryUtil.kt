@@ -20,11 +20,9 @@ class RetryUtil @Inject constructor() {
             } catch (e: Exception) {
                 lastException = e
 
-                if (!config.shouldRetry(e)) {
-                    throw e
-                }
                 delay(currentDelay)
                 currentDelay = (currentDelay * config.factor).toLong()
+                    .coerceAtMost(config.maxDelayMillis)
             }
         }
         return try {

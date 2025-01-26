@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.onboarding.presentation.view
 
 
-import android.widget.Button
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.example.mustmarket.R
+import com.example.mustmarket.core.adaptableLayout.ResponsiveSizeUtil
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerDefaults
@@ -119,9 +119,9 @@ fun BubblePager(
                 Button(
                     onClick = onGetStartedClick,
                     modifier = Modifier
-                        .padding(horizontal = 32.dp)
+                        .padding(horizontal = ResponsiveSizeUtil.responsivePadding(basePadding = 32.dp))
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(ResponsiveSizeUtil.responsivePadding(basePadding = 55.dp))
                 ) {
                     Text(
                         text = "Get Started",
