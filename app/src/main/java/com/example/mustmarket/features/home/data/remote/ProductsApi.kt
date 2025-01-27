@@ -30,7 +30,6 @@ interface ProductsApi {
 
     @GET("api/v1/products/all")
     suspend fun getAllProducts(
-        @Query("page") page: Int,
     ): AllProductsDto
 
     @GET("api/v1/products/by-name/{query}")
