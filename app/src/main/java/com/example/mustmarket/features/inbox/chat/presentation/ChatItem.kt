@@ -1,11 +1,10 @@
-package com.example.mustmarket.features.chat.presentation
+package com.example.mustmarket.features.inbox.chat.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,11 +27,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.example.mustmarket.features.chat.domain.ChatMessage
-import com.example.mustmarket.ui.theme.Purple700
+import com.example.mustmarket.features.inbox.chat.model.ChatMessage
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
-import com.example.mustmarket.ui.theme.colorPrimary
 
 
 @Composable
@@ -41,7 +38,7 @@ fun ChatMessageItem(
     onMenuClicked: (ChatMessage) -> Unit
 ) {
     val layoutDirection =
-        if (message.isSentByCurrentUser) LayoutDirection.Ltr else LayoutDirection.Rtl
+        if (message.isSentByCurrentUser) LayoutDirection.Rtl else LayoutDirection.Ltr
     val chatBubbleShape = ChatBubbleShape(
         isSentByCurrentUser = message.isSentByCurrentUser
     )

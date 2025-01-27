@@ -6,24 +6,29 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
+import com.example.mustmarket.features.auth.data.datastore.UserStoreManager
 import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.example.mustmarket.features.bookmarks.BookmarksScreen
 import com.example.mustmarket.features.chat.view.ChatScreen
 import com.example.mustmarket.features.chatsList.view.ChatListScreen
+import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
 import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
 import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
-import com.example.mustmarket.features.home.presentation.viewmodels.SharedViewModel
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
@@ -35,10 +40,9 @@ import com.example.mustmarket.features.splash.view.SplashScreen
 fun SetUpNavGraph(
     navController: NavHostController,
     productViewModel: AllProductsViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = Screen.HomeScreen.route,
@@ -69,31 +73,23 @@ fun SetUpNavGraph(
             }) {
             HomeScreen(
                 navController = navController,
-                allProductsViewModel = productViewModel,
-                sharedViewModel = sharedViewModel
+                allProductsViewModel = productViewModel
             )
         }
         composable(route = Screen.Detail.route,
+            arguments = listOf(
+                navArgument("productId") { type = NavType.IntType }
+            ),
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left, tween(500)
                 )
-            }) {
+            }) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
             ProductDetailsScreen(
+                productId = productId,
                 navController = navController,
-                onBackPressed = { navController.popBackStack() },
-                sharedViewModel = sharedViewModel
-
-            )
-        }
-        composable(route = Screen.ChatScreen.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
-            ChatScreen(
-                navController = navController
+                onBackPressed = { navController.popBackStack() }
             )
         }
 
@@ -103,8 +99,24 @@ fun SetUpNavGraph(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
+            val chatListViewModel: ChatListViewModel = viewModel()
             ChatListScreen(
-                navController = navController
+                navController = navController,
+                viewModel = chatListViewModel
+            )
+        }
+
+        composable(
+            route = Screen.ChatScreen.route,
+            arguments = listOf(navArgument("chatId") { type = NavType.StringType }),
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId")
+            ChatScreen(
+                navController = navController,
             )
         }
         composable(route = Screen.Bookmarks.route,
@@ -135,6 +147,7 @@ fun SetUpNavGraph(
                 )
             }) {
             UploadProducts(
+                userStoreManager = UserStoreManager(context)
             )
         }
 
@@ -149,7 +162,7 @@ fun SetUpNavGraph(
         }
 
         composable(route = Screen.AllProductsList.route) {
-            AllProductsListScreen(navController,sharedViewModel)
+            AllProductsListScreen(navController = navController)
         }
     }
 }

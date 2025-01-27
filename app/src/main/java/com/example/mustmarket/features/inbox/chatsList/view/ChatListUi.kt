@@ -30,25 +30,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.features.chatsList.presentation.ChatListItem
 import com.example.mustmarket.features.chatsList.viewModel.ChatListViewModel
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.gray01
 import com.example.mustmarket.ui.theme.greenishA
 
 @Composable
 fun ChatListScreen(
     navController: NavController,
-    viewModel: ChatListViewModel = hiltViewModel()
+    viewModel: ChatListViewModel
 ) {
     val chats by viewModel.chats.observeAsState(emptyList())
 
     Scaffold(
-        backgroundColor = ThemeUtils.AppColors.Surface.themed(),
+        backgroundColor = greenishA,
         topBar = {
             TopAppBar(
                 title = {
@@ -56,7 +53,7 @@ fun ChatListScreen(
                         "Market-Chat",
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = ThemeUtils.AppColors.Text.themed()
+                        color = Color.White
                     )
                 },
                 actions = {
@@ -115,9 +112,7 @@ fun ChatListScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.padding(padding)
-        ) {
+        LazyColumn {
             items(chats) { chat ->
                 ChatListItem(
                     chat = chat,

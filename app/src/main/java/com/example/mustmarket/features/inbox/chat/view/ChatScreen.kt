@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chat.view
+package com.example.mustmarket.features.inbox.chat.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,56 +15,74 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.features.chat.domain.ChatMessage
-import com.example.mustmarket.features.chat.presentation.ChatMessageItem
-import com.example.mustmarket.features.chat.presentation.MessageInput
-import com.example.mustmarket.features.chat.viewModel.ChatViewModel
+import com.example.mustmarket.features.inbox.chat.model.ChatMessage
+import com.example.mustmarket.features.inbox.chat.presentation.ChatMessageItem
+import com.example.mustmarket.features.inbox.chat.presentation.MessageInput
+import com.example.mustmarket.features.inbox.chat.viewModel.ChatViewModel
+import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun ChatScreen(
-    userName: String = "Unknown",
     navController: NavController,
-    viewModel: ChatViewModel = viewModel(),
+    chatId: String,
+    contactName: String,
+    currentUser: String,
+    chatViewModel: ChatViewModel = hiltViewModel(),
+    //chatListViewModel: ChatListViewModel = viewModel()
 ) {
-    val messages by viewModel.messages.collectAsState()
+
+    val messages by chatViewModel.messages.observeAsState(emptyList())
     var showMenuForMessage by remember { mutableStateOf<ChatMessage?>(null) }
-    //var isMenuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(chatId) {
+        chatViewModel.setCurrentChatId(chatId)
+    }
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = userName,
+                        text = contactName,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = ThemeUtils.AppColors.Text.themed()
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Screen.ChatListScreen.route){
+                                popUpTo(Screen.ChatListScreen.route){
+                                    inclusive = false
+                                }
+                            }
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBackIosNew,
                             contentDescription = "navigate back"
                         )
                     }
                 },
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = MaterialTheme.colors.primarySurface,
                 elevation = 0.dp
             )
         }
@@ -73,18 +91,18 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(bottom = 59.dp),
+                .padding(bottom = 1.dp),
         ) {
 
 
-            // Chat List
+            // scrollable chat
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp),
                 reverseLayout = true
             ) {
-                items(messages.reversed()) { message ->
+                items(messages/*.reversed()*/) { message ->
                     ChatMessageItem(
                         message = message,
                         onMenuClicked = {
@@ -96,9 +114,13 @@ fun ChatScreen(
 
             // Message Input
             MessageInput(
-                onMessageSent = {
-                    viewModel.sendMessage(it)
-                }
+                    onMessageSent = { message ->
+                        chatViewModel.sendMessage(
+                            sender = currentUser,
+                            message = message
+                        )
+                },
+                currentUser = currentUser
             )
 
             showMenuForMessage?.let { message ->
@@ -130,3 +152,10 @@ fun ChatScreen(
         }
     }
 }
+
+//fun simulateBackendMessages(chatViewModel: ChatViewModel) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        Thread.sleep(5000) // Simulate delay
+//        chatViewModel.receiveMessage("Demola", "This is a message from the server!")
+//    }
+//}
