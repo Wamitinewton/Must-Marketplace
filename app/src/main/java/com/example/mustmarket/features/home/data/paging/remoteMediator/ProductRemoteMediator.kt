@@ -48,7 +48,7 @@ class ProductRemoteMediator(
                 timeOuts = PagingConsts.NETWORK_TIMEOUT
             ) {
                 productsApi.getAllProducts(
-                    loadKey!!,
+                    //loadKey!!,
                 )
             }.first()
 
