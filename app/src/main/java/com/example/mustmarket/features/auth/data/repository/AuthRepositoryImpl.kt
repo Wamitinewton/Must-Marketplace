@@ -6,10 +6,11 @@ import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.UserDao
 import com.example.mustmarket.database.mappers.toAuthedUser
 import com.example.mustmarket.database.mappers.toUserEntity
-import com.example.mustmarket.features.auth.data.dto.OtpResponse
-import com.example.mustmarket.features.auth.data.dto.PasswordResetResponse
-import com.example.mustmarket.features.auth.data.remote.AuthApi
+import com.example.mustmarket.features.auth.data.auth_mappers.toAuthedUser
+import com.example.mustmarket.features.auth.data.auth_mappers.toLoginResult
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
+import com.example.mustmarket.features.auth.data.remote.service.AuthenticationService
+import com.example.mustmarket.features.auth.data.tokenHolder.AuthTokenHolder
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.LoginResult
@@ -17,9 +18,6 @@ import com.example.mustmarket.features.auth.domain.model.OtpRequest
 import com.example.mustmarket.features.auth.domain.model.RequestPasswordReset
 import com.example.mustmarket.features.auth.domain.model.SignUpUser
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
-import com.example.mustmarket.features.auth.data.mapper.toAuthedUser
-import com.example.mustmarket.features.auth.data.mapper.toLoginResult
-import com.example.mustmarket.features.auth.data.tokenHolder.AuthTokenHolder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -30,7 +28,7 @@ import javax.inject.Inject
 import retrofit2.HttpException as RetrofitHttpException
 
 class AuthRepositoryImpl @Inject constructor(
-    private val authApi: AuthApi,
+    private val authApi: AuthenticationService,
     private val sessionManger: SessionManager,
     private val userDao: UserDao
 ) : AuthRepository {
@@ -88,7 +86,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
 
-    override suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<OtpResponse>> =
+    override suspend fun requestOtp(email: RequestPasswordReset): Flow<Resource<com.example.mustmarket.features.auth.data.remote.auth_response.OtpResponse>> =
         flow {
             emit(Resource.Loading(true))
             try {
@@ -118,7 +116,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun resetPassword(otpRequest: OtpRequest): Flow<Resource<PasswordResetResponse>> =
+    override suspend fun resetPassword(otpRequest: OtpRequest): Flow<Resource<com.example.mustmarket.features.auth.data.remote.auth_response.PasswordResetResponse>> =
         flow {
             emit(Resource.Loading(true))
             try {

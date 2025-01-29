@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -42,15 +43,11 @@ class SignUpViewModel @Inject constructor(
         coroutineDebugger.cancelAllCoroutines()
         val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
         if (activeCoroutines.isNotEmpty()) {
-            Log.d(
-                "register",
-                "⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:"
-            )
+            Timber.tag("register")
+                .d("⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:")
             activeCoroutines.forEach { info ->
-                Log.d(
-                    "register",
-                    "📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms"
-                )
+                Timber.tag("register")
+                    .d("📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms")
             }
         }
     }
