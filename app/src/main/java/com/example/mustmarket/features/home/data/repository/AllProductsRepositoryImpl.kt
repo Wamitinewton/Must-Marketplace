@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.home.data.repository
 
+import androidx.lifecycle.lifecycleScope
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.ProductDao
@@ -14,9 +15,12 @@ import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -33,8 +37,19 @@ class AllProductsRepositoryImpl @Inject constructor(
         const val BATCH_SIZE = 50
     }
 
+    private val cachedProductsFlow = dao.getAllProducts()
+        .map { it.toNetworkProducts() }
+        .flowOn(ioDispatcher)
+        .shareIn(
+            scope = androidx.lifecycle.ProcessLifecycleOwner.get().lifecycleScope,
+            started = SharingStarted.Lazily,
+            replay = 1
+        )
+
     override suspend fun shouldRefresh(): Boolean =
-        dao.getAllProducts().firstOrNull().isNullOrEmpty()
+        withContext(ioDispatcher) {
+            dao.getAllProducts().firstOrNull().isNullOrEmpty()
+        }
 
 
 
@@ -42,16 +57,21 @@ class AllProductsRepositoryImpl @Inject constructor(
         flow {
             emit(Resource.Loading(true))
             try {
-                val cachedProducts = withContext(ioDispatcher){
-                    dao.getAllProducts().firstOrNull()
+                if (!forceRefresh) {
+                    cachedProductsFlow.firstOrNull()?.let { cachedProducts ->
+                        if (cachedProducts.isNotEmpty()) {
+                            emit(Resource.Success(cachedProducts))
+                        }
+                    }
                 }
 
-                if (!forceRefresh && !cachedProducts.isNullOrEmpty()) {
-                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
-                } else {
-                    val fetchResult = fetchAndProcessProducts()
-                    emit(fetchResult)
-                }
+             if (forceRefresh || shouldRefresh()) {
+                 when(val result = fetchAndProcessProducts()) {
+                     is Resource.Error -> emit(Resource.Error(result.message ?: ""))
+                     is Resource.Loading -> emit(Resource.Loading(result.isLoading))
+                     is Resource.Success -> (Resource.Success(result.data))
+                 }
+             }
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error occurred"))
             } finally {
@@ -66,10 +86,20 @@ class AllProductsRepositoryImpl @Inject constructor(
                val response = productsApi.getAllProducts()
 
                 if (response.message == "Success") {
-                    val processedProducts = response.data.map { it.toDomainProduct() }
+                    val processedProducts = response.data
+                        .asSequence()
+                        .map { it.toDomainProduct() }
                         .filter { it.brand.isNotBlank() }
                         .sortedByDescending { it.id }
                         .distinctBy { it.id }
+                        .toList()
+
+                    dao.run {
+                        dao.clearAllProducts()
+                        processedProducts.chunked(BATCH_SIZE).forEach{ batch ->
+                            dao.insertProducts(batch.toProductListingEntities())
+                        }
+                    }
 
                     dao.clearAllProducts()
                     processedProducts.chunked(BATCH_SIZE).forEach { batch ->
@@ -78,12 +108,7 @@ class AllProductsRepositoryImpl @Inject constructor(
 
                     syncManager.updateLastSyncTimeStamp()
 
-                    val freshProducts = dao.getAllProducts().firstOrNull()
-                    if (!freshProducts.isNullOrEmpty()) {
-                        Resource.Success(freshProducts.toNetworkProducts())
-                    } else {
-                        Resource.Error("No products found")
-                    }
+                  Resource.Success(processedProducts)
                 } else {
                     Resource.Error(response.message)
                 }
