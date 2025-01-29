@@ -1,9 +1,10 @@
 package com.example.mustmarket.features.auth.data.mapper
 
-import com.example.mustmarket.features.auth.data.dto.LogInResultDto
-import com.example.mustmarket.features.auth.data.dto.LoginDataDto
-import com.example.mustmarket.features.auth.data.dto.RefreshTokenDto
-import com.example.mustmarket.features.auth.data.dto.UserDto
+
+import com.example.mustmarket.features.auth.data.remote.auth_response.LogInResultDto
+import com.example.mustmarket.features.auth.data.remote.auth_response.LoginDataDto
+import com.example.mustmarket.features.auth.data.remote.auth_response.RefreshTokenDto
+import com.example.mustmarket.features.auth.data.remote.auth_response.UserDto
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginData
 import com.example.mustmarket.features.auth.domain.model.LoginResult

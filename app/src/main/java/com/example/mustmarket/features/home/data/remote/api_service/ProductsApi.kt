@@ -1,8 +1,8 @@
-package com.example.mustmarket.features.home.data.remote
+package com.example.mustmarket.features.home.data.remote.api_service
 
-import com.example.mustmarket.features.home.data.remote.dto.AllProductsDto
-import com.example.mustmarket.features.home.data.remote.dto.CategoryResponseDto
-import com.example.mustmarket.features.home.data.remote.dto.ProductDetailsDto
+import com.example.mustmarket.features.home.data.remote.response.AllProductsDto
+import com.example.mustmarket.features.home.data.remote.response.CategoryResponseDto
+import com.example.mustmarket.features.home.data.remote.response.ProductDetailsDto
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.features.home.domain.model.categories.UploadCategoryResponse
 import okhttp3.MultipartBody
@@ -15,30 +15,30 @@ import retrofit2.http.Query
 
 interface ProductsApi {
 
-    @GET("categories/all")
+    @GET(ProductsEndpoints.GET_CATEGORY_ID)
     suspend fun getCategories(
         @Query("size") size: Int
     ): List<ProductCategory>
 
-    @GET("api/v1/products/get/{id}")
+    @GET(ProductsEndpoints.GET_PRODUCTS_BY_ID)
     suspend fun getProductsById(
         @Path("id") productId: Int
     ): ProductDetailsDto
 
-    @GET("api/v1/categories/all")
+    @GET(ProductsEndpoints.GET_ALL_CATEGORIES)
     suspend fun getAllCategories(): CategoryResponseDto
 
-    @GET("api/v1/products/all")
+    @GET(ProductsEndpoints.GET_ALL_PRODUCTS)
     suspend fun getAllProducts(
     ): AllProductsDto
 
-    @GET("api/v1/products/by-name/{query}")
+    @GET(ProductsEndpoints.SEARCH_PRODUCTS)
     suspend fun searchProducts(
         @Query("query") query: String
     ): AllProductsDto
 
     @Multipart
-    @POST("api/v1/categories/add")
+    @POST(ProductsEndpoints.ADD_CATEGORY)
     suspend fun addCategory(
         @Query("name") name: String,
         @Part image: MultipartBody.Part

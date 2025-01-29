@@ -1,7 +1,7 @@
 package com.example.mustmarket.features.home.data.mapper
 
 import com.example.mustmarket.database.entities.CategoryListingEntity
-import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
+import com.example.mustmarket.features.home.data.remote.response.CategoryDto
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 
 fun CategoryDto.toProductCategory(): ProductCategory {

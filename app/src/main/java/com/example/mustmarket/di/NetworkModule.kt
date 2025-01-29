@@ -3,8 +3,8 @@ package com.example.mustmarket.di
 import android.content.Context
 import com.example.mustmarket.BuildConfig
 import com.example.mustmarket.features.auth.authInterceptor.AuthInterceptor
-import com.example.mustmarket.features.auth.data.remote.AuthApi
-import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.auth.data.remote.service.AuthenticationService
+import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -58,7 +58,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+    fun provideAuthApi(retrofit: Retrofit): AuthenticationService = retrofit.create(AuthenticationService::class.java)
 
     @Provides
     @Singleton

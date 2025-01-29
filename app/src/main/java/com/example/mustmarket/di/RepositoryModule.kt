@@ -2,8 +2,6 @@ package com.example.mustmarket.di
 
 import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.retryConfig.RetryUtil
-import com.example.mustmarket.core.threadExecutor.ThreadPoolExecutor
-import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
@@ -12,7 +10,8 @@ import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.database.dao.UserDao
-import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.auth.data.remote.service.AuthenticationService
+import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl
@@ -23,6 +22,8 @@ import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import com.example.mustmarket.features.home.workManager.ProductSyncManager
+import com.example.mustmarket.features.inbox.chat.model.ChatDao
+import com.example.mustmarket.features.inbox.repository.ChatRepository
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
@@ -41,7 +42,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authApi: AuthApi,
+        authApi: AuthenticationService,
         sessionManager: SessionManager,
         userDao: UserDao
     ): AuthRepository {
@@ -50,6 +51,12 @@ object RepositoryModule {
             sessionManger = sessionManager,
             userDao = userDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(chatDao: ChatDao): ChatRepository {
+        return ChatRepository(chatDao)
     }
 
     @Provides
@@ -74,17 +81,13 @@ object RepositoryModule {
         allProductsApi: ProductsApi,
         dao: ProductDao,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        retryUtil: RetryUtil,
         syncManager: ProductSyncManager,
-        multiThreadingActivity: ThreadPoolExecutor
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
             ioDispatcher = ioDispatcher,
-            retryUtil = retryUtil,
             syncManager = syncManager,
-            threadingActivity = multiThreadingActivity
         )
     }
 
