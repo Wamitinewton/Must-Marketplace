@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
@@ -36,7 +37,7 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 @Composable
 fun AllProductsListScreen(
     navController: NavController,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
     val products = sharedViewModel.productList
