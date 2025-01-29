@@ -2,7 +2,6 @@ package com.example.mustmarket.di
 
 import com.example.mustmarket.usecase.UseCases
 import com.example.mustmarket.core.retryConfig.RetryUtil
-import com.example.mustmarket.features.auth.data.remote.AuthApi
 import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
 import com.example.mustmarket.features.auth.data.datastore.SessionManager
 import com.example.mustmarket.features.auth.domain.repository.AuthRepository
@@ -11,7 +10,7 @@ import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.database.dao.UserDao
-import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl

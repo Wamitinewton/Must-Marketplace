@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.home.data.remote.dto
+package com.example.mustmarket.features.home.data.remote.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,8 +1,8 @@
 package com.example.mustmarket.features.auth.domain.repository
 
 import com.example.mustmarket.core.util.Resource
-import com.example.mustmarket.features.auth.data.dto.OtpResponse
-import com.example.mustmarket.features.auth.data.dto.PasswordResetResponse
+import com.example.mustmarket.features.auth.data.remote.auth_response.OtpResponse
+import com.example.mustmarket.features.auth.data.remote.auth_response.PasswordResetResponse
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.auth.domain.model.LoginRequest
 import com.example.mustmarket.features.auth.domain.model.LoginResult

@@ -9,7 +9,7 @@ import com.example.mustmarket.di.IODispatcher
 import com.example.mustmarket.features.home.data.mapper.toCategoryListingEntity
 import com.example.mustmarket.features.home.data.mapper.toDomainCategory
 import com.example.mustmarket.features.home.data.mapper.toProductCategory
-import com.example.mustmarket.features.home.data.remote.ProductsApi
+import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.data.repository.CategoryRepositoryImpl.CacheBatch.BATCH_SIZE
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 import com.example.mustmarket.features.home.domain.model.categories.UploadCategoryResponse

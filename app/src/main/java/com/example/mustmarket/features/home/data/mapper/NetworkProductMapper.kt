@@ -3,9 +3,9 @@ package com.example.mustmarket.features.home.data.mapper
 import com.example.mustmarket.database.converters.DataConverters
 import com.example.mustmarket.database.entities.ProductListingEntity
 import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.home.data.remote.dto.CategoryDto
-import com.example.mustmarket.features.home.data.remote.dto.NetworkProductDto
-import com.example.mustmarket.features.home.data.remote.dto.UserDataDto
+import com.example.mustmarket.features.home.data.remote.response.CategoryDto
+import com.example.mustmarket.features.home.data.remote.response.NetworkProductDto
+import com.example.mustmarket.features.home.data.remote.response.UserDataDto
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.model.categories.ProductCategory
 
