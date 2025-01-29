@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.mustmarket.database.database.AppDatabase
+import com.example.mustmarket.features.inbox.chat.model.ChatDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,6 +49,10 @@ object LocalModule {
     @Provides
     @Singleton
     fun provideUserDao(db: AppDatabase) = db.userDao
+
+    @Provides
+    @Singleton
+    fun provideChatDao(database: AppDatabase) = database.chatDao
 
 
 }

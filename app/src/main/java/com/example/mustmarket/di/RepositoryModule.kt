@@ -22,6 +22,8 @@ import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
 import com.example.mustmarket.features.home.workManager.ProductSyncManager
+import com.example.mustmarket.features.inbox.chat.model.ChatDao
+import com.example.mustmarket.features.inbox.repository.ChatRepository
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
@@ -49,6 +51,12 @@ object RepositoryModule {
             sessionManger = sessionManager,
             userDao = userDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(chatDao: ChatDao): ChatRepository {
+        return ChatRepository(chatDao)
     }
 
     @Provides
