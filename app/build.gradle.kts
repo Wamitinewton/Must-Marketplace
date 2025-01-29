@@ -105,6 +105,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     // Hilt DI
     implementation(libs.hilt.android)

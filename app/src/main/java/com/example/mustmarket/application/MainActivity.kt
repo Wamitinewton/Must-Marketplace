@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.example.mustmarket.core.sharedComposable.BottomNavBar
+import com.example.mustmarket.features.auth.data.authWorkManager.scheduleTokenRefreshWork
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.navigation.SetUpNavGraph
 import com.example.mustmarket.ui.theme.ThemeUtils.MustMarketTheme
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CoroutineDebugger.enableDebugging()
+        scheduleTokenRefreshWork(applicationContext)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContent {
 
