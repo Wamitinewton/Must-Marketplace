@@ -37,14 +37,7 @@ class AllProductsRepositoryImpl @Inject constructor(
         const val BATCH_SIZE = 50
     }
 
-    private val cachedProductsFlow = dao.getAllProducts()
-        .map { it.toNetworkProducts() }
-        .flowOn(ioDispatcher)
-        .shareIn(
-            scope = androidx.lifecycle.ProcessLifecycleOwner.get().lifecycleScope,
-            started = SharingStarted.Lazily,
-            replay = 1
-        )
+
 
     override suspend fun shouldRefresh(): Boolean =
         withContext(ioDispatcher) {
@@ -57,21 +50,16 @@ class AllProductsRepositoryImpl @Inject constructor(
         flow {
             emit(Resource.Loading(true))
             try {
-                if (!forceRefresh) {
-                    cachedProductsFlow.firstOrNull()?.let { cachedProducts ->
-                        if (cachedProducts.isNotEmpty()) {
-                            emit(Resource.Success(cachedProducts))
-                        }
-                    }
+                val cachedProducts = withContext(ioDispatcher){
+                    dao.getAllProducts().firstOrNull()
+                }
+                if (!forceRefresh && !cachedProducts.isNullOrEmpty()) {
+                    emit(Resource.Success(cachedProducts.toNetworkProducts()))
+                } else {
+                    val fetchResult = fetchAndProcessProducts()
+                    emit(fetchResult)
                 }
 
-             if (forceRefresh || shouldRefresh()) {
-                 when(val result = fetchAndProcessProducts()) {
-                     is Resource.Error -> emit(Resource.Error(result.message ?: ""))
-                     is Resource.Loading -> emit(Resource.Loading(result.isLoading))
-                     is Resource.Success -> (Resource.Success(result.data))
-                 }
-             }
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error occurred"))
             } finally {
