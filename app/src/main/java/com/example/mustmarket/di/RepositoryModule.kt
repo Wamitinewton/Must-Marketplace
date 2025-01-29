@@ -10,6 +10,7 @@ import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.database.dao.UserDao
+import com.example.mustmarket.features.auth.data.remote.service.AuthenticationService
 import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
@@ -39,7 +40,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authApi: AuthApi,
+        authApi: AuthenticationService,
         sessionManager: SessionManager,
         userDao: UserDao
     ): AuthRepository {
