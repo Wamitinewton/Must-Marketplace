@@ -23,7 +23,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.primarySurface
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -46,7 +44,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.mustmarket.core.sharedComposable.ButtonLoading
 import com.example.mustmarket.core.sharedComposable.DefaultTextInput
-import com.example.mustmarket.core.sharedComposable.myKeyboardOptions
+import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.MerchantPreferences
+import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
@@ -54,7 +53,8 @@ import com.example.mustmarket.ui.theme.ThemeUtils.themed
 fun RegisterStoreScreen(
     navController: NavController,
     storeNameError: String = "",
-    businessTypeError: String = ""
+    businessTypeError: String = "",
+    onRegister: ((String, String, String, String, String, Uri?) -> Unit)? = null
 ){
     var storeName by remember {
         mutableStateOf("")
@@ -145,7 +145,7 @@ fun RegisterStoreScreen(
                     storeName = it
                 },
                 inputText = storeName,
-                name = "Store Name",
+                name = "Stall Name",
                 errorMessage = storeNameError,
                 myKeyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -243,7 +243,7 @@ fun RegisterStoreScreen(
                     storeLocation = it
                 },
                 inputText = storeLocation,
-                name = "Store Location",
+                name = "Stall Location",
                 errorMessage = "",
                 myKeyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -256,7 +256,7 @@ fun RegisterStoreScreen(
             storeImageUri?.let {
                 Image(
                     painter = rememberImagePainter(it),
-                    contentDescription = "Store Logo",
+                    contentDescription = "Stall Logo",
                     modifier = Modifier.size(100.dp),
                     contentScale = ContentScale.Crop
                 )
@@ -265,7 +265,7 @@ fun RegisterStoreScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             ButtonLoading(
-                name = "Upload Store Logo",
+                name = "Upload Stall Logo",
                 isLoading = false,
                 enabled = true,
                 onClicked = {
@@ -276,11 +276,22 @@ fun RegisterStoreScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             ButtonLoading(
-                name = "Create Your Store",
+                name = "Create Your Stall",
                 isLoading = false,
                 enabled = true,
                 onClicked = {
-                    //navController.navigate(Screen.Login.route)
+                    val merchantId = MerchantPreferences.getMerchantId(context)
+                        onRegister?.invoke(
+                        storeName,
+                        businessType,
+                        storeLocation,
+                        businessPhone,
+                        businessDescription,
+                        storeImageUri
+                    )
+                    navController.navigate(
+                        Screen.MerchantStore.createRoute(merchantId.toString())
+                    )
                 }
             )
         }
