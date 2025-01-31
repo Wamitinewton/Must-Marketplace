@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -170,8 +171,17 @@ fun DefaultTextInput(
     errorMessage: String? = null,
     onSubmitted: (() -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
-    readOnly: Boolean = false
+    readOnly: Boolean = false,
+    singleLine: Boolean = true,
+    maxLines: Int = 1,
+    myKeyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text
+    ),
+    keyboardActions: KeyboardActions? = null,
 ) {
+
+    val softwareKeyboard = LocalSoftwareKeyboardController.current
+
     OutlinedTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             errorCursorColor = MaterialTheme.colors.primary,
@@ -185,10 +195,11 @@ fun DefaultTextInput(
         ),
         modifier = Modifier
             .background(Color.Transparent),
-        singleLine = true,
+        singleLine = singleLine,
         keyboardOptions = myKeyboardOptions,
         keyboardActions = KeyboardActions(
             onDone = {
+                softwareKeyboard?.hide()
                 onSubmitted?.invoke()
             }
         ),
@@ -199,7 +210,8 @@ fun DefaultTextInput(
             {
                 trailingIcon()
             }
-        }
+        },
+        maxLines = maxLines
     )
     errorMessage?.let {
         Text(

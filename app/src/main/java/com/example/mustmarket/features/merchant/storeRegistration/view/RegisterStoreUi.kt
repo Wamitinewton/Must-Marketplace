@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -37,12 +38,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.mustmarket.core.sharedComposable.ButtonLoading
 import com.example.mustmarket.core.sharedComposable.DefaultTextInput
+import com.example.mustmarket.core.sharedComposable.myKeyboardOptions
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
@@ -108,9 +112,9 @@ fun RegisterStoreScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Register Your Store",
+                        "Become a Seller",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         color = ThemeUtils.AppColors.Text.themed()
                     )
                 },
@@ -119,7 +123,9 @@ fun RegisterStoreScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Back",
-                            tint = MaterialTheme.colors.primarySurface
+                            tint = ThemeUtils.AppColors.Surface.themed(),
+                            modifier = Modifier
+                                .size(30.dp)
                         )
                     }
                 },
@@ -140,7 +146,11 @@ fun RegisterStoreScreen(
                 },
                 inputText = storeName,
                 name = "Store Name",
-                errorMessage = storeNameError
+                errorMessage = storeNameError,
+                myKeyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -173,7 +183,8 @@ fun RegisterStoreScreen(
                                     .size(44.dp)
                             )
                         }
-                    }
+                    },
+
                 )
                 DropdownMenu(
                     expanded = expanded,
@@ -201,7 +212,11 @@ fun RegisterStoreScreen(
                 },
                 inputText = businessPhone,
                 name = "Business Phone",
-                errorMessage = ""
+                errorMessage = "",
+                myKeyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -212,7 +227,13 @@ fun RegisterStoreScreen(
                 },
                 inputText = businessDescription,
                 name = "Business Description",
-                errorMessage = ""
+                errorMessage = "",
+                myKeyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Default
+                ),
+                maxLines = 5,
+                singleLine = false
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -223,7 +244,11 @@ fun RegisterStoreScreen(
                 },
                 inputText = storeLocation,
                 name = "Store Location",
-                errorMessage = ""
+                errorMessage = "",
+                myKeyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -251,7 +276,7 @@ fun RegisterStoreScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             ButtonLoading(
-                name = "Create Store",
+                name = "Create Your Store",
                 isLoading = false,
                 enabled = true,
                 onClicked = {
