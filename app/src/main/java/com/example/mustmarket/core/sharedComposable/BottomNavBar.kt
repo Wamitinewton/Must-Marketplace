@@ -8,13 +8,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 
 @Composable
@@ -22,9 +25,12 @@ import com.example.mustmarket.navigation.Screen
 
 fun BottomNavBar(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    merchantViewModel: MerchantViewModel = viewModel()
 ) {
     val screens = Screen.BottomNavItems.items
+    val isMerchant by merchantViewModel.isMerchant.collectAsState()
+    val merchantId by merchantViewModel.merchantId.collectAsState()
 
     BottomNavigation(
         modifier = modifier,
@@ -44,7 +50,7 @@ fun BottomNavBar(
 
                             Screen.Bookmarks -> Icons.Default.Bookmark
 
-                            Screen.Favourites -> Icons.Default.AddCircleOutline
+                            Screen.Favourites -> if (isMerchant) Icons.Default.Storefront else Icons.Default.AddCircleOutline
                             Screen.Profile -> Icons.Default.Settings
                             else -> Icons.Default.Home
                         },
@@ -57,7 +63,7 @@ fun BottomNavBar(
                             Screen.HomeScreen -> "Home"
                             Screen.ChatListScreen -> "Messages"
                             Screen.Bookmarks -> "Bookmarks"
-                            Screen.Favourites -> "Favourites"
+                            Screen.Favourites -> if (isMerchant) "Store" else "Register"
                             Screen.Profile -> "Account"
                             else -> ""
                         },
@@ -66,7 +72,13 @@ fun BottomNavBar(
                 },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    if (currentRoute != screen.route) {
+                    if (screen == Screen.Favourites) {
+                        if (isMerchant) {
+                            navController.navigate("add_product/$merchantId")
+                        } else {
+                            navController.navigate("register_store")
+                        }
+                    } else if (currentRoute != screen.route) {
                         navController.navigate(screen.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
@@ -75,7 +87,7 @@ fun BottomNavBar(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                        }
                 }
             )
         }

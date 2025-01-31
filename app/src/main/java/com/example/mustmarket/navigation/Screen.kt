@@ -27,6 +27,8 @@ sealed class Screen(
         }
     }
 
+    data object RegisterStore : Screen("register_store")
+
 
     object BottomNavItems {
         val items = listOf(
