@@ -168,7 +168,9 @@ fun DefaultTextInput(
     inputText: String,
     name: String,
     errorMessage: String? = null,
-    onSubmitted: (() -> Unit)? = null
+    onSubmitted: (() -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -191,7 +193,13 @@ fun DefaultTextInput(
             }
         ),
         label = { TextFieldLabel(name = name) },
-        isError = errorMessage != null
+        isError = errorMessage != null,
+        readOnly = readOnly,
+        trailingIcon = if (trailingIcon == null) null else {
+            {
+                trailingIcon()
+            }
+        }
     )
     errorMessage?.let {
         Text(
