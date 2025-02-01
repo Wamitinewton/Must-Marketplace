@@ -157,13 +157,14 @@ fun SetUpNavGraph(
                 navController = navController
             )
         }
-        composable(route = Screen.Favourites.route,
+        composable(route = Screen.AddProduct.route,
             enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }) {
             UploadProducts(
+                navController = navController
                 //userStoreManager = UserStoreManager(context)
             )
         }
@@ -190,7 +191,7 @@ fun SetUpNavGraph(
             val merchantId = backStackEntry.arguments?.getString("merchantId") ?: ""
             MerchantStoreScreen(
                 navController = navController,
-                merchantId
+                merchantId = merchantId
             )
         }
     }

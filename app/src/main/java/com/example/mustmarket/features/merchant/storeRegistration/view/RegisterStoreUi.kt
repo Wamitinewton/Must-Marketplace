@@ -1,5 +1,6 @@
 package com.example.mustmarket.features.merchant.storeRegistration.view
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,21 +41,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.core.sharedComposable.ButtonLoading
 import com.example.mustmarket.core.sharedComposable.DefaultTextInput
 import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.MerchantPreferences
+import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun RegisterStoreScreen(
     navController: NavController,
     storeNameError: String = "",
     businessTypeError: String = "",
-    onRegister: ((String, String, String, String, String, Uri?) -> Unit)? = null
+    onRegister: ((String, String, String, String, String, Uri?) -> Unit)? = null,
+    merchantViewModel: MerchantViewModel = viewModel()
 ){
     var storeName by remember {
         mutableStateOf("")
@@ -255,7 +260,7 @@ fun RegisterStoreScreen(
 
             storeImageUri?.let {
                 Image(
-                    painter = rememberImagePainter(it),
+                    painter = rememberAsyncImagePainter(it),
                     contentDescription = "Stall Logo",
                     modifier = Modifier.size(100.dp),
                     contentScale = ContentScale.Crop

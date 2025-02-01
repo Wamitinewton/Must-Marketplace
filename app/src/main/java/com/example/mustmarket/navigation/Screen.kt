@@ -14,7 +14,7 @@ sealed class Screen(
 
     data object Bookmarks: Screen("bookmarks_screen")
     data object Profile: Screen("profile_screen")
-    data object Favourites: Screen("favourites_screen")
+    data object AddProduct: Screen("add_products_screen")
     data object Onboarding: Screen("onboarding_screen")
     data object Otp: Screen("otp_screen")
     data object ProductSearch: Screen("product_search_screen")
@@ -38,7 +38,7 @@ sealed class Screen(
             HomeScreen,
             ChatListScreen,
             Bookmarks,
-            Favourites,
+            AddProduct,
             Profile,
         )
     }

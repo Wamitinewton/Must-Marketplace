@@ -6,3 +6,9 @@ data class Product(
     val price: String,
     val imageUri: String
 )
+
+data class StoreProfile(
+    val MerchantId: String,
+    val storeName: String?,
+    val storeLogoUrl: String?
+)

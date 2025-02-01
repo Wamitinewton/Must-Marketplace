@@ -50,7 +50,7 @@ fun BottomNavBar(
 
                             Screen.Bookmarks -> Icons.Default.Bookmark
 
-                            Screen.Favourites -> if (isMerchant) Icons.Default.Storefront else Icons.Default.AddCircleOutline
+                            Screen.AddProduct -> if (isMerchant) Icons.Default.Storefront else Icons.Default.AddCircleOutline
                             Screen.Profile -> Icons.Default.Settings
                             else -> Icons.Default.Home
                         },
@@ -63,7 +63,7 @@ fun BottomNavBar(
                             Screen.HomeScreen -> "Home"
                             Screen.ChatListScreen -> "Messages"
                             Screen.Bookmarks -> "Bookmarks"
-                            Screen.Favourites -> if (isMerchant) "Store" else "Register"
+                            Screen.AddProduct -> if (isMerchant) "Store" else "Register"
                             Screen.Profile -> "Account"
                             else -> ""
                         },
@@ -72,9 +72,9 @@ fun BottomNavBar(
                 },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    if (screen == Screen.Favourites) {
+                    if (screen == Screen.AddProduct) {
                         if (isMerchant) {
-                            navController.navigate("add_product/$merchantId")
+                            navController.navigate("merchant_store/{merchantId}")
                         } else {
                             navController.navigate("register_store")
                         }
