@@ -294,6 +294,7 @@ fun RegisterStoreScreen(
                         businessDescription,
                         storeImageUri
                     )
+                    merchantViewModel.setMerchantStatus(true, "sample_merchant_id")// remove this code when it comes to production
                     navController.navigate(
                         Screen.MerchantStore.createRoute(merchantId.toString())
                     )
