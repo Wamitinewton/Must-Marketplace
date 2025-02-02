@@ -139,9 +139,7 @@ fun ChatMessageItem(
 
         Row(
             modifier = Modifier
-                //.background(Color.Gray)
                 .fillMaxWidth()
-                //.widthIn(270.dp)
                 .padding(top = 2.dp),
             horizontalArrangement = if (message.isSentByCurrentUser) Arrangement.End else Arrangement.Start
         ) {
@@ -152,8 +150,6 @@ fun ChatMessageItem(
                 textAlign = if (message.isSentByCurrentUser) TextAlign.End else TextAlign.Start,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                //.fillMaxWidth()
-                //.widthIn(270.dp)
             )
         }
     }
