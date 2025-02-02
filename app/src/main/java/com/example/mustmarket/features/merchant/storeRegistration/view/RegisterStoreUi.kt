@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -147,7 +148,7 @@ fun RegisterStoreScreen(
         ) {
             DefaultTextInput(
                 onInputChanged = {
-                    storeName = it
+                    storeName = it.capitalize()
                 },
                 inputText = storeName,
                 name = "Stall Name",
@@ -228,7 +229,7 @@ fun RegisterStoreScreen(
 
             DefaultTextInput(
                 onInputChanged = {
-                    businessDescription = it
+                    businessDescription = it.capitalize()
                 },
                 inputText = businessDescription,
                 name = "Business Description",
@@ -245,7 +246,7 @@ fun RegisterStoreScreen(
 
             DefaultTextInput(
                 onInputChanged = {
-                    storeLocation = it
+                    storeLocation = it.capitalize()
                 },
                 inputText = storeLocation,
                 name = "Stall Location",
@@ -262,7 +263,8 @@ fun RegisterStoreScreen(
                 Image(
                     painter = rememberAsyncImagePainter(it),
                     contentDescription = "Stall Logo",
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier
+                        .size(100.dp),
                     contentScale = ContentScale.Crop
                 )
             }
