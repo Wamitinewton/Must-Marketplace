@@ -47,7 +47,7 @@ fun SetUpNavGraph(
         navController = navController,
         startDestination = Screen.Splash.route,
     ) {
-        composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
+        composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(
             route = Screen.SignUp.route,
             navTransition = NavigationTransitions.fade()
