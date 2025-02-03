@@ -75,7 +75,7 @@ fun ProductDetailsScreen(
     onBackPressed: () -> Unit,
     viewModel: BookmarksViewModel = hiltViewModel(),
     navController: NavController,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

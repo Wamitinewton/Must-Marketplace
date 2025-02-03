@@ -14,7 +14,7 @@ sealed class Screen(
 
     data object Bookmarks: Screen("bookmarks_screen")
     data object Profile: Screen("profile_screen")
-    data object Favourites: Screen("favourites_screen")
+    data object AddProduct: Screen("add_products_screen")
     data object Onboarding: Screen("onboarding_screen")
     data object Otp: Screen("otp_screen")
     data object ProductSearch: Screen("product_search_screen")
@@ -27,13 +27,18 @@ sealed class Screen(
         }
     }
 
+    data object RegisterStore : Screen("register_store")
+    data object MerchantStore : Screen("merchant_store/{merchantId}") {
+        fun createRoute(merchantId: String) = "merchant_store/$merchantId"
+    }
+
 
     object BottomNavItems {
         val items = listOf(
             HomeScreen,
             ChatListScreen,
             Bookmarks,
-            Favourites,
+            AddProduct,
             Profile,
         )
     }

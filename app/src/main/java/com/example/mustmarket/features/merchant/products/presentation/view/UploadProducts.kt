@@ -44,6 +44,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.mustmarket.core.networkManager.NetworkConnectionState
 import com.example.mustmarket.core.networkManager.rememberConnectivityState
 import com.example.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
@@ -82,7 +84,8 @@ fun UploadProducts(
     productViewModel: UploadProductViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     allProductsViewModel: AllProductsViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val context = LocalContext.current
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -331,6 +334,17 @@ fun UploadProducts(
                                     )
                                 }
                             }
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.navigateUp()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardDoubleArrowLeft,
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.surface,
+                            )
                         }
                     }
                 )

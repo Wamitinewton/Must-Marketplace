@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.chatsList.presentation
+package com.example.mustmarket.features.inbox.chatsList.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,30 +28,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.mustmarket.R
-import com.example.mustmarket.features.chatsList.model.Chat
+import com.example.mustmarket.features.inbox.chatsList.model.Chat
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.gray01
 
 @Composable
 fun ChatListItem(
     chat: Chat,
-    navController: NavController
+    navController: NavController,
+    currentUser: String = "anonymous",
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = Modifier
-            .background(Color.DarkGray)
+            .background(Color.White)
             .clickable {
-                //navController.navigate(Screen.ChatScreen.createRoute(chat.id))
+                navController.navigate(
+                    Screen.ChatScreen.createRoute(
+                        chatId = chat.id,
+                        contactName = chat.contactName ?: "anonymous",
+                        currentUser = currentUser
+                    )
+                )
             }
             .fillMaxWidth()
             .padding(8.dp),
@@ -104,10 +109,10 @@ fun ChatListItem(
             // Username and last message
             Column {
                 Text(
-                    text = chat.username ?: "Unknown",
+                    text = chat.contactName ?: "Unknown",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.White
+                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

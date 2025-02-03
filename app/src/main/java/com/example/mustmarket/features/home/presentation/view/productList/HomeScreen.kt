@@ -71,7 +71,7 @@ import timber.log.Timber
 fun HomeScreen(
     navController: NavController,
     allProductsViewModel: AllProductsViewModel,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel = hiltViewModel()
 ) {
 
     Content(
