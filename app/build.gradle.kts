@@ -109,8 +109,6 @@ dependencies {
 
     // Hilt DI
     implementation(libs.hilt.android)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.generativeai)
     implementation(libs.androidx.espresso.core)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -140,12 +138,7 @@ dependencies {
 
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.2.2")
-    implementation("com.github.skydoves:landscapist-bom:2.4.1")
-    implementation("com.github.skydoves:landscapist-coil:1.4.9")
-    implementation("com.github.skydoves:landscapist-glide")
-    implementation("com.github.skydoves:landscapist-placeholder")
-    implementation("com.github.skydoves:landscapist-palette")
-    implementation("com.github.skydoves:landscapist-transformation")
+
 
     // Accompanist
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.24.10-beta")

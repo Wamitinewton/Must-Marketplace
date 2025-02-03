@@ -10,8 +10,6 @@ import coil.request.CachePolicy
 import coil.util.DebugLogger
 import com.example.mustmarket.features.auth.data.authWorkManager.TokenRefreshWorkerFactory
 import com.example.mustmarket.features.auth.data.authWorkManager.scheduleTokenRefreshWork
-import com.example.mustmarket.features.home.workManager.ProductSyncManager
-import com.example.mustmarket.features.home.workManager.ProductSyncWorkerFactory
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -24,25 +22,18 @@ class MustApplication : Application(), ImageLoaderFactory, Configuration.Provide
     @Inject
     lateinit var workerFactory: TokenRefreshWorkerFactory
 
-    @Inject
-    lateinit var productSyncWorkerFactory: ProductSyncWorkerFactory
-
-    @Inject
-    lateinit var syncManager: ProductSyncManager
 
 
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
         scheduleTokenRefreshWork(this)
-        setupSyncManager()
     }
 
     override val workManagerConfiguration: Configuration by lazy(LazyThreadSafetyMode.PUBLICATION) {
         val compositeWorkerFactory = CompositeWorkerFactory(
             listOf(
                 workerFactory,
-                productSyncWorkerFactory
             )
         )
 
@@ -51,11 +42,6 @@ class MustApplication : Application(), ImageLoaderFactory, Configuration.Provide
             .setWorkerFactory(compositeWorkerFactory)
             .setMinimumLoggingLevel(android.util.Log.DEBUG)
             .build()
-    }
-
-    private fun setupSyncManager() {
-        syncManager.startPeriodicSync()
-        syncManager.observeSyncWork()
     }
 
 

@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.presentation
+package com.example.mustmarket.features.merchant.store.presentation
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

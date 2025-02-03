@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.view
+package com.example.mustmarket.features.merchant.store.view
 
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,11 +46,12 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.core.sharedComposable.ButtonLoading
 import com.example.mustmarket.core.sharedComposable.DefaultTextInput
-import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.MerchantPreferences
-import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
+import com.example.mustmarket.features.merchant.store.mDataStore.MerchantPreferences
+import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import java.util.Locale
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -148,7 +148,7 @@ fun RegisterStoreScreen(
         ) {
             DefaultTextInput(
                 onInputChanged = {
-                    storeName = it.capitalize()
+                    storeName = it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
                 },
                 inputText = storeName,
                 name = "Stall Name",

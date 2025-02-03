@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.view
+package com.example.mustmarket.features.merchant.store.view
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.Product
-import com.example.mustmarket.features.merchant.storeRegistration.presentation.EditStoreDropdownMenu
-import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
+import com.example.mustmarket.features.merchant.store.mDataStore.Product
+import com.example.mustmarket.features.merchant.store.presentation.EditStoreDropdownMenu
+import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed

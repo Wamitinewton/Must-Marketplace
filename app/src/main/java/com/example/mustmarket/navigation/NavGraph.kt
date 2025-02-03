@@ -29,8 +29,8 @@ import com.example.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
-import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantStoreScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.RegisterStoreScreen
+import com.example.mustmarket.features.merchant.store.view.MerchantStoreScreen
+import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 

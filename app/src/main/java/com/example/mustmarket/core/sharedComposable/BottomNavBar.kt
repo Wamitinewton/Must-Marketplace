@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
+import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 
 @Composable

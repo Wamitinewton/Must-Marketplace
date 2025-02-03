@@ -1,7 +1,6 @@
 package com.example.mustmarket.features.home.data.repository
 
 import coil.network.HttpException
-import com.example.mustmarket.core.retryConfig.RetryUtil
 import com.example.mustmarket.core.util.Constants.SUCCESS_RESPONSE
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.CategoryDao
@@ -33,7 +32,6 @@ import javax.inject.Inject
 class CategoryRepositoryImpl @Inject constructor(
     private val categoryApi: ProductsApi,
     private val dao: CategoryDao,
-    private val retryUtil: RetryUtil,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : CategoryRepository {
 
@@ -51,9 +49,7 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun getCategories(size: Int): Flow<Resource<List<ProductCategory>>> = flow {
         try {
-            val response = retryUtil.executeWithRetry {
-                categoryApi.getCategories(size)
-            }
+            val response = categoryApi.getCategories(size)
             emit(Resource.Success(data = response))
         } catch (e: HttpException) {
             emit(
@@ -95,7 +91,7 @@ class CategoryRepositoryImpl @Inject constructor(
     private suspend fun fetchAndProcessCategories(): Resource<List<ProductCategory>> =
         withContext(ioDispatcher) {
             try {
-                val response = retryUtil.executeWithRetry { categoryApi.getAllCategories() }
+                val response = categoryApi.getAllCategories()
 
                 if (response.message == SUCCESS_RESPONSE) {
                     val processedCategories = response.data.map { it.toDomainCategory() }
@@ -132,12 +128,10 @@ class CategoryRepositoryImpl @Inject constructor(
         emit(Resource.Loading(true))
         try {
             val imageFile = image.toMultipartBodyPart("file")
-            val response = retryUtil.executeWithRetry {
-                categoryApi.addCategory(
-                    name = name,
-                    image = imageFile
-                )
-            }
+            val response =  categoryApi.addCategory(
+                name = name,
+                image = imageFile
+            )
             if (response.message == "Success") {
                 emit(Resource.Success(response))
                 emit(Resource.Loading(false))

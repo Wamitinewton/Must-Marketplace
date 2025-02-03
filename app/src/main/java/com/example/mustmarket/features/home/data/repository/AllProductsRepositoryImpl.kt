@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.home.data.repository
 
-import androidx.lifecycle.lifecycleScope
 import coil.network.HttpException
 import com.example.mustmarket.core.util.Resource
 import com.example.mustmarket.database.dao.ProductDao
@@ -11,16 +10,12 @@ import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
-import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -29,7 +24,6 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val syncManager: ProductSyncManager,
 ) : AllProductsRepository {
 
 
@@ -94,7 +88,6 @@ class AllProductsRepositoryImpl @Inject constructor(
                         dao.insertProducts(batch.toProductListingEntities())
                     }
 
-                    syncManager.updateLastSyncTimeStamp()
 
                   Resource.Success(processedProducts)
                 } else {
