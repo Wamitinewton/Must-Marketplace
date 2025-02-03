@@ -43,50 +43,40 @@ fun SetUpNavGraph(
     productViewModel: AllProductsViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-    val context = LocalContext.current
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route,
+        startDestination = Screen.Splash.route,
     ) {
         composable(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
-        composable(route = Screen.SignUp.route, enterTransition = {
-            return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-            )
-        }) { SignUpScreen(navController = navController) }
-        composable(route = Screen.Login.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) { LoginScreen(navController = navController) }
-        composable(route = Screen.Splash.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) { SplashScreen(navController = navController) }
-        composable(route = Screen.HomeScreen.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(
+            route = Screen.SignUp.route,
+            navTransition = NavigationTransitions.fade()
+        ) { SignUpScreen(navController = navController) }
+        composableWithAnimations(
+            route = Screen.Login.route,
+            navTransition = NavigationTransitions.fade()
+        ) { LoginScreen(navController = navController) }
+        composableWithAnimations(
+            route = Screen.Splash.route,
+            navTransition = NavigationTransitions.horizontalSlide()
+          ) { SplashScreen(navController = navController) }
+        composableWithAnimations(
+            route = Screen.HomeScreen.route,
+            navTransition = NavigationTransitions.fade()
+            ) {
             HomeScreen(
                 navController = navController,
                 allProductsViewModel = productViewModel
             )
         }
-        composable(route = Screen.Detail.route,
+        composableWithAnimations(
+            route = Screen.Detail.route,
+            navTransition = NavigationTransitions.verticalSlide(),
             arguments = listOf(
                 navArgument("productId") { type = NavType.IntType }
             ),
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left, tween(500)
-                )
-            }) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
+          ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composableWithAnimations
             ProductDetailsScreen(
                 //productId = productId,
                 navController = navController,
@@ -94,12 +84,9 @@ fun SetUpNavGraph(
             )
         }
 
-        composable(route = Screen.ChatListScreen.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(
+            route = Screen.ChatListScreen.route,
+           ) {
             val chatListViewModel: ChatListViewModel = hiltViewModel()
             ChatListScreen(
                 navController = navController,
@@ -107,18 +94,14 @@ fun SetUpNavGraph(
             )
         }
 
-        composable(
+        composableWithAnimations(
             route = Screen.ChatScreen.route,
             arguments = listOf(
                 navArgument("chatId") { type = NavType.StringType },
                 navArgument("contactName") {type = NavType.StringType},
                 navArgument("currentUser") { type = NavType.StringType}
             ),
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) { backStackEntry ->
+          ) { backStackEntry ->
             ChatScreen(
                 navController = navController,
                 chatId = backStackEntry.arguments?.getString("chatId") ?: "",
@@ -127,67 +110,54 @@ fun SetUpNavGraph(
             )
         }
 
-        composable(Screen.NewChat.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(Screen.NewChat.route,
+          ) {
             NewChatScreen(navController)
         }
 
-        composable(route = Screen.Bookmarks.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(
+            route = Screen.Bookmarks.route,
+            navTransition = NavigationTransitions.horizontalSlide()
+           ) {
             BookmarksScreen(
                 navController = navController
             )
         }
-        composable(route = Screen.Profile.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(
+            route = Screen.Profile.route,
+            navTransition = NavigationTransitions.verticalSlide()
+          ) {
 
             AccountScreen(
                 navController = navController
             )
         }
-        composable(route = Screen.AddProduct.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composableWithAnimations(route = Screen.AddProduct.route,) {
             UploadProducts(
                 navController = navController
                 //userStoreManager = UserStoreManager(context)
             )
         }
 
-        composable(route = Screen.Otp.route) {
+        composableWithAnimations(route = Screen.Otp.route) {
             ForgotPasswordRoute(navController = navController, onNavigateToLogin = {
                 navController.popBackStack()
                 navController.navigate(Screen.Login.route)
             })
         }
-        composable(route = Screen.ProductSearch.route) {
+        composableWithAnimations(route = Screen.ProductSearch.route) {
             ProductSearchScreen(navController = navController)
         }
 
-        composable(route = Screen.AllProductsList.route) {
+        composableWithAnimations(route = Screen.AllProductsList.route) {
             AllProductsListScreen(navController = navController)
         }
 
-        composable(route = Screen.RegisterStore.route) {
+        composableWithAnimations(route = Screen.RegisterStore.route) {
             RegisterStoreScreen(navController)
         }
 
-        composable("merchant_store/{merchantId}") { backStackEntry ->
+        composableWithAnimations("merchant_store/{merchantId}") { backStackEntry ->
             val merchantId = backStackEntry.arguments?.getString("merchantId") ?: ""
             MerchantStoreScreen(
                 navController = navController,
