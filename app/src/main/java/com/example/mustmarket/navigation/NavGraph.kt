@@ -1,17 +1,13 @@
 package com.example.mustmarket.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
@@ -72,13 +68,11 @@ fun SetUpNavGraph(
         composableWithAnimations(
             route = Screen.Detail.route,
             navTransition = NavigationTransitions.verticalSlide(),
-            arguments = listOf(
-                navArgument("productId") { type = NavType.IntType }
-            ),
-          ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getInt("productId") ?: return@composableWithAnimations
+//            arguments = listOf(
+//                navArgument("productId") { type = NavType.IntType }
+//            ),
+          ) {
             ProductDetailsScreen(
-                //productId = productId,
                 navController = navController,
                 onBackPressed = { navController.popBackStack() }
             )

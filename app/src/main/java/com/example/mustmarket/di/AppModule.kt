@@ -1,23 +1,19 @@
 package com.example.mustmarket.di
 
 import android.app.Application
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.example.mustmarket.core.file_config.FileProcessor
+import com.example.mustmarket.core.file_config.ImageProcessingConfig
 import com.example.mustmarket.database.database.AppDatabase
-import com.example.mustmarket.features.inbox.chat.model.ChatDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object LocalModule {
+object AppModule {
 
     private const val DATASTORE_NAME = "must_market_preferences"
 
@@ -54,5 +50,14 @@ object LocalModule {
     @Singleton
     fun provideChatDao(database: AppDatabase) = database.chatDao
 
-
+    @Provides
+    fun provideFileProcessor(): FileProcessor {
+        return FileProcessor(
+            ImageProcessingConfig(
+                maxDimension = 2048,
+                maxFileSize = 10 * 1024 * 1024,
+                compressionQuality = 0.8f
+            )
+        )
+    }
 }
