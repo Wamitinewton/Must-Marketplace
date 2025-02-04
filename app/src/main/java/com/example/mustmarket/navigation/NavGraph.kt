@@ -1,5 +1,7 @@
 package com.example.mustmarket.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -8,6 +10,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.example.mustmarket.features.account.presentation.view.AccountScreen
@@ -29,18 +32,6 @@ import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
 import com.example.mustmarket.features.merchant.storeRegistration.presentation.StoreProfileScreen
 import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantProductScreen
 import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantStoreScreen
-import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
-import com.example.mustmarket.features.splash.view.SplashScreen
-
-<<<<<<< HEAD
-import com.example.mustmarket.features.merchant.storeRegistration.presentation.StoreProfileScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantProductScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantStoreScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.RegisterStoreScreen
-=======
-import com.example.mustmarket.features.merchant.store.view.MerchantStoreScreen
-import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
->>>>>>> main
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 
