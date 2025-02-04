@@ -1,6 +1,5 @@
 package com.example.mustmarket.features.merchant.storeRegistration.view
 
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
-import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.Product
 import com.example.mustmarket.features.merchant.storeRegistration.presentation.InventoryCard
 import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen

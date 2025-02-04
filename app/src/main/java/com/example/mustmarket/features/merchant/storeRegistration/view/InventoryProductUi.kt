@@ -73,6 +73,10 @@ fun MerchantProductScreen(
                 color = ThemeUtils.AppColors.Text.themed()
             )
 
+            //Lazygrid for products , per merchant id
+
+            //comments and ratings
+
         }
     }
 }
