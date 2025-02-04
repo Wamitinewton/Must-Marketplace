@@ -10,7 +10,6 @@ import com.example.mustmarket.features.home.data.mapper.toProductListingEntities
 import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.domain.model.products.NetworkProduct
 import com.example.mustmarket.features.home.domain.repository.AllProductsRepository
-import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +24,6 @@ class AllProductsRepositoryImpl @Inject constructor(
     private val productsApi: ProductsApi,
     private val dao: ProductDao,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val syncManager: ProductSyncManager,
 ) : AllProductsRepository {
 
 
@@ -33,8 +31,12 @@ class AllProductsRepositoryImpl @Inject constructor(
         const val BATCH_SIZE = 50
     }
 
+
+
     override suspend fun shouldRefresh(): Boolean =
-        dao.getAllProducts().firstOrNull().isNullOrEmpty()
+        withContext(ioDispatcher) {
+            dao.getAllProducts().firstOrNull().isNullOrEmpty()
+        }
 
 
 
@@ -45,13 +47,13 @@ class AllProductsRepositoryImpl @Inject constructor(
                 val cachedProducts = withContext(ioDispatcher){
                     dao.getAllProducts().firstOrNull()
                 }
-
                 if (!forceRefresh && !cachedProducts.isNullOrEmpty()) {
                     emit(Resource.Success(cachedProducts.toNetworkProducts()))
                 } else {
                     val fetchResult = fetchAndProcessProducts()
                     emit(fetchResult)
                 }
+
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error occurred"))
             } finally {
@@ -66,24 +68,28 @@ class AllProductsRepositoryImpl @Inject constructor(
                val response = productsApi.getAllProducts()
 
                 if (response.message == "Success") {
-                    val processedProducts = response.data.map { it.toDomainProduct() }
+                    val processedProducts = response.data
+                        .asSequence()
+                        .map { it.toDomainProduct() }
                         .filter { it.brand.isNotBlank() }
                         .sortedByDescending { it.id }
                         .distinctBy { it.id }
+                        .toList()
+
+                    dao.run {
+                        dao.clearAllProducts()
+                        processedProducts.chunked(BATCH_SIZE).forEach{ batch ->
+                            dao.insertProducts(batch.toProductListingEntities())
+                        }
+                    }
 
                     dao.clearAllProducts()
                     processedProducts.chunked(BATCH_SIZE).forEach { batch ->
                         dao.insertProducts(batch.toProductListingEntities())
                     }
 
-                    syncManager.updateLastSyncTimeStamp()
 
-                    val freshProducts = dao.getAllProducts().firstOrNull()
-                    if (!freshProducts.isNullOrEmpty()) {
-                        Resource.Success(freshProducts.toNetworkProducts())
-                    } else {
-                        Resource.Error("No products found")
-                    }
+                  Resource.Success(processedProducts)
                 } else {
                     Resource.Error(response.message)
                 }

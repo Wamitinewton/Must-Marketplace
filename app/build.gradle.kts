@@ -30,6 +30,7 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
     namespace = "com.example.mustmarket"
+
     compileSdk = 35
 
     defaultConfig {
@@ -105,11 +106,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     // Hilt DI
     implementation(libs.hilt.android)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.generativeai)
     implementation(libs.androidx.espresso.core)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -136,15 +136,11 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.2.2")
-    implementation("com.github.skydoves:landscapist-bom:2.4.1")
-    implementation("com.github.skydoves:landscapist-coil:1.4.9")
-    implementation("com.github.skydoves:landscapist-glide")
-    implementation("com.github.skydoves:landscapist-placeholder")
-    implementation("com.github.skydoves:landscapist-palette")
-    implementation("com.github.skydoves:landscapist-transformation")
+
 
     // Accompanist
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.24.10-beta")

@@ -81,6 +81,12 @@ class AuthRepositoryImpl @Inject constructor(
                             ?: "Could not reach server, check your internet connection",
                     )
                 )
+            } catch (e: HttpException) {
+                when(e.response.code) {
+                    502 -> {
+                        emit(Resource.Error(message = e.message ?: "Server temporarily unavailable. Try again later"))
+                    } else -> emit(Resource.Error("Http error: ${e.response.code}"))
+                }
             }
 
         }

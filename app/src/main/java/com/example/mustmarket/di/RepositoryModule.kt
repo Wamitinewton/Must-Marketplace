@@ -1,16 +1,15 @@
 package com.example.mustmarket.di
 
-import com.example.mustmarket.usecase.UseCases
-import com.example.mustmarket.core.retryConfig.RetryUtil
-import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
-import com.example.mustmarket.features.auth.data.datastore.SessionManager
-import com.example.mustmarket.features.auth.domain.repository.AuthRepository
-import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
+import com.example.mustmarket.core.file_config.FileProcessor
 import com.example.mustmarket.database.dao.BookmarkDao
 import com.example.mustmarket.database.dao.CategoryDao
 import com.example.mustmarket.database.dao.ProductDao
 import com.example.mustmarket.database.dao.UserDao
+import com.example.mustmarket.features.auth.data.datastore.SessionManager
 import com.example.mustmarket.features.auth.data.remote.service.AuthenticationService
+import com.example.mustmarket.features.auth.data.repository.AuthRepositoryImpl
+import com.example.mustmarket.features.auth.domain.repository.AuthRepository
+import com.example.mustmarket.features.auth.domain.usecases.AuthUseCase
 import com.example.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.example.mustmarket.features.home.data.repository.AllProductsRepositoryImpl
 import com.example.mustmarket.features.home.data.repository.BookmarkRepositoryImpl
@@ -21,13 +20,13 @@ import com.example.mustmarket.features.home.domain.repository.BookmarkRepository
 import com.example.mustmarket.features.home.domain.repository.CategoryRepository
 import com.example.mustmarket.features.home.domain.repository.SearchProductsRepository
 import com.example.mustmarket.features.home.domain.usecases.HomeUseCases
-import com.example.mustmarket.features.home.workManager.ProductSyncManager
 import com.example.mustmarket.features.inbox.chat.model.ChatDao
 import com.example.mustmarket.features.inbox.repository.ChatRepository
 import com.example.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.example.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.example.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.example.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
+import com.example.mustmarket.usecase.UseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,13 +64,11 @@ object RepositoryModule {
         categoryProductsApi: ProductsApi,
         dao: CategoryDao,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        retryUtil: RetryUtil
     ): CategoryRepository {
         return CategoryRepositoryImpl(
             categoryApi = categoryProductsApi,
             dao = dao,
             ioDispatcher = ioDispatcher,
-            retryUtil = retryUtil
         )
     }
 
@@ -81,13 +78,11 @@ object RepositoryModule {
         allProductsApi: ProductsApi,
         dao: ProductDao,
         @IODispatcher ioDispatcher: CoroutineDispatcher,
-        syncManager: ProductSyncManager,
     ): AllProductsRepository {
         return AllProductsRepositoryImpl(
             productsApi = allProductsApi,
             dao = dao,
             ioDispatcher = ioDispatcher,
-            syncManager = syncManager,
         )
     }
 
@@ -115,9 +110,10 @@ object RepositoryModule {
     @Singleton
     fun providesProductRepository(
         api: UploadProductsApi,
-        @IODispatcher dispatcher: CoroutineDispatcher
+        @IODispatcher dispatcher: CoroutineDispatcher,
+        fileProcessor: FileProcessor
     ): ProductRepository {
-        return ProductRepositoryImpl(api, dispatcher = dispatcher)
+        return ProductRepositoryImpl(api = api, dispatcher = dispatcher, fileProcessor = fileProcessor)
     }
 
 

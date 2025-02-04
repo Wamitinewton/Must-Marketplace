@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.mDataStore
+package com.example.mustmarket.features.merchant.store.mDataStore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

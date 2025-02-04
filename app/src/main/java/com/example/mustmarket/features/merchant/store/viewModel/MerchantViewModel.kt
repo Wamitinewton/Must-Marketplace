@@ -1,10 +1,10 @@
-package com.example.mustmarket.features.merchant.storeRegistration.viewModel
+package com.example.mustmarket.features.merchant.store.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.MerchantPreferences
-import com.example.mustmarket.features.merchant.storeRegistration.mDataStore.StoreProfile
+import com.example.mustmarket.features.merchant.store.mDataStore.MerchantPreferences
+import com.example.mustmarket.features.merchant.store.mDataStore.StoreProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
