@@ -9,7 +9,7 @@
 
 
     <application
-        android:name="com.example.mustmarket.application.MustApplication"
+        android:name="com.newton.mustmarket.application.MustApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
