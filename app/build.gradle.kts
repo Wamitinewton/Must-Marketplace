@@ -159,8 +159,8 @@ dependencies {
     // Security
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    // Utils
-    implementation("com.google.errorprone:error_prone_annotations:2.11.0")
+    //modules
+    implementation(project(":file_service"))
 
 
     // Testing
