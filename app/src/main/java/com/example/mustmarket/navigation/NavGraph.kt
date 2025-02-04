@@ -29,6 +29,8 @@ import com.example.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
+import com.example.mustmarket.features.merchant.storeRegistration.presentation.StoreProfileScreen
+import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantProductScreen
 import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantStoreScreen
 import com.example.mustmarket.features.merchant.storeRegistration.view.RegisterStoreScreen
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
@@ -192,6 +194,23 @@ fun SetUpNavGraph(
             MerchantStoreScreen(
                 navController = navController,
                 merchantId = merchantId
+            )
+        }
+
+        composable("store_profile_screen") {
+            StoreProfileScreen(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.InventoryProducts.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
+                )
+            }) {
+            MerchantProductScreen(
+                navController = navController
             )
         }
     }
