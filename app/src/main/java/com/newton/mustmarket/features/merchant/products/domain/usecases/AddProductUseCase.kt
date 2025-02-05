@@ -8,6 +8,4 @@ class AddProductUseCase(
     private val repository: ProductRepository
 ) {
     suspend fun addProduct(product: UploadProductRequest) = repository.addProduct(product)
-    suspend fun uploadListOfImages(images: List<File>) = repository.uploadListOfImages(images)
-    suspend fun uploadSingleImages(image: File) = repository.uploadSingleImages(image)
 }

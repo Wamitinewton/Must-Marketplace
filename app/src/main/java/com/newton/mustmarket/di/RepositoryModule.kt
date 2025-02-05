@@ -1,6 +1,5 @@
 package com.newton.mustmarket.di
 
-import com.newton.mustmarket.core.file_config.FileProcessor
 import com.newton.mustmarket.database.dao.BookmarkDao
 import com.newton.mustmarket.database.dao.CategoryDao
 import com.newton.mustmarket.database.dao.ProductDao
@@ -110,10 +109,9 @@ object RepositoryModule {
     @Singleton
     fun providesProductRepository(
         api: UploadProductsApi,
-        @IODispatcher dispatcher: CoroutineDispatcher,
-        fileProcessor: FileProcessor
+        @IODispatcher dispatcher: CoroutineDispatcher
     ): ProductRepository {
-        return ProductRepositoryImpl(api = api, dispatcher = dispatcher, fileProcessor = fileProcessor)
+        return ProductRepositoryImpl(api = api, dispatcher = dispatcher)
     }
 
 

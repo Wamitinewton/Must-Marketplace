@@ -101,7 +101,6 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         loginViewModel.navigateToHome.collect {
-            navController.popBackStack()
             navController.navigate(Screen.HomeScreen.route)
         }
     }
@@ -166,7 +165,7 @@ fun LoginScreen(
 
             ButtonLoading(
                 name = "Login",
-                isLoading = uiState.isLoading,
+                isLoading = !uiState.isLoading,
                 enabled = btnEnabled,
                 onClicked = ::handleLoginClick
             )

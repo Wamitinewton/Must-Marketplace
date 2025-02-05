@@ -3,7 +3,6 @@ package com.newton.mustmarket.features.home.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newton.mustmarket.usecase.UseCases
-import com.newton.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.newton.mustmarket.core.util.Resource
 import com.newton.mustmarket.features.home.presentation.event.SearchProductEvent
 import com.newton.mustmarket.features.home.presentation.state.SearchProductsState
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +27,6 @@ class SearchProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private val _searchViewModelState = MutableStateFlow(SearchProductsState())
     val searchUiState: StateFlow<SearchProductsState> = _searchViewModelState.asStateFlow()
-    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
     private val _searchQuery = MutableStateFlow("")
     private var searchJob: Job? = null
@@ -86,10 +85,7 @@ class SearchProductsViewModel @Inject constructor(
 
     private fun performSearch(query: String) {
         searchJob?.cancel()
-        searchJob = coroutineDebugger.launchTracked(
-            scope = viewModelScope,
-            tag = "perform_search"
-        ) {
+        searchJob = viewModelScope.launch {
             _searchViewModelState.update {
                 it.copy(
                     isLoading = true,

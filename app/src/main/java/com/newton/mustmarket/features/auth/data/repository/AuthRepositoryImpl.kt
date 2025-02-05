@@ -70,7 +70,6 @@ class AuthRepositoryImpl @Inject constructor(
                 val response = authApi.loginUser(loginCredentials)
                 if (response.message == SUCCESS_RESPONSE) {
                     emit(Resource.Success(data = response.toLoginResult()))
-                    emit(Resource.Loading(false))
                 } else {
                     emit(Resource.Error(response.message))
                 }
@@ -87,6 +86,9 @@ class AuthRepositoryImpl @Inject constructor(
                         emit(Resource.Error(message = e.message ?: "Server temporarily unavailable. Try again later"))
                     } else -> emit(Resource.Error("Http error: ${e.response.code}"))
                 }
+            } finally {
+                emit(Resource.Loading(false))
+
             }
 
         }

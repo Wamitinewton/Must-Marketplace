@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.newton.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.newton.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.newton.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.newton.mustmarket.core.util.Resource
@@ -20,8 +19,11 @@ import com.newton.mustmarket.features.auth.presentation.login.state.LoginState
 import com.newton.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -41,11 +43,8 @@ class LoginViewModel @Inject constructor(
     private val _loggedInUser = MutableStateFlow<AuthedUser?>(null)
     val loggedInUser: StateFlow<AuthedUser?> get() = _loggedInUser
 
-    private val coroutineDebugger = CoroutineDebugger.getInstance()
-
-    private val _navigateToHome = Channel<Unit>()
-
-    val navigateToHome = _navigateToHome.receiveAsFlow()
+    private val _navigateToHome = MutableSharedFlow<Unit>()
+    val navigateToHome: SharedFlow<Unit> = _navigateToHome.asSharedFlow()
 
     private val _navigateToLogin = Channel<Unit>()
     val navigateToLogin = _navigateToLogin.receiveAsFlow()
@@ -79,31 +78,9 @@ class LoginViewModel @Inject constructor(
         _loggedInUser.value = user
     }
 
-    override fun onCleared() {
-
-        super.onCleared()
-
-        coroutineDebugger.cancelAllCoroutines()
-
-        val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
-
-        if (activeCoroutines.isNotEmpty()) {
-
-            Timber.tag("register")
-                .d("⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:")
-            activeCoroutines.forEach { info ->
-
-                Timber.tag("register")
-                    .d("📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms")
-            }
-        }
-    }
 
     private fun logOut() {
-        coroutineDebugger.launchTracked(
-            scope = viewModelScope,
-            tag = "Logout_process"
-        ) {
+        viewModelScope.launch {
             try {
                 sessionManager.clearTokens()
                 clearUserData()
@@ -124,13 +101,7 @@ class LoginViewModel @Inject constructor(
         val password = _authUiState.value.passwordInput
 
 
-        coroutineDebugger.launchTracked(
-
-            scope = viewModelScope,
-
-            tag = "Login_process"
-
-        ) {
+       viewModelScope.launch {
             if (email.isEmpty() || password.isEmpty()) {
 
                 _authUiState.value = _authUiState.value.copy(
@@ -140,16 +111,10 @@ class LoginViewModel @Inject constructor(
 
                 )
 
-                return@launchTracked
+                return@launch
 
             }
-            coroutineDebugger.launchTracked(
 
-                scope = viewModelScope,
-
-                tag = "login_NetworkRequest"
-
-            ) {
                 val result = authUseCase.authUseCase.loginUseCase(
 
                     LoginRequest(
@@ -186,18 +151,24 @@ class LoginViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+                            _authUiState.value = _authUiState.value.copy(
+
+                                isLoading = false,
+
+                                errorMessage = null
+                            )
                             val accessToken = loginResult.data!!.data.token
                             val refreshToken = loginResult.data.data.refreshToken
                             val user = loginResult.data.data.user
                             authUseCase.authUseCase.storeTokens(accessToken, refreshToken)
+                            val isLoading = _authUiState.value.isLoading
+                            Timber.d("Current loading state $isLoading")
                             authUseCase.authUseCase.storeLoggedInUser(user)
-                            _authUiState.value = _authUiState.value.copy(
-                                isLoading = false,
-                                errorMessage = null
-
-                            )
-
-                            _navigateToHome.send(Unit)
+                            Timber.d("Emitting navigation event to Home")
+                            viewModelScope.launch {
+                                _navigateToHome.emit(Unit)
+                            }
+                            Timber.d("Navigation has been emitted....................")
 
                         }
                     }
@@ -205,7 +176,7 @@ class LoginViewModel @Inject constructor(
             }
 
         }
-    }
+
 
     fun onEvent(event: LoginEvent) {
 
@@ -213,13 +184,6 @@ class LoginViewModel @Inject constructor(
 
             is LoginEvent.EmailChanged -> {
 
-                coroutineDebugger.launchTracked(
-
-                    scope = viewModelScope,
-
-                    tag = "EmailValidation"
-
-                ) {
                     val emailError =
 
                         if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
@@ -235,7 +199,7 @@ class LoginViewModel @Inject constructor(
                         emailError = emailError
                     )
                 }
-            }
+
 
             LoginEvent.ClearError -> {
 
@@ -254,10 +218,6 @@ class LoginViewModel @Inject constructor(
 
             is LoginEvent.PasswordChanged -> {
 
-                coroutineDebugger.launchTracked(
-                    scope = viewModelScope,
-                    tag = "PasswordValidation"
-                ) {
                     val passwordError =
                         if (event.password.isNotEmpty() && !PASSWORD_REGEX.matches(event.password)) {
                             "Invalid password format"
@@ -270,7 +230,7 @@ class LoginViewModel @Inject constructor(
 
                     )
                 }
-            }
+
 
             is LoginEvent.TogglePasswordVisibility -> {
 

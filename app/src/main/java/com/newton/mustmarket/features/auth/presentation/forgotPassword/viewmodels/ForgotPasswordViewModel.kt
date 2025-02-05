@@ -3,7 +3,6 @@ package com.newton.mustmarket.features.auth.presentation.forgotPassword.viewmode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newton.mustmarket.usecase.UseCases
-import com.newton.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.newton.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.newton.mustmarket.core.util.Constants.PASSWORD_REGEX
 import com.newton.mustmarket.core.util.Resource
@@ -20,13 +19,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     private val authUseCase: UseCases,
 ) : ViewModel() {
-    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
     private val _state = MutableStateFlow(ForgotPasswordState())
     val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
@@ -104,10 +103,7 @@ class ForgotPasswordViewModel @Inject constructor(
     private fun requestOtp() {
         if (!validateEmail()) return
 
-        coroutineDebugger.launchTracked(
-            tag = "request-Otp",
-            scope = viewModelScope
-        ) {
+   viewModelScope.launch {
             authUseCase.authUseCase.requestOtpUseCase(
                 RequestPasswordReset(
                     email = _state.value.email
@@ -150,10 +146,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private fun resetPassword() {
         if (!validateResetPasswordInput()) return
-        coroutineDebugger.launchTracked(
-            tag = "reset-Password",
-            scope = viewModelScope,
-        ) {
+      viewModelScope.launch {
             val otpRequest = OtpRequest(
                 email = _state.value.email,
                 otp = _state.value.otp,

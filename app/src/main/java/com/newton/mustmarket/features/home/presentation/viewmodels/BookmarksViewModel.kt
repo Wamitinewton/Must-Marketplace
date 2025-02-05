@@ -71,9 +71,6 @@ class BookmarksViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleSearchResult(result: Resource<List<NetworkProduct>>){
-        
-    }
 
     private fun getBookmarkedProducts() {
         viewModelScope.launch {

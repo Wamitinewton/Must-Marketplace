@@ -29,7 +29,7 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    namespace = "com.example.mustmarket"
+    namespace = "com.newton.mustmarket"
 
     compileSdk = 35
 
@@ -54,7 +54,7 @@ android {
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
 
 
-        applicationId = "com.example.mustmarket"
+        applicationId = "com.newton.mustmarket"
         minSdk = 28
         targetSdk = 35
         versionCode = 1

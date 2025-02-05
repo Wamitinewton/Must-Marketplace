@@ -49,15 +49,4 @@ object AppModule {
     @Provides
     @Singleton
     fun provideChatDao(database: AppDatabase) = database.chatDao
-
-    @Provides
-    fun provideFileProcessor(): FileProcessor {
-        return FileProcessor(
-            ImageProcessingConfig(
-                maxDimension = 2048,
-                maxFileSize = 10 * 1024 * 1024,
-                compressionQuality = 0.8f
-            )
-        )
-    }
 }

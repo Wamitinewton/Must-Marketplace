@@ -17,9 +17,6 @@ class FileProcessor(
         return@withContext processAndOptimizeFile(file)
     }
 
-    suspend fun processImages(files: List<File>): List<File> = withContext(dispatcher) {
-        files.map { processImage(it) }
-    }
 
 
     private fun processAndOptimizeFile(file: File): File {

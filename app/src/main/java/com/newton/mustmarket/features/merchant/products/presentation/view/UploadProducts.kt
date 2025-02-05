@@ -443,7 +443,7 @@ fun UploadProducts(
                                     inventory = uiState.productInput.productInventory,
                                     name = uiState.productInput.productName,
                                     price = uiState.productInput.productPrice,
-                                    userId = user!!.id.toString()
+                                    userId = user?.id?.toString().orEmpty()
                                 )
                             )
                         )

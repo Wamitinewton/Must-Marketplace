@@ -9,13 +9,13 @@ import retrofit2.http.Part
 
 interface ImageUploadApi {
     @Multipart
-    @POST("upload/single")
+    @POST("api/v1/images/uploadSingleImage")
     suspend fun uploadSingleImage(
         @Part image: MultipartBody.Part
     ): UploadSingleImageResponse
 
     @Multipart
-    @POST("upload/single")
+    @POST("api/v1/images/uploadListImages")
     suspend fun uploadMultipleImages(
         @Part image: List<MultipartBody.Part>
     ): UploadImageListOfImageResponse

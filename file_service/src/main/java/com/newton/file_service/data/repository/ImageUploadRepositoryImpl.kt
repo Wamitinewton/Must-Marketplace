@@ -1,8 +1,6 @@
 package com.newton.file_service.data.repository
 
 import com.newton.file_service.data.remote.api_service.ImageUploadApi
-import com.newton.file_service.data.remote.utils.ImageUploadError
-import com.newton.file_service.data.remote.utils.ProcessingException
 import com.newton.file_service.data.remote.utils.ValidationException
 import com.newton.file_service.domain.model.ImageUploadState
 import com.newton.file_service.domain.repository.ImageUploadRepository
@@ -11,9 +9,11 @@ import com.newton.mustmarket.core.file_config.toMultiBodyPart
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -36,72 +36,103 @@ class ImageUploadRepositoryImpl @Inject constructor(
         private const val MAX_RETRIES = 3
         private const val INITIAL_BACKOFF = 1000L
         private const val MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-        private val ALLOWED_MIME_TYPES = setOf("image/jpeg", "image/png", "image/webp")
+        private const val BACKOFF_MULTIPLIER = 1.5
+        private val ALLOWED_MIME_TYPES = setOf(
+            MimeType.JPEG,
+            MimeType.PNG,
+            MimeType.WEBP
+        )
+    }
+
+    private object MimeType {
+        const val JPEG = "image/jpeg"
+        const val PNG = "image/png"
+        const val WEBP = "image/webp"
     }
 
     override suspend fun uploadSingleImage(
         image: File,
         onProgress: (Int) -> Unit
-    ): Flow<ImageUploadState> = callbackFlow {
-        send(ImageUploadState.Loading)
-        val progressChannel = Channel<Int>(Channel.CONFLATED)
+    ): Flow<ImageUploadState> = flow {
+        emit(ImageUploadState.Loading)
 
-        try {
-            if (!validateImage(image)) {
-                throw ValidationException("Invalid image file")
+        validateAndProcessImage(image).fold(
+            onSuccess = { processedImage ->
+                val progressChannel = Channel<Int>(Channel.CONFLATED)
+                try {
+                    coroutineScope {
+                        launch { collectProgress(progressChannel, onProgress) }
+
+                        val part = createProgressPart(processedImage, "file", progressChannel)
+                        val response = retryIO { api.uploadSingleImage(part) }
+
+                        emit(ImageUploadState.SingleImageSuccess(response.data))
+                    }
+                } finally {
+                    progressChannel.close()
+                }
+            },
+            onFailure = { error ->
+                emit(ImageUploadState.Error(error.message ?: "Unknown error"))
+                onProgress(-1)
             }
-
-            val processedImage = fileProcessor.processImage(image).also {
-                if (!validateImage(it)) throw ValidationException("Invalid processed image")
-            }
-
-            val part = createProgressPart(processedImage, "file", progressChannel)
-            val response = retryIO(MAX_RETRIES) { api.uploadSingleImage(part) }
-
-            launch { collectProgress(this@callbackFlow ,progressChannel, onProgress) }
-            send(ImageUploadState.SingleImageSuccess(response.data))
-        } catch (e: Exception) {
-            sendErrorState(this@callbackFlow ,e, onProgress)
-        } finally {
-            progressChannel.close()
-        }
+        )
     }.flowOn(dispatcher)
 
     override suspend fun uploadMultipleImages(
         images: List<File>,
         onProgress: (Int) -> Unit
-    ): Flow<ImageUploadState> = callbackFlow {
-        send(ImageUploadState.Loading)
+    ): Flow<ImageUploadState> = flow {
+        emit(ImageUploadState.Loading)
+
+        val processedImages = images.map { validateAndProcessImage(it) }
+        if (processedImages.any { it.isFailure }) {
+            val error = processedImages.first { it.isFailure }.exceptionOrNull()
+            emit(ImageUploadState.Error(error?.message ?: "Processing failed"))
+            onProgress(-1)
+            return@flow
+        }
+
         val progressChannel = Channel<Int>(Channel.CONFLATED)
-
         try {
-            images.forEach { if (!validateImage(it)) throw ValidationException("Invalid file: ${it.name}") }
-            val processedImages = images.map { fileProcessor.processImage(it).also { p ->
-                if (!validateImage(p)) throw ValidationException("Invalid processed image: ${p.name}")
-            }}
+            coroutineScope {
+                val validImages = processedImages.mapNotNull { it.getOrNull() }
+                val parts = validImages.map { createProgressPart(it, "files", progressChannel) }
+                val totalSize = validImages.sumOf { it.length() }
 
-            val parts = processedImages.map { createProgressPart(it, "files", progressChannel) }
-            launch { collectProgress(this@callbackFlow ,progressChannel, onProgress, processedImages.sumOf { it.length() }) }
+                launch { collectProgress(progressChannel, onProgress, totalSize) }
 
-            val response = retryIO(MAX_RETRIES) { api.uploadMultipleImages(parts) }
-            send(ImageUploadState.MultipleImageSuccess(response.data, "Uploaded ${images.size} images"))
-        } catch (e: Exception) {
-            sendErrorState(this@callbackFlow ,e, onProgress)
+                val response = retryIO { api.uploadMultipleImages(parts) }
+                emit(ImageUploadState.MultipleImageSuccess(
+                    response.data,
+                    "Uploaded ${validImages.size} images"
+                ))
+            }
         } finally {
             progressChannel.close()
         }
     }.flowOn(dispatcher)
 
-    override fun validateImage(file: File): Boolean {
-        if (file.length() > MAX_FILE_SIZE) return false
-        return getMimeType(file) in ALLOWED_MIME_TYPES
+    override fun validateImage(file: File): Boolean = runCatching {
+        file.length() <= MAX_FILE_SIZE && getMimeType(file) in ALLOWED_MIME_TYPES
+    }.getOrDefault(false)
+
+    private fun getMimeType(file: File): String = when (file.extension.lowercase()) {
+        "jpg", "jpeg" -> MimeType.JPEG
+        "png" -> MimeType.PNG
+        "webp" -> MimeType.WEBP
+        else -> throw ValidationException("Unsupported file type: ${file.extension}")
     }
 
-    private fun getMimeType(file: File): String? = when (file.extension.lowercase()) {
-        "jpg", "jpeg" -> "image/jpeg"
-        "png" -> "image/png"
-        "webp" -> "image/webp"
-        else -> null
+    private suspend fun validateAndProcessImage(file: File): Result<File> = runCatching {
+        if (!validateImage(file)) {
+            throw ValidationException("Invalid image file: ${file.name}")
+        }
+        fileProcessor.processImage(file).also {
+            if (!validateImage(it)) {
+                throw ValidationException("Invalid processed image: ${it.name}")
+            }
+        }
     }
 
     private fun createProgressPart(
@@ -110,52 +141,38 @@ class ImageUploadRepositoryImpl @Inject constructor(
         progressChannel: Channel<Int>
     ): MultipartBody.Part {
         val originalPart = file.toMultiBodyPart(fieldName)
-        val contentDisposition = originalPart.headers!!["Content-Disposition"]!!
-        val partName = contentDisposition.split("name=\"")[1].split("\"")[0]
+        val contentDisposition = requireNotNull(originalPart.headers?.get("Content-Disposition")) {
+            "Missing Content-Disposition header"
+        }
+        val partName = contentDisposition.substringAfter("name=\"").substringBefore("\"")
 
         return MultipartBody.Part.createFormData(
             partName,
             file.name,
             ProgressRequestBody(originalPart.body) { progress ->
-                progressChannel.trySend(progress).isSuccess
+                progressChannel.trySend(progress)
             }
         )
     }
 
     private suspend fun collectProgress(
-        scope: ProducerScope<ImageUploadState>,
         channel: Channel<Int>,
         onProgress: (Int) -> Unit,
         totalSize: Long? = null
     ) {
-        var uploadedBytes = 0L
-        for (progress in channel) {
-            if (totalSize != null) {
+        var uploadedBytes: Long
+        channel.consumeAsFlow().collect { progress ->
+            val finalProgress = if (totalSize != null) {
                 uploadedBytes = (totalSize * progress / 100).coerceAtMost(totalSize)
-                val overallProgress = (uploadedBytes * 100 / totalSize).toInt()
-                scope.send(ImageUploadState.Progress(overallProgress))
-                onProgress(overallProgress)
+                (uploadedBytes * 100 / totalSize).toInt()
             } else {
-                scope.send(ImageUploadState.Progress(progress))
-                onProgress(progress)
+                progress
             }
+            onProgress(finalProgress)
         }
     }
 
-    private suspend fun sendErrorState(
-        scope: ProducerScope<ImageUploadState>,
-        e: Exception, onProgress: (Int) -> Unit) {
-        val error = when (e) {
-            is IOException -> ImageUploadError.NetworkError(e.message ?: "Network error")
-            is ValidationException -> ImageUploadError.ValidationError(e.message ?: "Validation failed")
-            is ProcessingException -> ImageUploadError.FileProcessingError(e.message ?: "Processing failed")
-            else -> ImageUploadError.StorageError(e.message ?: "Upload failed")
-        }
-        scope.send(ImageUploadState.Error(error.toString()))
-        onProgress(-1) // Signal error completion
-    }
-
-    private inner class ProgressRequestBody(
+    private class ProgressRequestBody(
         private val delegate: RequestBody,
         private val onProgress: (Int) -> Unit
     ) : RequestBody() {
@@ -174,33 +191,49 @@ class ImageUploadRepositoryImpl @Inject constructor(
                 override fun write(source: Buffer, byteCount: Long) {
                     super.write(source, byteCount)
                     bytesWritten += byteCount
-                    val progress = (bytesWritten * 100 / contentLength).toInt().coerceIn(0, 100)
+                    val progress = (bytesWritten * 100 / contentLength)
+                        .toInt()
+                        .coerceIn(0, 100)
                     onProgress(progress)
                 }
             }
 
-            countingSink.buffer().use { delegate.writeTo(it) }
+            countingSink.buffer().use { bufferedSink ->
+                try {
+                    delegate.writeTo(bufferedSink)
+                    bufferedSink.flush()
+                } catch (e: Exception) {
+                    throw e
+                }
+            }
         }
     }
 
     private suspend fun <T> retryIO(
+        block: suspend () -> T
+    ): T = retry(
+        times = MAX_RETRIES,
+        initialDelay = INITIAL_BACKOFF,
+        factor = BACKOFF_MULTIPLIER,
+        block = block
+    )
+
+    private suspend fun <T> retry(
         times: Int,
-        initialDelay: Long = INITIAL_BACKOFF,
+        initialDelay: Long,
+        factor: Double = BACKOFF_MULTIPLIER,
         block: suspend () -> T
     ): T {
-        var delay = initialDelay
-        var lastError: Exception? = null
-
-        repeat(times) { attempt ->
+        var currentDelay = initialDelay
+        repeat(times - 1) { attempt ->
             try {
                 return block()
             } catch (e: Exception) {
-                lastError = e
-                if (e !is IOException || attempt == times - 1) throw e
-                kotlinx.coroutines.delay(delay)
-                delay = (delay * 1.5).toLong()
+                if (e !is IOException) throw e
+                delay(currentDelay)
+                currentDelay = (currentDelay * factor).toLong()
             }
         }
-        throw lastError ?: IllegalStateException("Retry failed")
+        return block() // last attempt
     }
 }

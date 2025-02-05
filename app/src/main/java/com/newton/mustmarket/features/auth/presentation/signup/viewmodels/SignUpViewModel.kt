@@ -2,23 +2,22 @@ package com.newton.mustmarket.features.auth.presentation.signup.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.newton.mustmarket.usecase.UseCases
 import com.newton.mustmarket.core.util.Constants.EMAIL_REGEX
 import com.newton.mustmarket.core.util.Resource
-import com.newton.mustmarket.core.coroutineLogger.CoroutineDebugger
 import com.newton.mustmarket.features.auth.domain.model.AuthedUser
 import com.newton.mustmarket.features.auth.domain.model.SignUpUser
 import com.newton.mustmarket.features.auth.presentation.auth_utils.PwdValidators.SCORE_THRESHOLDS
 import com.newton.mustmarket.features.auth.presentation.forgotPassword.enums.PasswordStrength
 import com.newton.mustmarket.features.auth.presentation.signup.event.SignupEvent
 import com.newton.mustmarket.features.auth.presentation.signup.state.SignUpViewModelState
+import com.newton.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
-import timber.log.Timber
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -26,8 +25,6 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val authUseCase: UseCases
 ) : ViewModel() {
-
-    private val coroutineDebugger = CoroutineDebugger.getInstance()
 
     private val _navigateToLogin = Channel<Unit>()
     val navigateToLogin = _navigateToLogin.receiveAsFlow()
@@ -37,37 +34,20 @@ class SignUpViewModel @Inject constructor(
     )
     val authUiState: StateFlow<SignUpViewModelState> get() = _authUiState
 
-    override fun onCleared() {
-        super.onCleared()
-        coroutineDebugger.cancelAllCoroutines()
-        val activeCoroutines = coroutineDebugger.getActiveCoroutinesInfo()
-        if (activeCoroutines.isNotEmpty()) {
-            Timber.tag("register")
-                .d("⚠️ Warning: ${activeCoroutines.size} coroutines were still active when ViewModel was cleared:")
-            activeCoroutines.forEach { info ->
-                Timber.tag("register")
-                    .d("📌 Coroutine ${info.id} (${info.tag}) - Running for ${info.duration}ms")
-            }
-        }
-    }
-
     private fun signupWithEmailAndPassword() {
         val email = _authUiState.value.emailInput
         val password = _authUiState.value.passwordInput
         val passwordConfirm = _authUiState.value.passwordConfirmInput
         val name = _authUiState.value.nameInput
 
-        coroutineDebugger.launchTracked(
-            scope = viewModelScope,
-            tag = "Signup_process"
-        ) {
+       viewModelScope.launch {
             when {
                 email.isEmpty() || password.isEmpty() || name.isEmpty() || passwordConfirm.isEmpty() -> {
                     updateSignupState(
                         isLoading = false,
                         errorMessage = "All inputs are required"
                     )
-                    return@launchTracked
+                    return@launch
                 }
 
                 !validatePassword(password) -> {
@@ -76,7 +56,7 @@ class SignUpViewModel @Inject constructor(
                         isLoading = false,
                         passwordError = errors
                     )
-                    return@launchTracked
+                    return@launch
                 }
 
                 password != passwordConfirm -> {
@@ -84,14 +64,10 @@ class SignUpViewModel @Inject constructor(
                         isLoading = false,
                         passwordConfirmError = listOf("Passwords do not match")
                     )
-                    return@launchTracked
+                    return@launch
                 }
             }
 
-            coroutineDebugger.launchTracked(
-                scope = viewModelScope,
-                tag = "Signup_NetworkRequest"
-            ) {
                 authUseCase.authUseCase.registerUseCase(SignUpUser(name, email, password))
                     .collectLatest { result ->
                         when (result) {
@@ -121,7 +97,6 @@ class SignUpViewModel @Inject constructor(
                     }
             }
         }
-    }
 
     private fun updateSignupState(
         isLoading: Boolean = _authUiState.value.isLoading,
@@ -138,10 +113,6 @@ class SignUpViewModel @Inject constructor(
     fun onEvent(event: SignupEvent) {
         when (event) {
             is SignupEvent.EmailChanged -> {
-                coroutineDebugger.launchTracked(
-                    scope = viewModelScope,
-                    tag = "EmailValidation"
-                ) {
                     val emailError =
                         if (event.email.isNotEmpty() && !EMAIL_REGEX.matches(event.email)) {
                             "Invalid email format"
@@ -151,7 +122,6 @@ class SignUpViewModel @Inject constructor(
                         emailError = emailError
                     )
                 }
-            }
 
             SignupEvent.ClearError -> {
                 updateSignupState(errorMessage = "")
@@ -159,10 +129,6 @@ class SignUpViewModel @Inject constructor(
             }
 
             is SignupEvent.ConfirmPasswordChanged -> {
-                coroutineDebugger.launchTracked(
-                    scope = viewModelScope,
-                    tag = "PasswordConfirmValidation"
-                ) {
                     val passwordConfirmError = mutableListOf<String>()
                     if (event.confirmPassword.isNotEmpty() && event.confirmPassword != _authUiState.value.passwordInput) {
                         passwordConfirmError.add("Passwords do not match")
@@ -173,13 +139,8 @@ class SignUpViewModel @Inject constructor(
                     )
                 }
 
-            }
 
             is SignupEvent.PasswordChanged -> {
-                coroutineDebugger.launchTracked(
-                    scope = viewModelScope,
-                    tag = "PasswordValidation"
-                ) {
                     val password = event.password
                     _authUiState.value = _authUiState.value.copy(
                         passwordInput = password,
@@ -187,7 +148,6 @@ class SignUpViewModel @Inject constructor(
                         passwordStrength = getPasswordStrength(password)
                     )
                 }
-            }
 
             SignupEvent.Signup -> signupWithEmailAndPassword()
             is SignupEvent.ToggleConfirmPasswordVisibility -> {
@@ -203,10 +163,6 @@ class SignUpViewModel @Inject constructor(
             }
 
             is SignupEvent.UsernameChanged -> {
-                coroutineDebugger.launchTracked(
-                    scope = viewModelScope,
-                    tag = "UsernameValidation"
-                ) {
                     val nameError = if (event.username.isEmpty()) "Username is required" else ""
                     _authUiState.value = _authUiState.value.copy(
                         nameInput = event.username,
@@ -216,7 +172,6 @@ class SignUpViewModel @Inject constructor(
             }
         }
 
-    }
 
     private fun validatePassword(password: String): Boolean {
         return password.matches(".*[0-9].*".toRegex()) &&
