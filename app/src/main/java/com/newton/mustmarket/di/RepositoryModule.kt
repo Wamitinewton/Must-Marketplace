@@ -25,6 +25,10 @@ import com.newton.mustmarket.features.merchant.products.data.remote.UploadProduc
 import com.newton.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.newton.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.newton.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
+import com.newton.mustmarket.features.merchant.store.data.remote.api_service.MerchantServices
+import com.newton.mustmarket.features.merchant.store.data.repository.MerchantRepositoryImpl
+import com.newton.mustmarket.features.merchant.store.domain.repository.MerchantRepository
+import com.newton.mustmarket.features.merchant.store.domain.usecases.MerchantUseCase
 import com.newton.mustmarket.usecase.UseCases
 import dagger.Module
 import dagger.Provides
@@ -114,6 +118,14 @@ object RepositoryModule {
         return ProductRepositoryImpl(api = api, dispatcher = dispatcher)
     }
 
+    @Provides
+    @Singleton
+    fun provideMerchantRepository(
+        api: MerchantServices
+    ): MerchantRepository {
+        return MerchantRepositoryImpl(merchantServices = api)
+    }
+
 
     @Provides
     @Singleton
@@ -123,7 +135,8 @@ object RepositoryModule {
         allProductsRepository: AllProductsRepository,
         bookmarkRepository: BookmarkRepository,
         searchProductsRepository: SearchProductsRepository,
-        addProductRepository: ProductRepository
+        addProductRepository: ProductRepository,
+        merchantRepository: MerchantRepository
     ): UseCases =
         UseCases(
             authUseCase = AuthUseCase(repository = authRepository),
@@ -135,6 +148,9 @@ object RepositoryModule {
             ),
             addProduct = AddProductUseCase(
                 repository = addProductRepository
+            ),
+            merchantUseCase = MerchantUseCase(
+                merchantRepository = merchantRepository
             )
         )
 }

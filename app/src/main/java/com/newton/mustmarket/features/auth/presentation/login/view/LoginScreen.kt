@@ -165,7 +165,7 @@ fun LoginScreen(
 
             ButtonLoading(
                 name = "Login",
-                isLoading = !uiState.isLoading,
+                isLoading = uiState.isLoading,
                 enabled = btnEnabled,
                 onClicked = ::handleLoginClick
             )

@@ -8,8 +8,6 @@ import com.newton.mustmarket.features.home.presentation.event.HomeScreenEvent
 import com.newton.mustmarket.features.home.presentation.state.AllProductsViewModelState
 import com.newton.mustmarket.usecase.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,11 +20,6 @@ import javax.inject.Inject
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
 ) : ViewModel() {
-
-    private val refreshTrigger = MutableSharedFlow<Unit>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_LATEST
-    )
 
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())

@@ -22,6 +22,7 @@ import okio.Buffer
 import okio.BufferedSink
 import okio.ForwardingSink
 import okio.buffer
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -54,6 +55,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
         image: File,
         onProgress: (Int) -> Unit
     ): Flow<ImageUploadState> = flow {
+        Timber.d("Starting single image upload: ${image.name}")
         emit(ImageUploadState.Loading)
 
         validateAndProcessImage(image).fold(
@@ -64,7 +66,17 @@ class ImageUploadRepositoryImpl @Inject constructor(
                         launch { collectProgress(progressChannel, onProgress) }
 
                         val part = createProgressPart(processedImage, "file", progressChannel)
-                        val response = retryIO { api.uploadSingleImage(part) }
+                        val response = try {
+                            Timber.i("Attempting to upload image: ${processedImage.name}")
+                            retryIO {
+                                api.uploadSingleImage(part).also {
+                                    Timber.d("Image upload successful: ${processedImage.name}")
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to upload single image: ${processedImage.name}")
+                            throw e
+                        }
 
                         emit(ImageUploadState.SingleImageSuccess(response.data))
                     }
@@ -83,11 +95,13 @@ class ImageUploadRepositoryImpl @Inject constructor(
         images: List<File>,
         onProgress: (Int) -> Unit
     ): Flow<ImageUploadState> = flow {
+        Timber.d("Starting multiple image upload. Total images: ${images.size}")
         emit(ImageUploadState.Loading)
 
         val processedImages = images.map { validateAndProcessImage(it) }
         if (processedImages.any { it.isFailure }) {
             val error = processedImages.first { it.isFailure }.exceptionOrNull()
+            Timber.e(error, "Image processing failed")
             emit(ImageUploadState.Error(error?.message ?: "Processing failed"))
             onProgress(-1)
             return@flow
@@ -99,10 +113,20 @@ class ImageUploadRepositoryImpl @Inject constructor(
                 val validImages = processedImages.mapNotNull { it.getOrNull() }
                 val parts = validImages.map { createProgressPart(it, "files", progressChannel) }
                 val totalSize = validImages.sumOf { it.length() }
+                Timber.i("Prepared ${validImages.size} images for upload")
 
                 launch { collectProgress(progressChannel, onProgress, totalSize) }
 
-                val response = retryIO { api.uploadMultipleImages(parts) }
+                val response = try {
+                    retryIO {
+                        api.uploadMultipleImages(parts).also {
+                            Timber.d("Multiple images uploaded successfully")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to upload multiple images")
+                    throw e
+                }
                 emit(ImageUploadState.MultipleImageSuccess(
                     response.data,
                     "Uploaded ${validImages.size} images"
@@ -180,32 +204,34 @@ class ImageUploadRepositoryImpl @Inject constructor(
         override fun contentLength() = delegate.contentLength()
 
         override fun writeTo(sink: BufferedSink) {
-            val contentLength = contentLength().takeIf { it > 0 } ?: run {
-                delegate.writeTo(sink)
-                return
-            }
+          try {
+              val contentLength = contentLength().takeIf { it > 0 } ?: run {
+                  Timber.w("Content length is 0 or negative")
+                  delegate.writeTo(sink)
+                  return
+              }
+              Timber.d("Starting file upload. Total content length: $contentLength bytes")
 
-            val countingSink = object : ForwardingSink(sink) {
-                private var bytesWritten = 0L
+              val countingSink = object : ForwardingSink(sink) {
+                  private var bytesWritten = 0L
 
-                override fun write(source: Buffer, byteCount: Long) {
-                    super.write(source, byteCount)
-                    bytesWritten += byteCount
-                    val progress = (bytesWritten * 100 / contentLength)
-                        .toInt()
-                        .coerceIn(0, 100)
-                    onProgress(progress)
-                }
-            }
+                  override fun write(source: Buffer, byteCount: Long) {
+                      super.write(source, byteCount)
+                      bytesWritten += byteCount
+                      val progress = (bytesWritten * 100 / contentLength)
+                          .toInt()
+                          .coerceIn(0, 100)
+                      onProgress(progress)
+                  }
+              }
 
-            countingSink.buffer().use { bufferedSink ->
-                try {
-                    delegate.writeTo(bufferedSink)
-                    bufferedSink.flush()
-                } catch (e: Exception) {
-                    throw e
-                }
-            }
+              countingSink.buffer().use { bufferedSink ->
+                      delegate.writeTo(bufferedSink)
+                      bufferedSink.flush()
+              }
+          } catch (e: Exception){
+              throw Exception("Error in progressRequestBody: ${e.message}", e)
+          }
         }
     }
 
@@ -225,7 +251,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
         block: suspend () -> T
     ): T {
         var currentDelay = initialDelay
-        repeat(times - 1) { attempt ->
+        repeat(times - 1) {
             try {
                 return block()
             } catch (e: Exception) {

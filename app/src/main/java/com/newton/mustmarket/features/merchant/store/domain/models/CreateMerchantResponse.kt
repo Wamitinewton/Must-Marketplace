@@ -8,12 +8,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateMerchantResponse(
     val message: String,
-    val data: MerchantResponseData
+    val data: MerchantResponse
 )
 
 
 @Serializable
-data class MerchantResponseData(
+data class MerchantResponse(
     val storeId: String,
     val name: String,
     val user: AuthedUser,

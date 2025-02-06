@@ -7,6 +7,7 @@ import com.newton.mustmarket.features.auth.data.remote.service.AuthenticationSer
 import com.newton.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.newton.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.newton.mustmarket.features.merchant.store.data.remote.api_service.MerchantServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,8 +15,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import okhttp3.ConnectionPool
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
@@ -36,9 +39,10 @@ object NetworkModule {
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
             .addInterceptor(loggingInterceptor)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(40, TimeUnit.SECONDS)
+            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(40, TimeUnit.SECONDS)
+            .connectionPool(ConnectionPool(0, 5, TimeUnit.MINUTES))
             .build()
 
 
@@ -74,5 +78,10 @@ object NetworkModule {
         return retrofit.create(UploadProductsApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideMerchantApi(retrofit: Retrofit): MerchantServices {
+        return retrofit.create(MerchantServices::class.java)
+    }
 
 }

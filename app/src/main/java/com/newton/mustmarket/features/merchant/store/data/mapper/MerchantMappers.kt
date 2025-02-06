@@ -1,27 +1,28 @@
 package com.newton.mustmarket.features.merchant.store.data.mapper
 
-import com.newton.mustmarket.features.auth.data.auth_mappers.toUserDto
-import com.newton.mustmarket.features.home.data.mapper.toProductDto
+import com.newton.mustmarket.features.home.data.mapper.toDomainProduct
+import com.newton.mustmarket.features.home.data.mapper.toUser
 import com.newton.mustmarket.features.home.data.remote.response.NetworkProductDto
 import com.newton.mustmarket.features.home.domain.model.products.NetworkProduct
-import com.newton.mustmarket.features.merchant.store.data.remote.response.CreateMerchantsData
-import com.newton.mustmarket.features.merchant.store.domain.models.MerchantResponseData
+import com.newton.mustmarket.features.merchant.store.data.remote.response.MerchantResponseData
+import com.newton.mustmarket.features.merchant.store.domain.models.MerchantResponse
 
-fun MerchantResponseData.toMerchantDto(): CreateMerchantsData {
-    return CreateMerchantsData(
-        id = storeId,
+
+fun MerchantResponseData.toMerchantData(): MerchantResponse {
+    return MerchantResponse(
+        storeId = id,
         name = name,
-        userDto = user.toUserDto(),
+        user = userDto.toUser(),
         banner = banner,
-        address = location,
+        location = address,
         profile = profile,
         description = description,
-        products = products?.productDto(),
+        products = products?.productData(),
         reviews = reviews,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
 }
 
-fun List<NetworkProduct>.productDto(): List<NetworkProductDto> =
-    map { it.toProductDto() }
+fun List<NetworkProductDto>.productData(): List<NetworkProduct> =
+    map { it.toDomainProduct() }
