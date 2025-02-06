@@ -36,7 +36,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
     companion object {
         private const val MAX_RETRIES = 3
         private const val INITIAL_BACKOFF = 1000L
-        private const val MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+        private const val MAX_FILE_SIZE = 1000 * 1024 * 1024 // 10MB
         private const val BACKOFF_MULTIPLIER = 1.5
         private val ALLOWED_MIME_TYPES = setOf(
             MimeType.JPEG,

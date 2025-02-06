@@ -24,6 +24,7 @@ import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
 import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
+import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_input.MerchantSignupScreen
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
 import com.newton.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.newton.mustmarket.features.onboarding.presentation.view.OnboardingScreen
@@ -147,8 +148,21 @@ fun SetUpNavGraph(
         }
 
         composableWithAnimations(route = Screen.MerchantOnboarding.route) {
-            MerchantOnboardingScreen()
+            MerchantOnboardingScreen(
+                onRegisterMerchantClick = {
+                },
+                navController = navController
+                )
+
         }
+
+        composableWithAnimations(route = Screen.MerchantRegistration.route) {
+            MerchantSignupScreen(
+                onNavigateToMyStore = {}
+            )
+
+        }
+
     }
 }
 

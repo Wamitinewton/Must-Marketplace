@@ -28,6 +28,7 @@ sealed class Screen(
     }
 
     data object MerchantOnboarding: Screen("merchant_onboarding")
+    data object MerchantRegistration: Screen("merchant_registration")
 
 
 

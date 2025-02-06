@@ -62,6 +62,15 @@ class MerchantViewModel @Inject constructor(
                 }
             }
             is MerchantEvent.BannerAndProfileUpload -> handleImageUpload(event)
+            is MerchantEvent.ShopLocationChanged -> {
+                _createMerchantState.update { currentState ->
+                    currentState.copy(
+                        merchantDetailsInput = currentState.merchantDetailsInput.copy(
+                            location = event.location
+                        )
+                    )
+                }
+            }
         }
     }
 

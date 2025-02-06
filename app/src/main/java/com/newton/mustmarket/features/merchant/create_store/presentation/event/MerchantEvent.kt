@@ -9,4 +9,5 @@ sealed class MerchantEvent {
     data object ClearError: MerchantEvent()
     data class MerchantNameChanged(val name: String): MerchantEvent()
     data class ShopDescriptionChanged(val description: String): MerchantEvent()
+    data class ShopLocationChanged(val location: String): MerchantEvent()
 }

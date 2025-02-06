@@ -137,6 +137,7 @@ fun ProductInputFields(
     labelName: String,
     keyboardType: KeyboardType,
     isDescription: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         colors = TextFieldDefaults.outlinedTextFieldColors(

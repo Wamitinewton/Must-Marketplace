@@ -1,7 +1,5 @@
 package com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding
 
-import android.widget.Button
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,13 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.newton.mustmarket.R
 import com.newton.mustmarket.core.sharedComposable.LoopReverseLottieLoader
+import com.newton.mustmarket.navigation.Screen
 
 @Composable
 fun MerchantOnboardingScreen(
-    onRegisterMerchantClick: () -> Unit = {},
+    onRegisterMerchantClick: () -> Unit,
     onSkipClick: () -> Unit = {},
+    navController: NavController
 ) {
     val benefits = listOf(
         Benefit(
@@ -77,7 +78,7 @@ fun MerchantOnboardingScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Button(
-                onClick = onRegisterMerchantClick,
+                onClick = {navController.navigate(Screen.MerchantRegistration.route)},
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colors.primary
