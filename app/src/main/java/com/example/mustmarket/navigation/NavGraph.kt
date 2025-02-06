@@ -29,9 +29,9 @@ import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
-import com.example.mustmarket.features.merchant.storeRegistration.presentation.StoreProfileScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantProductScreen
-import com.example.mustmarket.features.merchant.storeRegistration.view.MerchantStoreScreen
+import com.example.mustmarket.features.merchant.store.presentation.StoreProfileScreen
+import com.example.mustmarket.features.merchant.store.view.MerchantProductScreen
+import com.example.mustmarket.features.merchant.store.view.MerchantStoreScreen
 import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.example.mustmarket.features.splash.view.SplashScreen
 
@@ -46,7 +46,8 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.MerchantStore.route//Screen.Splash.route,
+        startDestination = Screen.Splash.route,
+        //Screen.MerchantStore.route
     ) {
         composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(

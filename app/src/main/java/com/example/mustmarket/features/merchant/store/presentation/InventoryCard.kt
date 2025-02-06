@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.presentation
+package com.example.mustmarket.features.merchant.store.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

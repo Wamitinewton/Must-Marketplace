@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.view
+package com.example.mustmarket.features.merchant.store.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

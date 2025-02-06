@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.merchant.storeRegistration.view
+package com.example.mustmarket.features.merchant.store.view
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,8 +44,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
+import com.example.mustmarket.core.sharedComposable.BottomNavBar
 import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
-import com.example.mustmarket.features.merchant.storeRegistration.presentation.InventoryCard
+import com.example.mustmarket.features.merchant.store.presentation.InventoryCard
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
@@ -71,6 +72,7 @@ fun MerchantStoreScreen(
 
 
     Scaffold(
+        bottomBar = { BottomNavBar(navController = navController) },
         topBar = {
             TopAppBar(
                 title = {
