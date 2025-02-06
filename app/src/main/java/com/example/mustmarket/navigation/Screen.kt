@@ -31,6 +31,8 @@ sealed class Screen(
     data object MerchantStore : Screen("merchant_store/{merchantId}") {
         fun createRoute(merchantId: String) = "merchant_store/$merchantId"
     }
+    data object StoreProfileScreen : Screen("store_profile_screen")
+    data object InventoryProducts : Screen("inventory_products")
 
 
     object BottomNavItems {

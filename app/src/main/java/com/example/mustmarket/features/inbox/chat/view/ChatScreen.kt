@@ -2,7 +2,6 @@ package com.example.mustmarket.features.inbox.chat.view
 
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,7 +46,6 @@ import com.example.mustmarket.features.inbox.chat.model.ChatMessage
 import com.example.mustmarket.features.inbox.chat.presentation.ChatMessageItem
 import com.example.mustmarket.features.inbox.chat.presentation.MessageInput
 import com.example.mustmarket.features.inbox.chat.viewModel.ChatViewModel
-import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import kotlinx.coroutines.launch
