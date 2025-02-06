@@ -24,9 +24,8 @@ import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
 import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
+import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
 import com.newton.mustmarket.features.merchant.products.presentation.view.UploadProducts
-import com.newton.mustmarket.features.merchant.store.view.MerchantStoreScreen
-import com.newton.mustmarket.features.merchant.store.view.RegisterStoreScreen
 import com.newton.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.newton.mustmarket.features.splash.view.SplashScreen
 
@@ -41,7 +40,7 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route,
+        startDestination = Screen.MerchantOnboarding.route,
     ) {
         composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(
@@ -147,16 +146,8 @@ fun SetUpNavGraph(
             AllProductsListScreen(navController = navController)
         }
 
-        composableWithAnimations(route = Screen.RegisterStore.route) {
-            RegisterStoreScreen(navController)
-        }
-
-        composableWithAnimations("merchant_store/{merchantId}") { backStackEntry ->
-            val merchantId = backStackEntry.arguments?.getString("merchantId") ?: ""
-            MerchantStoreScreen(
-                navController = navController,
-                merchantId = merchantId
-            )
+        composableWithAnimations(route = Screen.MerchantOnboarding.route) {
+            MerchantOnboardingScreen()
         }
     }
 }

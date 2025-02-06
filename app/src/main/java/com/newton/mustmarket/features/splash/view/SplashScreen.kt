@@ -66,7 +66,7 @@ fun SplashScreen(
         ) {
             LoopReverseLottieLoader(
                 modifier = Modifier.size(270.dp),
-                lottieFile = R.raw.business
+                lottieFile = R.raw.splash01
             )
 
             this@Column.AnimatedVisibility(

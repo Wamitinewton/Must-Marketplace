@@ -25,10 +25,10 @@ import com.newton.mustmarket.features.merchant.products.data.remote.UploadProduc
 import com.newton.mustmarket.features.merchant.products.data.repository.ProductRepositoryImpl
 import com.newton.mustmarket.features.merchant.products.domain.repository.ProductRepository
 import com.newton.mustmarket.features.merchant.products.domain.usecases.AddProductUseCase
-import com.newton.mustmarket.features.merchant.store.data.remote.api_service.MerchantServices
-import com.newton.mustmarket.features.merchant.store.data.repository.MerchantRepositoryImpl
-import com.newton.mustmarket.features.merchant.store.domain.repository.MerchantRepository
-import com.newton.mustmarket.features.merchant.store.domain.usecases.MerchantUseCase
+import com.newton.mustmarket.features.merchant.create_store.data.remote.api_service.MerchantServices
+import com.newton.mustmarket.features.merchant.create_store.data.repository.MerchantRepositoryImpl
+import com.newton.mustmarket.features.merchant.create_store.domain.repository.MerchantRepository
+import com.newton.mustmarket.features.merchant.create_store.domain.usecases.MerchantUseCase
 import com.newton.mustmarket.usecase.UseCases
 import dagger.Module
 import dagger.Provides

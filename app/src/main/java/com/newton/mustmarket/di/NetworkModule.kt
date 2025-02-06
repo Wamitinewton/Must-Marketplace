@@ -7,7 +7,7 @@ import com.newton.mustmarket.features.auth.data.remote.service.AuthenticationSer
 import com.newton.mustmarket.features.home.data.remote.api_service.ProductsApi
 import com.newton.mustmarket.features.merchant.products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.newton.mustmarket.features.merchant.store.data.remote.api_service.MerchantServices
+import com.newton.mustmarket.features.merchant.create_store.data.remote.api_service.MerchantServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +18,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.ConnectionPool
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
