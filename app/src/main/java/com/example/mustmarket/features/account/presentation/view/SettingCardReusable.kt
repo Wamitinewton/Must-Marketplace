@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +30,7 @@ fun SettingsCard(
                     shape = Shapes.medium
                 )
                 .background(
-                    gray01,
+                    MaterialTheme.colors.surface,
                     Shapes.medium
                 )
                 .fillMaxWidth()

@@ -37,6 +37,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mustmarket.features.inbox.chatsList.model.Chat
 import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.gray01
 
 @Composable
@@ -48,7 +50,7 @@ fun ChatListItem(
 ) {
     Row(
         modifier = Modifier
-            .background(Color.White)
+            .background(MaterialTheme.colors.surface)
             .clickable {
                 navController.navigate(
                     Screen.ChatScreen.createRoute(
@@ -72,7 +74,7 @@ fun ChatListItem(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray)
+                    .background(Color.LightGray)
             ) {
                 if (!chat.profileImageUrl.isNullOrEmpty()) {
                     Image(
@@ -96,7 +98,7 @@ fun ChatListItem(
                     ) {
                         Text(
                             text = chat.username?.firstOrNull()?.toString()?.uppercase() ?: "?",
-                            color = Color.White,
+                            color = ThemeUtils.AppColors.Text.themed(),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -112,7 +114,7 @@ fun ChatListItem(
                     text = chat.contactName ?: "Unknown",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = ThemeUtils.AppColors.Text.themed()
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

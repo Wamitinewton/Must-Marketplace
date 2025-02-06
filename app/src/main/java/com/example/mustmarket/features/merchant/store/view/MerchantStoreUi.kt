@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
+import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
 import com.example.mustmarket.features.merchant.storeRegistration.presentation.InventoryCard
-import com.example.mustmarket.features.merchant.storeRegistration.viewModel.MerchantViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.ThemeUtils
 import com.example.mustmarket.ui.theme.ThemeUtils.themed
