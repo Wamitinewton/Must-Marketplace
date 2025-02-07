@@ -3,7 +3,7 @@ package com.newton.mustmarket.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.newton.mustmarket.features.auth.domain.model.AuthedUser
-import com.newton.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.newton.mustmarket.features.products.domain.model.categories.ProductCategory
 
 
 @Entity(tableName = "products")

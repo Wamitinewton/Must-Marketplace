@@ -41,7 +41,7 @@ import coil.compose.AsyncImage
 import com.newton.mustmarket.core.sharedComposable.LoadingAnimationType
 import com.newton.mustmarket.core.sharedComposable.LoadingState
 import com.newton.mustmarket.core.sharedComposable.ProductInputFields
-import com.newton.mustmarket.features.home.presentation.state.ProductCategoryViewModelState
+import com.newton.mustmarket.features.products.presentation.state.ProductCategoryViewModelState
 
 @Composable
 fun ProductsInputForm(

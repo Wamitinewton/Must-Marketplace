@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.SubcomposeAsyncImage
-import com.newton.mustmarket.R
-import com.newton.mustmarket.core.sharedComposable.shimmer.ShimmerAnimation
 
 
 @Composable
@@ -30,7 +29,11 @@ fun CustomImageLoader(
             modifier = Modifier.fillMaxSize(),
             contentScale = contentScale,
             loading = {
-                ShimmerAnimation(modifier = modifier.fillMaxSize())
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             },
             error = {
                 Box(
@@ -40,7 +43,7 @@ fun CustomImageLoader(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.no_image),
+                        painter = painterResource(id = coil.singleton.R.drawable.ic_100tb),
                         contentDescription = "no-image",
                         contentScale = contentScale
                     )

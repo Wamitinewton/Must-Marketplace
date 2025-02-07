@@ -1,7 +1,7 @@
 package com.newton.mustmarket.features.merchant.products.domain.models
 
 import com.newton.mustmarket.features.auth.domain.model.AuthedUser
-import com.newton.mustmarket.features.home.domain.model.categories.ProductCategory
+import com.newton.mustmarket.features.products.domain.model.categories.ProductCategory
 import kotlinx.serialization.Serializable
 
 
