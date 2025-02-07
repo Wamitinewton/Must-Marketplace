@@ -42,8 +42,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.newton.mustmarket.core.sharedComposable.SearchBar
-import com.newton.mustmarket.features.products.presentation.state.BookmarksUiState
-import com.newton.mustmarket.features.products.presentation.viewmodels.BookmarksViewModel
+import com.newton.mustmarket.features.get_products.presentation.state.BookmarksUiState
+import com.newton.mustmarket.features.get_products.presentation.viewmodels.BookmarksViewModel
 import com.newton.mustmarket.navigation.Screen
 
 @Composable

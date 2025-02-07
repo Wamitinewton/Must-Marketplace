@@ -15,18 +15,18 @@ import com.newton.mustmarket.features.auth.presentation.forgotPassword.view.Forg
 import com.newton.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.newton.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.newton.mustmarket.features.bookmarks.BookmarksScreen
-import com.newton.mustmarket.features.products.presentation.view.productDetails.ProductDetailsScreen
-import com.newton.mustmarket.features.products.presentation.view.productList.AllProductsListScreen
-import com.newton.mustmarket.features.products.presentation.view.productList.HomeScreen
-import com.newton.mustmarket.features.products.presentation.view.productList.ProductSearchScreen
-import com.newton.mustmarket.features.products.presentation.viewmodels.AllProductsViewModel
+import com.newton.mustmarket.features.get_products.presentation.view.productDetails.ProductDetailsScreen
+import com.newton.mustmarket.features.get_products.presentation.view.productList.AllProductsListScreen
+import com.newton.mustmarket.features.get_products.presentation.view.productList.HomeScreen
+import com.newton.mustmarket.features.get_products.presentation.view.productList.ProductSearchScreen
+import com.newton.mustmarket.features.get_products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
 import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_input.MerchantSignupScreen
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
-import com.newton.mustmarket.features.merchant.products.presentation.view.UploadProducts
+import com.newton.mustmarket.features.merchant.upload_products.presentation.view.UploadProducts
 import com.newton.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.newton.mustmarket.features.splash.view.SplashScreen
 

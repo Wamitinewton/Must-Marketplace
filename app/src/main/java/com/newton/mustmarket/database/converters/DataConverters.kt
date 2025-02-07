@@ -2,7 +2,7 @@ package com.newton.mustmarket.database.converters
 
 import androidx.room.TypeConverter
 import com.newton.mustmarket.features.auth.domain.model.AuthedUser
-import com.newton.mustmarket.features.products.domain.model.categories.ProductCategory
+import com.newton.mustmarket.features.get_products.domain.model.categories.ProductCategory
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
