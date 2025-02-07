@@ -15,11 +15,11 @@ import com.newton.mustmarket.features.auth.presentation.forgotPassword.view.Forg
 import com.newton.mustmarket.features.auth.presentation.login.view.LoginScreen
 import com.newton.mustmarket.features.auth.presentation.signup.view.SignUpScreen
 import com.newton.mustmarket.features.bookmarks.BookmarksScreen
-import com.newton.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
-import com.newton.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
-import com.newton.mustmarket.features.home.presentation.view.productList.HomeScreen
-import com.newton.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
-import com.newton.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
+import com.newton.mustmarket.features.products.presentation.view.productDetails.ProductDetailsScreen
+import com.newton.mustmarket.features.products.presentation.view.productList.AllProductsListScreen
+import com.newton.mustmarket.features.products.presentation.view.productList.HomeScreen
+import com.newton.mustmarket.features.products.presentation.view.productList.ProductSearchScreen
+import com.newton.mustmarket.features.products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
 import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
 import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen

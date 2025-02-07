@@ -1,7 +1,7 @@
 package com.newton.mustmarket.features.merchant.create_store.data.remote.response
 
 import com.newton.mustmarket.features.auth.data.remote.auth_response.UserDto
-import com.newton.mustmarket.features.home.data.remote.response.NetworkProductDto
+import com.newton.mustmarket.features.products.data.remote.response.NetworkProductDto
 import kotlinx.serialization.Serializable
 
 @Serializable

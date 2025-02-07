@@ -68,10 +68,10 @@ import androidx.navigation.NavController
 import com.newton.mustmarket.core.networkManager.NetworkConnectionState
 import com.newton.mustmarket.core.networkManager.rememberConnectivityState
 import com.newton.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
-import com.newton.mustmarket.features.home.presentation.event.CategoryEvent
-import com.newton.mustmarket.features.home.presentation.event.HomeScreenEvent
-import com.newton.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
-import com.newton.mustmarket.features.home.presentation.viewmodels.ProductCategoryViewModel
+import com.newton.mustmarket.features.products.presentation.event.CategoryEvent
+import com.newton.mustmarket.features.products.presentation.event.HomeScreenEvent
+import com.newton.mustmarket.features.products.presentation.viewmodels.AllProductsViewModel
+import com.newton.mustmarket.features.products.presentation.viewmodels.ProductCategoryViewModel
 import com.newton.mustmarket.features.merchant.products.domain.models.UploadProductRequest
 import com.newton.mustmarket.features.merchant.products.presentation.event.UploadEvent
 import com.newton.mustmarket.features.merchant.products.presentation.viewModel.UploadProductViewModel

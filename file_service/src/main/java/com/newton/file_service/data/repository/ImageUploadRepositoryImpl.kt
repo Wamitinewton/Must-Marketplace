@@ -205,11 +205,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
 
         override fun writeTo(sink: BufferedSink) {
           try {
-              val contentLength = contentLength().takeIf { it > 0 } ?: run {
-                  Timber.w("Content length is 0 or negative")
-                  delegate.writeTo(sink)
-                  return
-              }
+              val contentLength = contentLength()
               Timber.d("Starting file upload. Total content length: $contentLength bytes")
 
               val countingSink = object : ForwardingSink(sink) {
@@ -225,10 +221,9 @@ class ImageUploadRepositoryImpl @Inject constructor(
                   }
               }
 
-              countingSink.buffer().use { bufferedSink ->
-                      delegate.writeTo(bufferedSink)
-                      bufferedSink.flush()
-              }
+              val bufferedSink = countingSink.buffer()
+              delegate.writeTo(bufferedSink)
+              bufferedSink.flush()
           } catch (e: Exception){
               throw Exception("Error in progressRequestBody: ${e.message}", e)
           }
