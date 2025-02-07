@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.newton.file_service.domain.model.ImageUploadState
+import com.newton.mustmarket.core.sharedComposable.UploadProgressDialog
 import com.newton.mustmarket.core.util.PermissionUtils
 import com.newton.mustmarket.features.merchant.create_store.domain.models.CreateMerchantRequest
 import com.newton.mustmarket.features.merchant.create_store.presentation.event.MerchantEvent
@@ -70,6 +71,7 @@ fun MerchantSignupScreen(
     var bannerUri by remember { mutableStateOf<Uri?>(null) }
     var profileUri by remember { mutableStateOf<Uri?>(null) }
     var currentStep by remember { mutableIntStateOf(0) }
+    var isUploadDialogVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -108,6 +110,16 @@ fun MerchantSignupScreen(
         }
     }
 
+    LaunchedEffect(uploadProgress) {
+        isUploadDialogVisible = when (uploadProgress) {
+            is ImageUploadState.Progress -> true
+            is ImageUploadState.Error -> false
+             ImageUploadState.Loading -> true
+            is ImageUploadState.MultipleImageSuccess -> false
+            else -> false
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.navigateToMyStore.collect {
             onNavigateToMyStore()
@@ -126,6 +138,15 @@ fun MerchantSignupScreen(
             Toast.makeText(context, success, Toast.LENGTH_LONG).show()
         }
     }
+
+    UploadProgressDialog(
+        isVisible = isUploadDialogVisible,
+        progress = when (uploadProgress) {
+            is ImageUploadState.Progress -> (uploadProgress as ImageUploadState.Progress).percentage / 100f
+            else -> 0f
+        },
+        onDismissRequest = { isUploadDialogVisible = false }
+    )
 
     Column(
         modifier = Modifier
