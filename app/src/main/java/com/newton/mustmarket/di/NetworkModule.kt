@@ -4,8 +4,8 @@ import android.content.Context
 import com.newton.mustmarket.BuildConfig
 import com.newton.mustmarket.features.auth.authInterceptor.AuthInterceptor
 import com.newton.mustmarket.features.auth.data.remote.service.AuthenticationService
-import com.newton.mustmarket.features.products.data.remote.api_service.ProductsApi
-import com.newton.mustmarket.features.merchant.products.data.remote.UploadProductsApi
+import com.newton.mustmarket.features.get_products.data.remote.api_service.ProductsApi
+import com.newton.mustmarket.features.merchant.upload_products.data.remote.UploadProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.newton.mustmarket.features.merchant.create_store.data.remote.api_service.MerchantServices
 import dagger.Module
