@@ -46,7 +46,7 @@ interface ProductsApi {
 
     @GET(ProductsEndpoints.GET_PRODUCTS_BY_CATEGORY)
     suspend fun getProductsByCategory(
-        @Query("category") category: String
+        @Path("category") category: String
     ): AllProductsDto
 
 }

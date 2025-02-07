@@ -1,5 +1,7 @@
 package com.newton.mustmarket.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.newton.mustmarket.database.dao.BookmarkDao
 import com.newton.mustmarket.database.dao.CategoryDao
 import com.newton.mustmarket.database.dao.ProductDao
@@ -29,6 +31,8 @@ import com.newton.mustmarket.features.merchant.create_store.data.remote.api_serv
 import com.newton.mustmarket.features.merchant.create_store.data.repository.MerchantRepositoryImpl
 import com.newton.mustmarket.features.merchant.create_store.domain.repository.MerchantRepository
 import com.newton.mustmarket.features.merchant.create_store.domain.usecases.MerchantUseCase
+import com.newton.mustmarket.features.merchant.create_store.merchant_keystore.MerchantPrefsRepository
+import com.newton.mustmarket.features.merchant.create_store.merchant_keystore.MerchantPrefsRepositoryImpl
 import com.newton.mustmarket.usecase.UseCases
 import dagger.Module
 import dagger.Provides
@@ -86,6 +90,16 @@ object RepositoryModule {
             productsApi = allProductsApi,
             dao = dao,
             ioDispatcher = ioDispatcher,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMerchantPrefsRepository(
+        dataStore: DataStore<Preferences>
+    ): MerchantPrefsRepository {
+        return MerchantPrefsRepositoryImpl(
+            dataStore = dataStore
         )
     }
 

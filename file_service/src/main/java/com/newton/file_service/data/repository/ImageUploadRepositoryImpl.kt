@@ -184,6 +184,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
         onProgress: (Int) -> Unit,
         totalSize: Long? = null
     ) {
+        onProgress(0)
         var uploadedBytes: Long
         channel.consumeAsFlow().collect { progress ->
             val finalProgress = if (totalSize != null) {
@@ -206,6 +207,9 @@ class ImageUploadRepositoryImpl @Inject constructor(
         override fun writeTo(sink: BufferedSink) {
           try {
               val contentLength = contentLength()
+              if (contentLength <= 0) {
+                  onProgress(0)
+              }
               Timber.d("Starting file upload. Total content length: $contentLength bytes")
 
               val countingSink = object : ForwardingSink(sink) {
@@ -222,6 +226,7 @@ class ImageUploadRepositoryImpl @Inject constructor(
               }
 
               val bufferedSink = countingSink.buffer()
+              onProgress(0)
               delegate.writeTo(bufferedSink)
               bufferedSink.flush()
           } catch (e: Exception){

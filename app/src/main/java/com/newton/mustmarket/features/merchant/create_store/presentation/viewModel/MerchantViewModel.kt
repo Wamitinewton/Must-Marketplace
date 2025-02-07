@@ -9,6 +9,7 @@ import com.newton.file_service.domain.repository.ImageUploadRepository
 import com.newton.file_service.file_config.FileConverter.uriToFile
 import com.newton.mustmarket.core.util.Resource
 import com.newton.mustmarket.features.merchant.create_store.domain.models.CreateMerchantRequest
+import com.newton.mustmarket.features.merchant.create_store.merchant_keystore.MerchantPrefsRepository
 import com.newton.mustmarket.features.merchant.create_store.presentation.event.MerchantEvent
 import com.newton.mustmarket.features.merchant.create_store.presentation.state.CreateMerchantState
 import com.newton.mustmarket.features.merchant.create_store.presentation.state.UploadBannerAndProfileState
@@ -21,13 +22,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MerchantViewModel @Inject constructor(
     private val merchantUseCase: UseCases,
-    private val imageUploadRepository: ImageUploadRepository
+    private val imageUploadRepository: ImageUploadRepository,
+    private val merchantPrefsRepository: MerchantPrefsRepository
 ): ViewModel() {
+
+    private val _isMerchant = MutableStateFlow(false)
+    val isMerchant = _isMerchant.asStateFlow()
 
     private val _createMerchantState = MutableStateFlow(CreateMerchantState())
     val createMerchantState = _createMerchantState.asStateFlow()
@@ -39,6 +45,26 @@ class MerchantViewModel @Inject constructor(
     val navigateToMyStore = _navigateToMyStore.receiveAsFlow()
 
     private var currentUploadJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            merchantPrefsRepository.getMerchantStatus()
+                .collect { status ->
+                    _isMerchant.value = status
+                }
+        }
+    }
+
+
+    private fun updateMerchantStatus(isSuccess: Boolean) {
+        viewModelScope.launch {
+            if (isSuccess) {
+                Timber.d("Setting merchant to true")
+                merchantPrefsRepository.setMerchantStatus(true)
+                Timber.d("Merchant state is set")
+            }
+        }
+    }
 
     fun handleEvent(event: MerchantEvent) {
         when(event) {
@@ -167,6 +193,7 @@ class MerchantViewModel @Inject constructor(
                             banner = imageUrls[0],
                             profile = imageUrls[1],
                         ))
+                        updateMerchantStatus(true)
                     }
                     else -> {}
                 }

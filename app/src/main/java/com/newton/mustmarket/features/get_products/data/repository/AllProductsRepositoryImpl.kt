@@ -64,15 +64,29 @@ class AllProductsRepositoryImpl @Inject constructor(
     override suspend fun getProductByCategory(category: String): Flow<Resource<List<NetworkProduct>>> = flow {
         emit(Resource.Loading(true))
         try {
-           val response = productsApi.getProductsByCategory(category)
+            val response = productsApi.getProductsByCategory(category)
+
             if (response.message == "Success") {
                 val products = response.data.map { it.toDomainProduct() }
                 emit(Resource.Success(data = products))
+            } else {
+                emit(Resource.Error(response.message ?: "Unknown error"))
             }
-        }catch (e: Exception) {
-            emit(handleError(e))
+
+        } catch (e: HttpException) {
+            val errorMessage = when (e.response.code) {
+                404 -> "No products found in this category"
+                500 -> "Server error, please try again later"
+                else -> "Unexpected error: ${e.message}"
+            }
+            emit(Resource.Error(errorMessage))
+        } catch (e: IOException) {
+            emit(Resource.Error("Network error, check your internet connection"))
+        } catch (e: Exception) {
+            emit(Resource.Error("No products found for this category"))
         }
     }
+
 
     private suspend fun fetchAndProcessProducts(): Resource<List<NetworkProduct>> =
 

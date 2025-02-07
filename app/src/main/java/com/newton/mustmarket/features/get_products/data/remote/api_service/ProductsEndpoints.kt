@@ -7,5 +7,5 @@ object ProductsEndpoints {
     const val GET_CATEGORY_ID = "categories/all"
     const val SEARCH_PRODUCTS = "api/v1/products/by-name/{query}"
     const val ADD_CATEGORY = "api/v1/categories/add"
-    const val GET_PRODUCTS_BY_CATEGORY = "api/v1/products/by-category/laptops"
+    const val GET_PRODUCTS_BY_CATEGORY = "api/v1/products/by-category/{category}"
 }
