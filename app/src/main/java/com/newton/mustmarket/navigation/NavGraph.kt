@@ -19,6 +19,7 @@ import com.newton.mustmarket.features.get_products.presentation.view.productDeta
 import com.newton.mustmarket.features.get_products.presentation.view.productList.AllProductsListScreen
 import com.newton.mustmarket.features.get_products.presentation.view.productList.HomeScreen
 import com.newton.mustmarket.features.get_products.presentation.view.productList.ProductSearchScreen
+import com.newton.mustmarket.features.get_products.presentation.view.productList.ProductsByCategoryScreen
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
 import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
@@ -41,7 +42,7 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.MerchantOnboarding.route,
+        startDestination = Screen.Splash.route,
     ) {
         composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(
@@ -68,9 +69,9 @@ fun SetUpNavGraph(
         composableWithAnimations(
             route = Screen.Detail.route,
             navTransition = NavigationTransitions.verticalSlide(),
-//            arguments = listOf(
-//                navArgument("productId") { type = NavType.IntType }
-//            ),
+            arguments = listOf(
+                navArgument("productId") { type = NavType.IntType }
+            ),
           ) {
             ProductDetailsScreen(
                 navController = navController,
@@ -159,6 +160,20 @@ fun SetUpNavGraph(
         composableWithAnimations(route = Screen.MerchantRegistration.route) {
             MerchantSignupScreen(
                 onNavigateToMyStore = {}
+            )
+
+        }
+
+        composableWithAnimations(route = Screen.ProductByCategory.route, arguments = listOf(
+            navArgument("category") { type = NavType.StringType
+            }
+        )
+        ) { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category")
+                ?: return@composableWithAnimations
+            ProductsByCategoryScreen(
+                navController = navController,
+                categoryName =  category
             )
 
         }

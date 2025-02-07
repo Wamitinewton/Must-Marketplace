@@ -3,6 +3,7 @@ package com.newton.mustmarket.features.get_products.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newton.mustmarket.core.util.Resource
+import com.newton.mustmarket.core.util.RetryableViewModel
 import com.newton.mustmarket.features.get_products.domain.model.products.NetworkProduct
 import com.newton.mustmarket.features.get_products.presentation.event.HomeScreenEvent
 import com.newton.mustmarket.features.get_products.presentation.state.AllProductsViewModelState
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProductsViewModel @Inject constructor(
     private val productsUseCases: UseCases,
-) : ViewModel() {
+) : RetryableViewModel() {
 
 
     private val _viewModelState = MutableStateFlow(AllProductsViewModelState())
@@ -29,11 +30,19 @@ class AllProductsViewModel @Inject constructor(
     private val _getProductByCategoryState = MutableStateFlow(GetProductsByCategoryState())
     val getProductsByCategoryState: StateFlow<GetProductsByCategoryState> = _getProductByCategoryState.asStateFlow()
 
+    private var currentCategory: String? = null
+
+
 
 
     init {
         viewModelScope.launch {
             initiateProductLoading()
+            retryTrigger.collect {
+                if (currentCategory != null) {
+                    getProductsByCategory(currentCategory!!)
+                }
+            }
         }
     }
 
@@ -68,7 +77,7 @@ class AllProductsViewModel @Inject constructor(
             _getProductByCategoryState.update { it.copy(isLoading = true) }
             productsUseCases.homeUseCases.getProductsByCategory(category)
                 .collect { result ->
-                    handleProductsResult(result)
+                    handleProductByCategoryResult(result)
                 }
         }
     }
@@ -92,5 +101,32 @@ class AllProductsViewModel @Inject constructor(
             }
         }
     }
+
+    private fun handleProductByCategoryResult(result: Resource<List<NetworkProduct>>) {
+        _getProductByCategoryState.update { state ->
+            when (result) {
+                is Resource.Success -> state.copy(
+                    isLoading = false,
+                    products = result.data ?: emptyList(),
+                    errorMessage = null
+                )
+
+                is Resource.Error -> state.copy(
+                    isLoading = false,
+                    errorMessage = result.message ?: "An unexpected error occurred",
+                    products = emptyList()
+                )
+
+                is Resource.Loading -> state.copy(isLoading = result.isLoading)
+            }
+        }
+    }
+
+    override fun handleRetry() {
+        currentCategory?.let { category ->
+            getProductsByCategory(category)
+        }
+    }
+
 }
 

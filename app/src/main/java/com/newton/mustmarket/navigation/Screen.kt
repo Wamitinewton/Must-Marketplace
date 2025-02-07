@@ -29,6 +29,11 @@ sealed class Screen(
 
     data object MerchantOnboarding: Screen("merchant_onboarding")
     data object MerchantRegistration: Screen("merchant_registration")
+    data object ProductByCategory: Screen("product_by_category/{category}") {
+        fun createRoute(category: String): String {
+            return "product_by_category/$category"
+        }
+    }
 
 
 

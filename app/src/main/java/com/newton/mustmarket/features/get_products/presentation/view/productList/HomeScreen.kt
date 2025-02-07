@@ -35,6 +35,7 @@ import com.newton.mustmarket.R
 import com.newton.mustmarket.core.sharedComposable.ErrorState
 import com.newton.mustmarket.core.sharedComposable.shimmer.ProductShimmer
 import com.newton.mustmarket.features.auth.presentation.login.viewmodels.LoginViewModel
+import com.newton.mustmarket.features.get_products.domain.model.categories.ProductCategory
 import com.newton.mustmarket.features.get_products.domain.model.products.NetworkProduct
 import com.newton.mustmarket.features.get_products.presentation.event.CategoryEvent
 import com.newton.mustmarket.features.get_products.presentation.event.HomeScreenEvent
@@ -148,7 +149,11 @@ fun Content(
 
 
                 item { CategoryChipView(
-                    categories = categoryUIState.categories
+                    categories = categoryUIState.categories,
+
+                    onCategoryClick = { category: ProductCategory ->
+                        navController.navigate(Screen.ProductByCategory.createRoute(category = category.name))
+                    }
                 ) }
                 item {
                     Card(
@@ -235,7 +240,7 @@ fun Content(
                                         description = product.description
                                     )
                                     sharedViewModel.addDetails(productDetails)
-                                    navController.navigate(Screen.Detail.route) {
+                                    navController.navigate(Screen.Detail.createRoute(productId = product.id)) {
                                         popUpTo(Screen.Detail.route) {
                                             inclusive = true
                                         }
