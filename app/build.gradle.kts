@@ -29,7 +29,7 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    namespace = "com.example.mustmarket"
+    namespace = "com.newton.mustmarket"
 
     compileSdk = 35
 
@@ -54,7 +54,7 @@ android {
         buildConfigField("String", "SERVER_BASE_URL", "\"$serverBaseUrl\"")
 
 
-        applicationId = "com.example.mustmarket"
+        applicationId = "com.newton.mustmarket"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
@@ -159,8 +159,8 @@ dependencies {
     // Security
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    // Utils
-    implementation("com.google.errorprone:error_prone_annotations:2.11.0")
+    //modules
+    implementation(project(":file_service"))
 
 
     // Testing
