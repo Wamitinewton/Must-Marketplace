@@ -7,3 +7,10 @@ data class GetMerchantsState(
     val error: String? = null,
     val success: List<GetMerchantsData>? = emptyList(),
 )
+
+data class GetMerchantByIdState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val success: GetMerchantsData? = null,
+)
+

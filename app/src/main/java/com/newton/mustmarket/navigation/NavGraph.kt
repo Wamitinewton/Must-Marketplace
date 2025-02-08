@@ -27,6 +27,7 @@ import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_input.MerchantSignupScreen
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
+import com.newton.mustmarket.features.merchant.get_merchants.presentation.view.MerchantDetailsScreen
 import com.newton.mustmarket.features.merchant.upload_products.presentation.view.UploadProducts
 import com.newton.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.newton.mustmarket.features.splash.view.SplashScreen
@@ -176,6 +177,16 @@ fun SetUpNavGraph(
                 categoryName =  category
             )
 
+        }
+
+        composableWithAnimations(route = Screen.GetMerchantById.route, arguments = listOf(
+            navArgument("id") { type = NavType.IntType }
+        )) { backStackEntry ->
+            val merchantId = backStackEntry.arguments?.getInt("id")
+                ?: return@composableWithAnimations
+            MerchantDetailsScreen(
+                merchantId = merchantId
+            )
         }
 
     }

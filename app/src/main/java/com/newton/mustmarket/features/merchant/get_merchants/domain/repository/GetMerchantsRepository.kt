@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface GetMerchantsRepository {
     suspend fun getAllMerchants(): Flow<Resource<List<GetMerchantsData>>>
+    suspend fun getMerchantById(id: Int): Flow<Resource<GetMerchantsData>>
 }

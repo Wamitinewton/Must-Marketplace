@@ -35,6 +35,12 @@ sealed class Screen(
         }
     }
 
+    data object GetMerchantById: Screen("merchant_by_id/{id}") {
+        fun createRoute(id: Int): String {
+            return "merchant_by_id/$id"
+        }
+    }
+
 
 
     object BottomNavItems {
