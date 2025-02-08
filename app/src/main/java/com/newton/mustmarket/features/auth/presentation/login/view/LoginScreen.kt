@@ -100,8 +100,12 @@ fun LoginScreen(
 
 
     LaunchedEffect(Unit) {
-        loginViewModel.navigateToHome.collect {
-            navController.navigate(Screen.HomeScreen.route)
+        loginViewModel.navigationChannel.collect { shouldNavigate ->
+            if (shouldNavigate) {
+                navController.navigate(Screen.HomeScreen.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+            }
         }
     }
 

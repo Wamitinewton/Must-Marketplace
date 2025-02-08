@@ -43,8 +43,6 @@ class LoginViewModel @Inject constructor(
     private val _loggedInUser = MutableStateFlow<AuthedUser?>(null)
     val loggedInUser: StateFlow<AuthedUser?> get() = _loggedInUser
 
-    private val _navigateToHome = MutableSharedFlow<Unit>()
-    val navigateToHome: SharedFlow<Unit> = _navigateToHome.asSharedFlow()
 
     private val _navigateToLogin = Channel<Unit>()
     val navigateToLogin = _navigateToLogin.receiveAsFlow()
@@ -56,6 +54,10 @@ class LoginViewModel @Inject constructor(
 
     private val _isUserLoggedIn = MutableStateFlow(false)
     val isUserLoggedIn: StateFlow<Boolean> get() = _isUserLoggedIn
+
+    // Add navigation channel
+    private val _navigationChannel = Channel<Boolean>()
+    val navigationChannel = _navigationChannel.receiveAsFlow()
 
 
     init {
@@ -165,9 +167,7 @@ class LoginViewModel @Inject constructor(
                             Timber.d("Current loading state $isLoading")
                             authUseCase.authUseCase.storeLoggedInUser(user)
                             Timber.d("Emitting navigation event to Home")
-                            viewModelScope.launch {
-                                _navigateToHome.emit(Unit)
-                            }
+                            _navigationChannel.send(true)
                             Timber.d("Navigation has been emitted....................")
 
                         }

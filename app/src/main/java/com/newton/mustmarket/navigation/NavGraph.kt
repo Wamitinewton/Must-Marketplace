@@ -185,7 +185,8 @@ fun SetUpNavGraph(
             val merchantId = backStackEntry.arguments?.getInt("id")
                 ?: return@composableWithAnimations
             MerchantDetailsScreen(
-                merchantId = merchantId
+                merchantId = merchantId,
+                navController = navController
             )
         }
 

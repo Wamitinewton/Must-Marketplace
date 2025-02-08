@@ -78,6 +78,14 @@ class GetMerchantsViewModel @Inject constructor(
                     }
                 }
             }
+        } catch (e: Exception) {
+            _getMerchantByIdState.update { currentState ->
+                currentState.copy(
+                    error = e.message,
+                    isLoading = false,
+                    success = null
+                )
+            }
         }
     }
 
