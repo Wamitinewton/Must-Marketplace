@@ -10,3 +10,4 @@ data class GetMerchantsResponseDto(
     @SerialName("data")
     val dataDto: List<GetMerchantsDataDto>? = emptyList()
 )
+

@@ -172,7 +172,9 @@ fun Content(
                                 merchants = merchantState.success!!,
                                 currentIndex = currentMerchantIndex,
                                 onIndexChange = getMerchantsViewModel::updateCurrentIndex,
-                                onMerchantClick = { merchant -> }
+                                onMerchantClick = { merchant ->
+                                    navController.navigate(Screen.GetMerchantById.createRoute(merchant.id))
+                                }
                             )
                         }
                     }

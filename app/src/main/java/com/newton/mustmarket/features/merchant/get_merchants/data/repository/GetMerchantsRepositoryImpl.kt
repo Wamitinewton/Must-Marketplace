@@ -33,4 +33,18 @@ class GetMerchantsRepositoryImpl @Inject constructor(
             emit(Resource.Error("An error has occurred. ${e.message}"))
         }
     }
+
+    override suspend fun getMerchantById(id: Int): Flow<Resource<GetMerchantsData>> = flow {
+        emit(Resource.Loading(true))
+        try {
+            val response = merchantsService.getMerchantById(id)
+            emit(Resource.Success(data = response.toGetDomainMerchants()))
+        } catch (e: HttpException) {
+            emit(Resource.Error(e.message ?: "Network error. Try again later"))
+        } catch (e: IOException) {
+            emit(Resource.Error(e.message ?: "An error has occurred"))
+        } catch (e: Exception) {
+            emit(Resource.Error("An error has occurred. ${e.message}"))
+        }
+    }
 }

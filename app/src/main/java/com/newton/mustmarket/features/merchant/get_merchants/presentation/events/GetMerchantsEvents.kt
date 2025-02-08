@@ -2,4 +2,5 @@ package com.newton.mustmarket.features.merchant.get_merchants.presentation.event
 
 sealed class GetMerchantsEvents {
     data object GetAllMerchants: GetMerchantsEvents()
+    data class GetMerchantById(val id: Int): GetMerchantsEvents()
 }
