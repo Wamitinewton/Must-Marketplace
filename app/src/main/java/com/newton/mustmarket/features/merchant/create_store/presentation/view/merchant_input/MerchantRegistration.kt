@@ -56,7 +56,7 @@ import com.newton.file_service.domain.model.ImageUploadState
 import com.newton.mustmarket.core.sharedComposable.UploadProgressDialog
 import com.newton.mustmarket.core.util.PermissionUtils
 import com.newton.mustmarket.features.merchant.create_store.domain.models.CreateMerchantRequest
-import com.newton.mustmarket.features.merchant.create_store.presentation.event.MerchantEvent
+import com.newton.mustmarket.features.merchant.create_store.presentation.event.CreateMerchantEvent
 import com.newton.mustmarket.features.merchant.create_store.presentation.viewModel.MerchantViewModel
 
 @Composable
@@ -129,7 +129,7 @@ fun MerchantSignupScreen(
     state.error?.let { error ->
         LaunchedEffect(error) {
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-            viewModel.handleEvent(MerchantEvent.ClearError)
+            viewModel.handleEvent(CreateMerchantEvent.ClearError)
         }
     }
 
@@ -280,21 +280,21 @@ fun MerchantSignupScreen(
                     0 -> BasicInfoSection(
                         name = state.merchantDetailsInput.merchantName,
                         onNameChange = {
-                            viewModel.handleEvent(MerchantEvent.MerchantNameChanged(it))
+                            viewModel.handleEvent(CreateMerchantEvent.MerchantNameChanged(it))
                         }
                     )
                     1 -> LocationSection(
                         location = state.merchantDetailsInput.location,
                         onLocationChange = { location ->
                             viewModel.handleEvent(
-                                MerchantEvent.ShopLocationChanged(location)
+                                CreateMerchantEvent.ShopLocationChanged(location)
                             )
                         }
                     )
                     2 -> DescriptionSection(
                         description = state.merchantDetailsInput.shopDescription,
                         onDescriptionChange = {
-                            viewModel.handleEvent(MerchantEvent.ShopDescriptionChanged(it))
+                            viewModel.handleEvent(CreateMerchantEvent.ShopDescriptionChanged(it))
                         }
                     )
                 }
@@ -328,7 +328,7 @@ fun MerchantSignupScreen(
                     } else {
                        if (bannerUri != null && profileUri != null) {
                            viewModel.handleEvent(
-                               MerchantEvent.BannerAndProfileUpload(
+                               CreateMerchantEvent.BannerAndProfileUpload(
                                    context = context,
                                    bannerUri = bannerUri!!,
                                    profileUri = profileUri!!,

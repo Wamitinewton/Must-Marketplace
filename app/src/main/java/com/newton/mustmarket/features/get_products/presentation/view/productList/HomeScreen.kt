@@ -42,6 +42,8 @@ import com.newton.mustmarket.features.get_products.presentation.event.HomeScreen
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.ProductCategoryViewModel
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.SharedViewModel
+import com.newton.mustmarket.features.merchant.get_merchants.presentation.view.MerchantCarousel
+import com.newton.mustmarket.features.merchant.get_merchants.presentation.view_model.GetMerchantsViewModel
 import com.newton.mustmarket.navigation.Screen
 import com.newton.mustmarket.ui.theme.ThemeUtils
 import com.newton.mustmarket.ui.theme.ThemeUtils.themed
@@ -69,10 +71,9 @@ fun Content(
     viewModel: AllProductsViewModel = hiltViewModel(),
     categoryViewModel: ProductCategoryViewModel = hiltViewModel(),
     navController: NavController,
-
     sharedViewModel: SharedViewModel,
-
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    getMerchantsViewModel: GetMerchantsViewModel = hiltViewModel()
 
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -83,6 +84,8 @@ fun Content(
         isRefreshing = isRefreshing
     )
     val user by loginViewModel.loggedInUser.collectAsStateWithLifecycle()
+    val merchantState by getMerchantsViewModel.getAllMerchantsEvent.collectAsState()
+    val currentMerchantIndex by getMerchantsViewModel.currentMerchantIndex.collectAsState()
 
     Scaffold(
         topBar = {
@@ -155,6 +158,26 @@ fun Content(
                         navController.navigate(Screen.ProductByCategory.createRoute(category = category.name))
                     }
                 ) }
+
+                item {
+                    when {
+                        merchantState.isLoading -> {
+                            ProductShimmer()
+                        }
+                        merchantState.error != null -> {
+                            merchantState.error?.let { ErrorState(message = it) }
+                        }
+                        !merchantState.success.isNullOrEmpty() -> {
+                            MerchantCarousel(
+                                merchants = merchantState.success!!,
+                                currentIndex = currentMerchantIndex,
+                                onIndexChange = getMerchantsViewModel::updateCurrentIndex,
+                                onMerchantClick = { merchant -> }
+                            )
+                        }
+                    }
+                }
+
                 item {
                     Card(
                         shape = RectangleShape,
@@ -196,8 +219,6 @@ fun Content(
                         }
                     }
                 }
-
-
 
                 when {
                     uiState.isLoading -> {

@@ -85,12 +85,6 @@ object ThemeUtils {
 
 
     @Composable
-    @ReadOnlyComposable
-    fun Colors.themedColor(pair: ThemeColorPair): Color {
-        return if (isSystemInDarkTheme()) pair.dark else pair.light
-    }
-
-    @Composable
     fun MustMarketTheme(
         darkTheme: Boolean = isSystemInDarkTheme(),
         content: @Composable () -> Unit

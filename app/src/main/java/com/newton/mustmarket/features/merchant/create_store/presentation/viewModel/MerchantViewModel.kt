@@ -10,7 +10,7 @@ import com.newton.file_service.file_config.FileConverter.uriToFile
 import com.newton.mustmarket.core.util.Resource
 import com.newton.mustmarket.features.merchant.create_store.domain.models.CreateMerchantRequest
 import com.newton.mustmarket.features.merchant.create_store.merchant_keystore.MerchantPrefsRepository
-import com.newton.mustmarket.features.merchant.create_store.presentation.event.MerchantEvent
+import com.newton.mustmarket.features.merchant.create_store.presentation.event.CreateMerchantEvent
 import com.newton.mustmarket.features.merchant.create_store.presentation.state.CreateMerchantState
 import com.newton.mustmarket.features.merchant.create_store.presentation.state.UploadBannerAndProfileState
 import com.newton.mustmarket.usecase.UseCases
@@ -66,10 +66,10 @@ class MerchantViewModel @Inject constructor(
         }
     }
 
-    fun handleEvent(event: MerchantEvent) {
+    fun handleEvent(event: CreateMerchantEvent) {
         when(event) {
-            MerchantEvent.ClearError -> clearError()
-            is MerchantEvent.ShopDescriptionChanged -> {
+            CreateMerchantEvent.ClearError -> clearError()
+            is CreateMerchantEvent.ShopDescriptionChanged -> {
                 _createMerchantState.update { currentState ->
                     currentState.copy(
                         merchantDetailsInput = currentState.merchantDetailsInput.copy(
@@ -78,7 +78,7 @@ class MerchantViewModel @Inject constructor(
                     )
                 }
             }
-            is MerchantEvent.MerchantNameChanged -> {
+            is CreateMerchantEvent.MerchantNameChanged -> {
                 _createMerchantState.update { currentState ->
                     currentState.copy(
                         merchantDetailsInput = currentState.merchantDetailsInput.copy(
@@ -87,8 +87,8 @@ class MerchantViewModel @Inject constructor(
                     )
                 }
             }
-            is MerchantEvent.BannerAndProfileUpload -> handleImageUpload(event)
-            is MerchantEvent.ShopLocationChanged -> {
+            is CreateMerchantEvent.BannerAndProfileUpload -> handleImageUpload(event)
+            is CreateMerchantEvent.ShopLocationChanged -> {
                 _createMerchantState.update { currentState ->
                     currentState.copy(
                         merchantDetailsInput = currentState.merchantDetailsInput.copy(
@@ -100,7 +100,7 @@ class MerchantViewModel @Inject constructor(
         }
     }
 
-    private fun handleImageUpload(event: MerchantEvent.BannerAndProfileUpload) {
+    private fun handleImageUpload(event: CreateMerchantEvent.BannerAndProfileUpload) {
         currentUploadJob?.cancel()
         currentUploadJob = viewModelScope.launch {
             uploadMerchant(
