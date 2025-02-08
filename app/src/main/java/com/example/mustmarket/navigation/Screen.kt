@@ -33,6 +33,7 @@ sealed class Screen(
     }
     data object StoreProfileScreen : Screen("store_profile_screen")
     data object InventoryProducts : Screen("inventory_products")
+    data object InviteFriends : Screen("invite_friends")
 
 
     object BottomNavItems {

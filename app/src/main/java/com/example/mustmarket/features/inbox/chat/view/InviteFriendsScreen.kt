@@ -23,12 +23,14 @@ import com.example.mustmarket.features.inbox.chat.model.fetchContacts
 import com.example.mustmarket.features.inbox.chat.presentation.ContactItem
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.navigation.Screen
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 import com.example.mustmarket.ui.theme.gray01
 import com.example.mustmarket.ui.theme.greenishA
 import kotlinx.coroutines.launch
 
 @Composable
-fun NewChatScreen(
+fun InviteFriendsScreen(
     navController: NavController,
     chatListViewModel: ChatListViewModel = hiltViewModel(),
     currentUser: String = "anonymous"
@@ -66,7 +68,7 @@ fun NewChatScreen(
                         "Select Contact",
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = Color.White
+                        color = ThemeUtils.AppColors.Text.themed()
                     )
                 },
                 navigationIcon = {
@@ -74,7 +76,7 @@ fun NewChatScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = gray01
+                            tint = MaterialTheme.colors.onPrimary
                         )
                     }
                 },

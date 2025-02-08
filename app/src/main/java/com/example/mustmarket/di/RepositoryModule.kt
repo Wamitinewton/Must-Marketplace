@@ -54,8 +54,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideChatRepository(chatDao: ChatDao): ChatRepository {
-        return ChatRepository(chatDao)
+    fun provideChatRepository(chatDao: ChatDao, userDao: UserDao): ChatRepository {
+        return ChatRepository(chatDao, userDao)
     }
 
     @Provides

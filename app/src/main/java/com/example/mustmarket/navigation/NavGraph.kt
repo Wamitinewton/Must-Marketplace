@@ -24,9 +24,10 @@ import com.example.mustmarket.features.home.presentation.view.productList.HomeSc
 import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
 import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
 import com.example.mustmarket.features.inbox.chat.view.ChatScreen
-import com.example.mustmarket.features.inbox.chat.view.NewChatScreen
+import com.example.mustmarket.features.inbox.chat.view.InviteFriendsScreen
 import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
+import com.example.mustmarket.features.inbox.fetchUsers.view.UserListScreen
 import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
 import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
 import com.example.mustmarket.features.merchant.store.presentation.StoreProfileScreen
@@ -112,7 +113,10 @@ fun SetUpNavGraph(
 
         composableWithAnimations(Screen.NewChat.route,
           ) {
-            NewChatScreen(navController)
+            //InviteFriendsScreen(navController)
+            UserListScreen(
+                navController = navController
+            )
         }
 
         composableWithAnimations(
@@ -181,6 +185,18 @@ fun SetUpNavGraph(
                 navController = navController
             )
         }
+
+        composable(Screen.InviteFriends.route) {
+            // InviteFriendsScreen()
+            InviteFriendsScreen(
+                navController
+            )
+
+        }
+
+
+
+
     }
 }
 

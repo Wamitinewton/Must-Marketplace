@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.mustmarket.database.entities.UserEntity
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 
 @Dao
 interface UserDao {
@@ -19,4 +20,7 @@ interface UserDao {
 
     @Query("SELECT * FROM user LIMIT 1")
     suspend fun getLoggedInUser(): UserEntity?
+
+    @Query("SELECT * FROM user")
+    suspend fun getAllUsers(): List<AuthedUser>
 }

@@ -99,19 +99,6 @@ fun ChatListScreen(
         },
         floatingActionButton = {
             ExpandableFloatingActionButton(navController)
-//            FloatingActionButton(
-//                modifier = Modifier
-//                    .padding(bottom = 50.dp),
-//                onClick = {
-//                    navController.navigate(Screen.NewChat.route)
-//                },
-//                backgroundColor = MaterialTheme.colors.primary
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Add,
-//                    contentDescription = "Start New Chat"
-//                )
-//            }
         }
     ) { padding ->
 

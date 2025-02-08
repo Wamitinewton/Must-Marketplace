@@ -1,5 +1,7 @@
 package com.example.mustmarket.features.inbox.repository
 
+import com.example.mustmarket.database.dao.UserDao
+import com.example.mustmarket.features.auth.domain.model.AuthedUser
 import com.example.mustmarket.features.inbox.chat.model.ChatDao
 import com.example.mustmarket.features.inbox.chat.model.ChatEntity
 import com.example.mustmarket.features.inbox.chat.model.ChatMessageEntity
@@ -7,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ChatRepository @Inject constructor(
-    private val chatDao: ChatDao
+    private val chatDao: ChatDao,
+    private val userDao: UserDao
 ) {
     fun getAllChats() = chatDao.getAllChats()
 
@@ -45,5 +48,12 @@ class ChatRepository @Inject constructor(
     ) {
         chatDao.updateChatLastMessage(chatId, lastMessage, timestamp)
     }
+
+    suspend fun fetchUsers(): List<AuthedUser> {
+        return userDao.getAllUsers()
+    }
+
+    //suspend fun getAllUsers() = userDao.getAllUsers()
+
 }
 

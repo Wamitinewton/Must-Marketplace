@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mustmarket.features.inbox.chat.model.Contact
+import com.example.mustmarket.ui.theme.ThemeUtils
+import com.example.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun ContactItem(
@@ -46,7 +48,7 @@ fun ContactItem(
         ) {
             Text(
                 text = contact.name.first().uppercase(),
-                color = Color.Black,
+                color = ThemeUtils.AppColors.Text.themed(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -59,12 +61,12 @@ fun ContactItem(
                 text = contact.name,
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = ThemeUtils.AppColors.Text.themed(),
             )
             Text(
                 text = contact.phoneNumber,
                 style = MaterialTheme.typography.caption,
-                color = Color.Gray
+                color = ThemeUtils.AppColors.Text.themed(),
             )
         }
     }
