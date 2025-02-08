@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mustmarket.R
 import com.example.mustmarket.features.inbox.chatsList.presentation.ChatListItem
+import com.example.mustmarket.features.inbox.chatsList.presentation.ExpandableFloatingActionButton
 import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.example.mustmarket.navigation.Screen
 import com.example.mustmarket.ui.theme.gray01
@@ -97,19 +98,20 @@ fun ChatListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier
-                    .padding(bottom = 50.dp),
-                onClick = {
-                    navController.navigate(Screen.NewChat.route)
-                },
-                backgroundColor = MaterialTheme.colors.primary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Start New Chat"
-                )
-            }
+            ExpandableFloatingActionButton(navController)
+//            FloatingActionButton(
+//                modifier = Modifier
+//                    .padding(bottom = 50.dp),
+//                onClick = {
+//                    navController.navigate(Screen.NewChat.route)
+//                },
+//                backgroundColor = MaterialTheme.colors.primary
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Add,
+//                    contentDescription = "Start New Chat"
+//                )
+//            }
         }
     ) { padding ->
 
