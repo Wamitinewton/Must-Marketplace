@@ -49,7 +49,6 @@ sealed class Screen(
     object BottomNavItems {
         val items = listOf(
             HomeScreen,
-            ChatListScreen,
             Bookmarks,
             AddProduct,
             Profile,

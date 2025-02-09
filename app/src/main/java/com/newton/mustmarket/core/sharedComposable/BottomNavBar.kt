@@ -47,7 +47,7 @@ fun BottomNavBar(
                     Icon(
                         imageVector = when (screen) {
                             Screen.HomeScreen -> Icons.Default.Home
-                            Screen.ChatListScreen -> Icons.AutoMirrored.Filled.Message
+//                            Screen.ChatListScreen -> Icons.AutoMirrored.Filled.Message
                             Screen.Bookmarks -> Icons.Default.Bookmark
                             Screen.AddProduct -> {
                                 if (isMerchant) Icons.Default.Shop else Icons.Default.AddCircleOutline
@@ -62,7 +62,7 @@ fun BottomNavBar(
                     Text(
                         text = when (screen) {
                             Screen.HomeScreen -> "Home"
-                            Screen.ChatListScreen -> "Messages"
+//                            Screen.ChatListScreen -> "Messages"
                             Screen.Bookmarks -> "Bookmarks"
                             Screen.AddProduct -> {
                                 if (isMerchant) "My Shop" else "Register"
@@ -85,23 +85,20 @@ fun BottomNavBar(
                                 }
                                 navController.navigate(route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                        inclusive = true
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                             else -> {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                        inclusive = true
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         }
-//                        navController.popBackStack()
                     }
                 }
             )
