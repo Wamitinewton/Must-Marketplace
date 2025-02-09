@@ -47,8 +47,7 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = //Screen.Splash.route,
-    Screen.ChatListScreen.route,
+        startDestination = Screen.Splash.route,
     ) {
         composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(
