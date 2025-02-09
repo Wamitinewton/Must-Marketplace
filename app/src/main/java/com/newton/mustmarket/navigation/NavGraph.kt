@@ -8,32 +8,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/navigation/NavGraph.kt
-import com.example.mustmarket.features.account.presentation.view.AccountScreen
-import com.example.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
-import com.example.mustmarket.features.auth.presentation.login.view.LoginScreen
-import com.example.mustmarket.features.auth.presentation.signup.view.SignUpScreen
-import com.example.mustmarket.features.bookmarks.BookmarksScreen
-import com.example.mustmarket.features.home.presentation.view.productDetails.ProductDetailsScreen
-import com.example.mustmarket.features.home.presentation.view.productList.AllProductsListScreen
-import com.example.mustmarket.features.home.presentation.view.productList.HomeScreen
-import com.example.mustmarket.features.home.presentation.view.productList.ProductSearchScreen
-import com.example.mustmarket.features.home.presentation.viewmodels.AllProductsViewModel
-import com.example.mustmarket.features.inbox.chat.view.ChatScreen
-import com.example.mustmarket.features.inbox.chat.view.InviteFriendsScreen
-import com.example.mustmarket.features.inbox.chatsList.view.ChatListScreen
-import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
-import com.example.mustmarket.features.inbox.fetchUsers.view.UserListScreen
-import com.example.mustmarket.features.merchant.products.presentation.view.UploadProducts
-import com.example.mustmarket.features.merchant.store.view.RegisterStoreScreen
+import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
+import com.newton.mustmarket.features.inbox.chatsList.view.UserListScreen
 import com.example.mustmarket.features.merchant.store.presentation.StoreProfileScreen
 import com.example.mustmarket.features.merchant.store.view.MerchantProductScreen
-import com.example.mustmarket.features.merchant.store.view.MerchantStoreScreen
-import com.example.mustmarket.features.onboarding.presentation.view.OnboardingScreen
-import com.example.mustmarket.features.splash.view.SplashScreen
-=======
 import com.newton.mustmarket.features.account.presentation.view.AccountScreen
 import com.newton.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.newton.mustmarket.features.auth.presentation.login.view.LoginScreen
@@ -46,8 +27,7 @@ import com.newton.mustmarket.features.get_products.presentation.view.productList
 import com.newton.mustmarket.features.get_products.presentation.view.productList.ProductsByCategoryScreen
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
-import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
-import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
+import com.newton.mustmarket.features.inbox.chat.view.InviteFriendsScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_input.MerchantSignupScreen
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
@@ -55,7 +35,6 @@ import com.newton.mustmarket.features.merchant.get_merchants.presentation.view.M
 import com.newton.mustmarket.features.merchant.upload_products.presentation.view.UploadProducts
 import com.newton.mustmarket.features.onboarding.presentation.view.OnboardingScreen
 import com.newton.mustmarket.features.splash.view.SplashScreen
->>>>>>> main:app/src/main/java/com/newton/mustmarket/navigation/NavGraph.kt
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
@@ -68,12 +47,8 @@ fun SetUpNavGraph(
 ) {
     NavHost(
         navController = navController,
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/navigation/NavGraph.kt
-        startDestination = Screen.Splash.route,
-        //Screen.MerchantStore.route
-=======
-        startDestination = Screen.Splash.route,
->>>>>>> main:app/src/main/java/com/newton/mustmarket/navigation/NavGraph.kt
+        startDestination = //Screen.Splash.route,
+    Screen.ChatListScreen.route,
     ) {
         composableWithAnimations(route = Screen.Onboarding.route) { OnboardingScreen(navController = navController) }
         composableWithAnimations(
@@ -222,19 +197,13 @@ fun SetUpNavGraph(
             )
         }
 
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/navigation/NavGraph.kt
         composable("store_profile_screen") {
             StoreProfileScreen(
                 navController = navController
             )
         }
 
-        composable(route = Screen.InventoryProducts.route,
-            enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
-                )
-            }) {
+        composable(route = Screen.InventoryProducts.route){
             MerchantProductScreen(
                 navController = navController
             )
@@ -251,8 +220,6 @@ fun SetUpNavGraph(
 
 
 
-=======
->>>>>>> main:app/src/main/java/com/newton/mustmarket/navigation/NavGraph.kt
     }
 }
 

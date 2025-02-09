@@ -3,15 +3,10 @@ package com.newton.mustmarket.features.inbox.chatsList.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/features/inbox/chatsList/viewModel/ChatListViewModel.kt
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.auth.domain.repository.AuthRepository
-import com.example.mustmarket.features.inbox.chatsList.model.Chat
-import com.example.mustmarket.features.inbox.repository.ChatRepository
-=======
+import com.newton.mustmarket.features.auth.domain.model.AuthedUser
+import com.newton.mustmarket.features.auth.domain.repository.AuthRepository
 import com.newton.mustmarket.features.inbox.chatsList.model.Chat
 import com.newton.mustmarket.features.inbox.repository.ChatRepository
->>>>>>> main:app/src/main/java/com/newton/mustmarket/features/inbox/chatsList/viewModel/ChatListViewModel.kt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

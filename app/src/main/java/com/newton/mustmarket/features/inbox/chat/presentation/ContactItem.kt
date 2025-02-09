@@ -21,13 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/features/inbox/chat/presentation/ContactItem.kt
-import com.example.mustmarket.features.inbox.chat.model.Contact
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
-=======
+
 import com.newton.mustmarket.features.inbox.chat.model.Contact
->>>>>>> main:app/src/main/java/com/newton/mustmarket/features/inbox/chat/presentation/ContactItem.kt
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun ContactItem(
@@ -67,9 +64,10 @@ fun ContactItem(
                 color = ThemeUtils.AppColors.Text.themed(),
             )
             Text(
-                text = contact.phoneNumber,
+                text = "Let us chat on MustMarket",
                 style = MaterialTheme.typography.caption,
                 color = ThemeUtils.AppColors.Text.themed(),
+                fontSize = 12.sp
             )
         }
     }

@@ -19,9 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mustmarket.features.merchant.store.mDataStore.Product
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import com.google.android.gms.analytics.ecommerce.Product
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun MerchantProductScreen(

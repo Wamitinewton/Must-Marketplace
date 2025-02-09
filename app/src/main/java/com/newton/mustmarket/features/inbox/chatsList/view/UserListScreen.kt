@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.inbox.fetchUsers.view
+package com.newton.mustmarket.features.inbox.chatsList.view
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
-import com.example.mustmarket.features.inbox.fetchUsers.presentation.MustUserItem
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import com.newton.mustmarket.features.inbox.chatsList.presentation.MustUserItem
+import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable

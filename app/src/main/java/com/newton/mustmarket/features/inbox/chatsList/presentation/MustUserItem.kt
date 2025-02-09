@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.inbox.fetchUsers.presentation
+package com.newton.mustmarket.features.inbox.chatsList.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,9 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import com.newton.mustmarket.features.auth.domain.model.AuthedUser
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun MustUserItem(

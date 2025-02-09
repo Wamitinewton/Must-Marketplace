@@ -43,13 +43,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.mustmarket.R
-import com.example.mustmarket.core.sharedComposable.BottomNavBar
-import com.example.mustmarket.features.merchant.store.viewModel.MerchantViewModel
 import com.example.mustmarket.features.merchant.store.presentation.InventoryCard
-import com.example.mustmarket.navigation.Screen
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
+import com.newton.mustmarket.R
+import com.newton.mustmarket.core.sharedComposable.BottomNavBar
+import com.newton.mustmarket.features.merchant.create_store.presentation.viewModel.MerchantViewModel
+import com.newton.mustmarket.navigation.Screen
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun MerchantStoreScreen(

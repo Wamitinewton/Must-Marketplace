@@ -36,25 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-<<<<<<<< HEAD:app/src/main/java/com/newton/mustmarket/features/inbox/chat/view/InviteFriendsScreen.kt
-import com.example.mustmarket.features.inbox.chat.model.Contact
-import com.example.mustmarket.features.inbox.chat.model.RequestContactsPermission
-import com.example.mustmarket.features.inbox.chat.model.fetchContacts
-import com.example.mustmarket.features.inbox.chat.presentation.ContactItem
-import com.example.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
-import com.example.mustmarket.ui.theme.ThemeUtils
-import com.example.mustmarket.ui.theme.ThemeUtils.themed
-import com.example.mustmarket.ui.theme.greenishA
-========
 import com.newton.mustmarket.features.inbox.chat.model.Contact
 import com.newton.mustmarket.features.inbox.chat.model.RequestContactsPermission
 import com.newton.mustmarket.features.inbox.chat.model.fetchContacts
 import com.newton.mustmarket.features.inbox.chat.presentation.ContactItem
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
-import com.newton.mustmarket.navigation.Screen
-import com.newton.mustmarket.ui.theme.gray01
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 import com.newton.mustmarket.ui.theme.greenishA
->>>>>>>> main:app/src/main/java/com/newton/mustmarket/features/inbox/chat/view/NewChatScreen.kt
 import kotlinx.coroutines.launch
 
 @Composable
@@ -182,12 +171,11 @@ private fun inviteViaWhatsApp(
     contact: Contact
 ){
 
-    val inviteMessage = """"Hey ${contact.name},
-         I just found an amazing app called **MustMarket** that makes buying, selling, and chatting super easy! 🛍️💬
+    val inviteMessage = """"Hey ${contact.name},I just found an amazing app called *MustMarket* that makes buying, selling, and chatting super easy! 🛍️💬
                     
-         Join me on Must now and let's connect. Trust me, you’ll love it! 🔥🔥  
+   Join me on MustMarket now and let's connect. Trust me, you’ll love it! 🔥🔥  
 
-         Download it here: [Play Store Link] """.trimIndent()
+   Download it here: [Play Store Link] """.trimIndent()
 
     val formattedPhone = formatPhoneNumber(contact.phoneNumber)
 

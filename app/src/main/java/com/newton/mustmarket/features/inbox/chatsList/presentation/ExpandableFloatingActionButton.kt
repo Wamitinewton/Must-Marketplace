@@ -1,4 +1,4 @@
-package com.example.mustmarket.features.inbox.chatsList.presentation
+package com.newton.mustmarket.features.inbox.chatsList.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.mustmarket.navigation.Screen
+import com.newton.mustmarket.navigation.Screen
 
 @Composable
 fun ExpandableFloatingActionButton(

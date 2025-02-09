@@ -1,16 +1,11 @@
 package com.newton.mustmarket.features.inbox.repository
 
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/features/inbox/repository/ChatRepo.kt
-import com.example.mustmarket.database.dao.UserDao
-import com.example.mustmarket.features.auth.domain.model.AuthedUser
-import com.example.mustmarket.features.inbox.chat.model.ChatDao
-import com.example.mustmarket.features.inbox.chat.model.ChatEntity
-import com.example.mustmarket.features.inbox.chat.model.ChatMessageEntity
-=======
+
+import com.newton.mustmarket.database.dao.UserDao
+import com.newton.mustmarket.features.auth.domain.model.AuthedUser
 import com.newton.mustmarket.features.inbox.chat.model.ChatDao
 import com.newton.mustmarket.features.inbox.chat.model.ChatEntity
 import com.newton.mustmarket.features.inbox.chat.model.ChatMessageEntity
->>>>>>> main:app/src/main/java/com/newton/mustmarket/features/inbox/repository/ChatRepo.kt
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

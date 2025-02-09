@@ -34,19 +34,16 @@ sealed class Screen(
             return "product_by_category/$category"
         }
     }
-<<<<<<< HEAD:app/src/main/java/com/example/mustmarket/navigation/Screen.kt
+
     data object StoreProfileScreen : Screen("store_profile_screen")
     data object InventoryProducts : Screen("inventory_products")
     data object InviteFriends : Screen("invite_friends")
-=======
 
     data object GetMerchantById: Screen("merchant_by_id/{id}") {
         fun createRoute(id: Int): String {
             return "merchant_by_id/$id"
         }
     }
-
->>>>>>> main:app/src/main/java/com/newton/mustmarket/navigation/Screen.kt
 
 
     object BottomNavItems {

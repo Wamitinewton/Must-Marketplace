@@ -111,6 +111,7 @@ dependencies {
     // Hilt DI
     implementation(libs.hilt.android)
     implementation(libs.androidx.espresso.core)
+    implementation(libs.play.services.analytics.impl)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     kapt("androidx.hilt:hilt-compiler:1.2.0")
