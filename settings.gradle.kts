@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "MustMarket"
 include(":app")
 include(":file_service")
+include(":custom_ads")
