@@ -26,7 +26,7 @@ interface AuthenticationService {
     suspend fun resetPassword(@Body otpRequest: OtpRequest): PasswordResetResponse
 
     @POST(AuthorizationEndpoints.REFRESH_TOKEN)
-    suspend fun refreshToken(@Body refreshTokenRequest: String?): LoginResult
+    suspend fun refreshToken(@Body refreshToken: String?): LoginResult
 
 }
 
