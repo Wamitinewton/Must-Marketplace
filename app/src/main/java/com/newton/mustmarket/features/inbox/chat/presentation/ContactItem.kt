@@ -18,11 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 import com.newton.mustmarket.features.inbox.chat.model.Contact
+import com.newton.mustmarket.ui.theme.ThemeUtils
+import com.newton.mustmarket.ui.theme.ThemeUtils.themed
 
 @Composable
 fun ContactItem(
@@ -46,7 +48,7 @@ fun ContactItem(
         ) {
             Text(
                 text = contact.name.first().uppercase(),
-                color = Color.Black,
+                color = ThemeUtils.AppColors.Text.themed(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -59,12 +61,13 @@ fun ContactItem(
                 text = contact.name,
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = ThemeUtils.AppColors.Text.themed(),
             )
             Text(
-                text = contact.phoneNumber,
+                text = "Let us chat on MustMarket",
                 style = MaterialTheme.typography.caption,
-                color = Color.Gray
+                color = ThemeUtils.AppColors.Text.themed(),
+                fontSize = 12.sp
             )
         }
     }

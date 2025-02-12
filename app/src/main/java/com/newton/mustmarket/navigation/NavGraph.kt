@@ -8,8 +8,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
+import com.newton.mustmarket.features.inbox.chatsList.view.UserListScreen
+import com.example.mustmarket.features.merchant.store.presentation.StoreProfileScreen
+import com.example.mustmarket.features.merchant.store.view.MerchantProductScreen
 import com.newton.mustmarket.features.account.presentation.view.AccountScreen
 import com.newton.mustmarket.features.auth.presentation.forgotPassword.view.ForgotPasswordRoute
 import com.newton.mustmarket.features.auth.presentation.login.view.LoginScreen
@@ -22,8 +27,7 @@ import com.newton.mustmarket.features.get_products.presentation.view.productList
 import com.newton.mustmarket.features.get_products.presentation.view.productList.ProductsByCategoryScreen
 import com.newton.mustmarket.features.get_products.presentation.viewmodels.AllProductsViewModel
 import com.newton.mustmarket.features.inbox.chat.view.ChatScreen
-import com.newton.mustmarket.features.inbox.chat.view.NewChatScreen
-import com.newton.mustmarket.features.inbox.chatsList.view.ChatListScreen
+import com.newton.mustmarket.features.inbox.chat.view.InviteFriendsScreen
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_input.MerchantSignupScreen
 import com.newton.mustmarket.features.merchant.create_store.presentation.view.merchant_onboarding.MerchantOnboardingScreen
@@ -108,7 +112,10 @@ fun SetUpNavGraph(
 
         composableWithAnimations(Screen.NewChat.route,
           ) {
-            NewChatScreen(navController)
+            //InviteFriendsScreen(navController)
+            UserListScreen(
+                navController = navController
+            )
         }
 
         composableWithAnimations(
@@ -189,6 +196,29 @@ fun SetUpNavGraph(
                 navController = navController
             )
         }
+
+        composable("store_profile_screen") {
+            StoreProfileScreen(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.InventoryProducts.route){
+            MerchantProductScreen(
+                navController = navController
+            )
+        }
+
+        composable(Screen.InviteFriends.route) {
+            // InviteFriendsScreen()
+            InviteFriendsScreen(
+                navController
+            )
+
+        }
+
+
+
 
     }
 }

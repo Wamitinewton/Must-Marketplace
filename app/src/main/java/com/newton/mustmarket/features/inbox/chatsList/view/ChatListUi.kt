@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -14,7 +13,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -31,10 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.newton.mustmarket.R
 import com.newton.mustmarket.features.inbox.chatsList.presentation.ChatListItem
+import com.newton.mustmarket.features.inbox.chatsList.presentation.ExpandableFloatingActionButton
 import com.newton.mustmarket.features.inbox.chatsList.viewModel.ChatListViewModel
-import com.newton.mustmarket.navigation.Screen
-import com.newton.mustmarket.ui.theme.gray01
-import com.newton.mustmarket.ui.theme.greenishA
 
 @Composable
 fun ChatListScreen(
@@ -45,7 +41,7 @@ fun ChatListScreen(
     val activeChats by chatListViewModel.activeChats.observeAsState(emptyList())
 
     Scaffold(
-        backgroundColor = greenishA,
+        backgroundColor = MaterialTheme.colors.surface,
         topBar = {
             TopAppBar(
                 title = {
@@ -65,7 +61,7 @@ fun ChatListScreen(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = gray01
+                            tint = MaterialTheme.colors.surface
                         )
                     }
                     IconButton(
@@ -76,7 +72,7 @@ fun ChatListScreen(
                         Image(
                             painter = painterResource(R.drawable.dslr_camera),
                             contentDescription = "",
-                            colorFilter = ColorFilter.tint(gray01),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.surface),
                             modifier = Modifier
                                 .size(20.dp)
                                 .background(Color.Transparent)
@@ -90,26 +86,16 @@ fun ChatListScreen(
                         Icon(
                             Icons.Default.MoreVert,
                             contentDescription = "More",
-                            tint = gray01
+                            tint = MaterialTheme.colors.surface
                         )
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier
-                    .padding(bottom = 50.dp),
-                onClick = {
-                    navController.navigate(Screen.NewChat.route)
-                },
-                backgroundColor = MaterialTheme.colors.primary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Start New Chat"
-                )
-            }
+            ExpandableFloatingActionButton(
+                navController = navController
+            )
         }
     ) { padding ->
 

@@ -3,9 +3,14 @@ package com.newton.mustmarket.features.inbox.chatsList.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.newton.mustmarket.features.auth.domain.model.AuthedUser
+import com.newton.mustmarket.features.auth.domain.repository.AuthRepository
 import com.newton.mustmarket.features.inbox.chatsList.model.Chat
 import com.newton.mustmarket.features.inbox.repository.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -15,8 +20,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val repository: ChatRepository
+    private val repository: ChatRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
+
+    private val _users = MutableStateFlow<List<AuthedUser>>(emptyList())
+    val users = _users.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     // Convert Flow to LiveData for active chats
     val activeChats = repository.getAllChats()
@@ -62,5 +77,21 @@ class ChatListViewModel @Inject constructor(
         return SimpleDateFormat("hh:mm a, dd MMM yyyy", Locale.getDefault())
             .format(Date())
     }
+
+    fun loadUsers() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val user = authRepository.getLoggedInUser() // Fetch authenticated user
+                _users.value = user?.let { listOf(it) } ?: emptyList()
+            } catch (e: Exception) {
+                _error.value = "Failed to load users: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
 }
 

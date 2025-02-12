@@ -47,7 +47,7 @@ class GetMerchantsViewModel @Inject constructor(
         try {
             viewModelScope.launch {
                 useCases.getMerchantsUseCase.getMerchantById(id).collect { merchandById ->
-                    when(merchandById) {
+                    when (merchandById) {
                         is Resource.Error -> {
                             _getMerchantByIdState.update { currentState ->
                                 currentState.copy(
@@ -57,6 +57,7 @@ class GetMerchantsViewModel @Inject constructor(
                                 )
                             }
                         }
+
                         is Resource.Loading -> {
                             _getMerchantByIdState.update { currentState ->
                                 currentState.copy(
@@ -66,6 +67,7 @@ class GetMerchantsViewModel @Inject constructor(
                                 )
                             }
                         }
+
                         is Resource.Success -> {
                             _getMerchantByIdState.update { currentState ->
                                 currentState.copy(
